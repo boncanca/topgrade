@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(\n# Move resources/js/admin content to resources/js/volara\nmkdir -p resources/js/volara\nmv resources/js/admin/* resources/js/volara/\nrmdir resources/js/admin\necho \"✅ Moved resources/js/admin/* → resources/js/volara/\"\n)",
+      "Bash(xargs -I {} basename {})",
+      "Bash(rm -f database/migrations/*create_media_table.php && rm -f app/Features/Content/Models/Media.php && echo \"Media model and migration removed\")",
+      "Bash(npm run *)"
+    ],
+    "additionalDirectories": [
+      "/Users/tomc/Herd/topgrade/resources/js/admin",
+      "/Users/tomc/.claude/projects/-Users-tomc-Herd-topgrade",
+      "/Users/tomc/Herd/topgrade/database/migrations"
+    ]
+  }
+}
