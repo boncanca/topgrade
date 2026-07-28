@@ -49,9 +49,8 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www
 
-# Copy Composer files & local path repository modules
+# Copy Composer files
 COPY composer.json composer.lock ./
-COPY app-modules ./app-modules
 
 # Install Composer vendor packages safely
 RUN composer install \
