@@ -104,14 +104,13 @@ RUN mkdir -p \
 
 # Startup script (Runs at container boot with runtime environment variables)
 RUN echo '#!/bin/bash' > /start.sh && \
-    echo 'set -e' >> /start.sh && \
-    echo 'php artisan migrate --force' >> /start.sh && \
-    echo 'php artisan config:cache' >> /start.sh && \
-    echo 'php artisan route:cache' >> /start.sh && \
-    echo 'php artisan view:cache' >> /start.sh && \
-    echo 'php artisan event:cache 2>/dev/null || true' >> /start.sh && \
-    echo 'php artisan icons:cache 2>/dev/null || true' >> /start.sh && \
-    echo 'php artisan filament:optimize 2>/dev/null || true' >> /start.sh && \
+    echo 'php artisan config:clear || true' >> /start.sh && \
+    echo 'php artisan route:clear || true' >> /start.sh && \
+    echo 'php artisan view:clear || true' >> /start.sh && \
+    echo 'php artisan migrate --force || echo "Migration failed or database not ready yet."' >> /start.sh && \
+    echo 'php artisan config:cache || true' >> /start.sh && \
+    echo 'php artisan route:cache || true' >> /start.sh && \
+    echo 'php artisan view:cache || true' >> /start.sh && \
     echo 'exec php artisan octane:start --server=swoole --host=0.0.0.0 --port=8000' >> /start.sh && \
     chown laravel:laravel /start.sh && \
     chmod +x /start.sh
@@ -120,7 +119,7 @@ RUN echo '#!/bin/bash' > /start.sh && \
 EXPOSE 8000
 
 # Health Check using Laravel /up endpoint
-HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+HEALTHCHECK --interval=15s --timeout=5s --start-period=30s --retries=3 \
     CMD curl -f http://localhost:8000/up || exit 1
 
 # Switch to non-root user for execution
