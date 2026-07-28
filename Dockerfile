@@ -102,18 +102,8 @@ RUN mkdir -p \
     && chown -R laravel:laravel storage bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
 
-# Startup script (Runs at container boot with runtime environment variables)
-RUN echo '#!/bin/bash' > /start.sh && \
-    echo 'php artisan config:clear || true' >> /start.sh && \
-    echo 'php artisan route:clear || true' >> /start.sh && \
-    echo 'php artisan view:clear || true' >> /start.sh && \
-    echo 'php artisan migrate --force || echo "Migration failed or database not ready yet."' >> /start.sh && \
-    echo 'php artisan config:cache || true' >> /start.sh && \
-    echo 'php artisan route:cache || true' >> /start.sh && \
-    echo 'php artisan view:cache || true' >> /start.sh && \
-    echo 'exec php artisan octane:start --server=swoole --host=0.0.0.0 --port=8000' >> /start.sh && \
-    chown laravel:laravel /start.sh && \
-    chmod +x /start.sh
+# Copy entrypoint script
+COPY --chmod=0755 docker/entrypoint-octane.sh /usr/local/bin/entrypoint.sh
 
 # Expose Port 8000 for Dokploy/Traefik routing
 EXPOSE 8000
@@ -125,4 +115,4 @@ HEALTHCHECK --interval=15s --timeout=5s --start-period=30s --retries=3 \
 # Switch to non-root user for execution
 USER laravel
 
-CMD ["/start.sh"]
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
