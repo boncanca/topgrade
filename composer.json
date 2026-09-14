@@ -19,6 +19,7 @@
         "laravel/tinker": "^3.0",
         "laravel/wayfinder": "^0.1.14",
         "predis/predis": "^3.5",
+        "resend/resend-laravel": "^1.4",
         "spatie/laravel-activitylog": "^5.0",
         "spatie/laravel-medialibrary": "^11.23",
         "spatie/laravel-permission": "^8.0",
