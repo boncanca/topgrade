@@ -4,6 +4,11 @@ import EmptyState from '@/components/EmptyState.vue';
 import PageHeader from '@/components/PageHeader.vue';
 import { Button } from '@/components/ui/button';
 import { index as activitiesIndex } from '@/routes/bookable-items';
+import {
+    create as schedulesCreate,
+    destroy as schedulesDestroy,
+    edit as schedulesEdit,
+} from '@/routes/bookable-items/schedules';
 
 interface Activity {
     id: number;
@@ -73,7 +78,7 @@ function deleteSchedule(schedule: Schedule): void {
     }
 
     router.delete(
-        route('bookable-items.schedules.destroy', [props.activity.id, schedule.id])
+        schedulesDestroy.url([props.activity.id, schedule.id])
     );
 }
 
@@ -86,15 +91,15 @@ function paginationLabel(label: string): string {
     <Head :title="`${activity.name} - Schedules`" />
 
     <PageHeader
-        :title="`${activity.name} Sessions`"
-        description="Manage training sessions and schedules for this activity."
+        :title="`${activity.name} Schedules`"
+        description="Manage schedules and dates for this activity."
     />
 
     <div class="space-y-6 p-6">
         <!-- Create Button -->
         <div class="flex justify-end">
             <Link
-                :href="route('bookable-items.schedules.create', activity.id)"
+                :href="schedulesCreate(activity.id)"
                 class="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
             >
                 + Add Schedule
@@ -142,7 +147,7 @@ function paginationLabel(label: string): string {
                         <td class="px-6 py-4 text-right">
                             <div class="flex items-center justify-end gap-2">
                                 <Link
-                                    :href="route('bookable-items.schedules.edit', [activity.id, schedule.id])"
+                                    :href="schedulesEdit([activity.id, schedule.id])"
                                     class="text-xs font-medium text-primary hover:underline"
                                 >
                                     Edit
@@ -166,7 +171,7 @@ function paginationLabel(label: string): string {
             title="No schedules yet"
             description="Create your first schedule to start accepting bookings."
             action-text="Create Schedule"
-            :action-href="route('bookable-items.schedules.create', activity.id)"
+            :action-href="schedulesCreate(activity.id)"
         />
 
         <!-- Pagination -->

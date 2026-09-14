@@ -142,6 +142,10 @@ function handleCancel(): void {
             :description="booking.participant_name"
         />
 
+        <div v-if="$page.props.errors && Object.keys($page.props.errors).length > 0" class="rounded-lg border border-destructive/50 bg-destructive/10 p-4 text-sm text-destructive">
+            <p v-for="(err, key) in $page.props.errors" :key="key">{{ err }}</p>
+        </div>
+
         <div class="space-y-8">
             <FormSection
                 title="Booking Details"

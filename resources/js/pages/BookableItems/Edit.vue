@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { router, useForm } from '@inertiajs/vue3';
+import { Link, router, useForm } from '@inertiajs/vue3';
 import FormPage from '@/components/FormPage.vue';
 import FormSection from '@/components/FormSection.vue';
 import PageActions from '@/components/PageActions.vue';
@@ -9,6 +9,7 @@ import {
     index as activitiesIndex,
     update as activitiesUpdate,
 } from '@/routes/bookable-items';
+import { index as schedulesIndex } from '@/routes/bookable-items/schedules';
 
 interface Activity {
     id: number;
@@ -87,8 +88,8 @@ function handleDelete(): void {
     >
         <div class="mb-6 flex justify-end">
             <Button variant="outline" class="border-purple-300 text-purple-700 hover:bg-purple-50 dark:border-purple-800 dark:text-purple-300 dark:hover:bg-purple-950 font-semibold" as-child>
-                <Link :href="route('bookable-items.schedules.index', props.item.id)">
-                    📅 View & Add Session Slots
+                <Link :href="schedulesIndex(props.item.id)">
+                    📅 Manage Schedules
                 </Link>
             </Button>
         </div>

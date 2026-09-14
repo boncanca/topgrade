@@ -9,6 +9,7 @@ import {
     edit as activitiesEdit,
     index as activitiesIndex,
 } from '@/routes/bookable-items';
+import { index as schedulesIndex } from '@/routes/bookable-items/schedules';
 
 interface Activity {
     id: number;
@@ -186,8 +187,8 @@ function deleteActivity(item: Activity): void {
                             <td class="px-4 py-4">
                                 <div class="flex justify-end gap-2">
                                     <Button variant="outline" size="sm" class="border-purple-200 text-purple-700 hover:bg-purple-50 dark:border-purple-900 dark:text-purple-300 dark:hover:bg-purple-950 font-semibold" as-child>
-                                        <Link :href="route('bookable-items.schedules.index', item.id)">
-                                            📅 Manage Slots
+                                        <Link :href="schedulesIndex(item.id)">
+                                            📅 Manage Schedules
                                         </Link>
                                     </Button>
                                     <Button variant="ghost" size="sm" as-child>

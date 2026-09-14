@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Head, Link, router } from '@inertiajs/vue3';
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { Button } from '@/components/ui/button';
 import PublicLayout from '@/layouts/PublicLayout.vue';
 import {
@@ -55,7 +55,7 @@ const form = ref({
 
 watch(
     () => props.schedules,
-    (schedules) => {
+    (schedules: Schedule[]) => {
         if (schedules && schedules.length > 0 && !form.value.schedule_id) {
             form.value.schedule_id = schedules[0].id.toString();
         }

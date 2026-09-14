@@ -5,6 +5,10 @@ import FormSection from '@/components/FormSection.vue';
 import PageActions from '@/components/PageActions.vue';
 import { Button } from '@/components/ui/button';
 import { index as activitiesIndex } from '@/routes/bookable-items';
+import {
+    index as schedulesIndex,
+    update as schedulesUpdate,
+} from '@/routes/bookable-items/schedules';
 
 interface Activity {
     id: number;
@@ -50,11 +54,11 @@ function setEndTime(): void {
 }
 
 function handleSubmit(): void {
-    form.put(route('bookable-items.schedules.update', [props.activity.id, props.schedule.id]));
+    form.put(schedulesUpdate.url([props.activity.id, props.schedule.id]));
 }
 
 function handleCancel(): void {
-    router.visit(route('bookable-items.schedules.index', [props.activity.id]));
+    router.visit(schedulesIndex.url(props.activity.id));
 }
 </script>
 
@@ -147,7 +151,6 @@ function handleCancel(): void {
                         <select v-model="form.status" :class="fieldClass">
                             <option value="active">Active</option>
                             <option value="cancelled">Cancelled</option>
-                            <option value="full">Full</option>
                         </select>
                         <p v-if="form.errors.status" class="mt-1 text-sm text-destructive">
                             {{ form.errors.status }}
