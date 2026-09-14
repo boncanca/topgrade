@@ -1,13 +1,15 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
 import {
+    BookOpen,
     CalendarCheck,
     ClipboardList,
     FileText,
-    Inbox,
     LayoutGrid,
     Menu,
+    MessageSquare,
     Settings,
+    Users,
 } from '@lucide/vue';
 import AppLogo from '@/components/AppLogo.vue';
 import NavMain from '@/components/NavMain.vue';
@@ -33,7 +35,6 @@ import type { NavGroup } from '@/types';
 
 const navGroups: NavGroup[] = [
     {
-        title: 'Overview',
         items: [
             {
                 title: 'Dashboard',
@@ -41,26 +42,6 @@ const navGroups: NavGroup[] = [
                 icon: LayoutGrid,
                 exact: true,
             },
-        ],
-    },
-    {
-        title: 'Website',
-        items: [
-            {
-                title: 'Pages',
-                href: contentIndex(),
-                icon: FileText,
-            },
-            {
-                title: 'Menus',
-                href: menusIndex(),
-                icon: Menu,
-            },
-        ],
-    },
-    {
-        title: 'Bookings',
-        items: [
             {
                 title: 'Activities',
                 href: bookableItemsIndex(),
@@ -71,30 +52,39 @@ const navGroups: NavGroup[] = [
                 href: bookingsIndex(),
                 icon: CalendarCheck,
             },
-        ],
-    },
-    {
-        title: 'People',
-        items: [
             {
                 title: 'Contacts',
                 href: contactsIndex(),
-                icon: ClipboardList,
+                icon: Users,
+            },
+            {
+                title: 'Messages',
+                href: inquiriesIndex(),
+                icon: MessageSquare,
             },
         ],
     },
     {
-        title: 'Communication',
+        title: 'Content',
         items: [
             {
-                title: 'Inquiries',
-                href: inquiriesIndex(),
-                icon: Inbox,
+                title: 'Pages',
+                href: contentIndex({ query: { type: 'page' } }),
+                icon: FileText,
+            },
+            {
+                title: 'Articles',
+                href: contentIndex({ query: { type: 'article' } }),
+                icon: BookOpen,
+            },
+            {
+                title: 'Menus',
+                href: menusIndex(),
+                icon: Menu,
             },
         ],
     },
     {
-        title: 'System',
         items: [
             {
                 title: 'Settings',

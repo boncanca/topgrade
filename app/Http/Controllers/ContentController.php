@@ -8,17 +8,22 @@ use App\Models\Content;
 use App\Models\ContentBlock;
 use App\Models\ContentType;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class ContentController extends Controller
 {
-    public function index(): Response
+    public function index(Request $request): Response
     {
         return Inertia::render('Content/Index', [
             'content' => Content::with('contentType')
+                ->when($request->query('type'), function ($query, $type) {
+                    $query->whereHas('contentType', fn ($q) => $q->where('slug', $type));
+                })
                 ->latest()
-                ->paginate(15),
+                ->paginate(15)
+                ->withQueryString(),
         ]);
     }
 

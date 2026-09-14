@@ -39,8 +39,18 @@ export function useCurrentUrl(): UseCurrentUrlReturn {
         currentUrl?: string,
         startsWith: boolean = false,
     ) {
-        const urlToCompare = currentUrl ?? currentUrlReactive.value;
         const urlString = toUrl(urlToCheck);
+
+        if (urlString.includes('?')) {
+            const currentFull = currentUrl ?? page.url;
+            const targetUrl = urlString.startsWith('http')
+                ? new URL(urlString)
+                : new URL(urlString, 'http://localhost');
+            const targetPathWithSearch = targetUrl.pathname + targetUrl.search;
+            return startsWith ? currentFull.startsWith(targetPathWithSearch) : currentFull === targetPathWithSearch;
+        }
+
+        const urlToCompare = currentUrl ?? currentUrlReactive.value;
 
         const comparePath = (path: string): boolean =>
             startsWith ? urlToCompare.startsWith(path) : path === urlToCompare;

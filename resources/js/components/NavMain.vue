@@ -18,8 +18,8 @@ const { isCurrentOrParentUrl, isCurrentUrl } = useCurrentUrl();
 </script>
 
 <template>
-    <SidebarGroup v-for="group in groups" :key="group.title" class="px-2 py-0">
-        <SidebarGroupLabel>{{ group.title }}</SidebarGroupLabel>
+    <SidebarGroup v-for="(group, index) in groups" :key="group.title ?? index" class="px-2 py-0">
+        <SidebarGroupLabel v-if="group.title">{{ group.title }}</SidebarGroupLabel>
         <SidebarMenu>
             <SidebarMenuItem v-for="item in group.items" :key="item.title">
                 <SidebarMenuButton
