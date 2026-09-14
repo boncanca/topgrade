@@ -25,7 +25,6 @@ class ScheduleFactory extends Factory
             'capacity' => rand(10, 30),
             'location' => $this->faker->city(),
             'status' => 'active',
-            'recurrence_pattern' => null,
         ];
     }
 }

@@ -43,8 +43,8 @@ Route::middleware(['auth', 'verified', 'admin'])->group(function () {
 
         // Booking management
         Route::resource('bookable-items', BookableItemController::class);
-        Route::resource('bookable-items.schedules', ScheduleController::class);
-        Route::resource('bookings', BookingController::class);
+        Route::resource('bookable-items.schedules', ScheduleController::class)->scoped();
+        Route::resource('bookings', BookingController::class)->only(['index', 'show']);
 
         // Booking workflow
         Route::post('bookings/{booking}/confirm', [BookingController::class, 'confirm'])->name('bookings.confirm');

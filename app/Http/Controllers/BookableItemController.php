@@ -32,11 +32,9 @@ class BookableItemController extends Controller
             ->with('success', 'Activity created successfully');
     }
 
-    public function show(BookableItem $bookableItem): Response
+    public function show(BookableItem $bookableItem): RedirectResponse
     {
-        return Inertia::render('BookableItems/Show', [
-            'item' => $bookableItem,
-        ]);
+        return redirect()->route('bookable-items.schedules.index', $bookableItem);
     }
 
     public function edit(BookableItem $bookableItem): Response
@@ -50,7 +48,7 @@ class BookableItemController extends Controller
     {
         $bookableItem->update($request->validated());
 
-        return redirect()->route('bookable-items.show', $bookableItem)
+        return redirect()->route('bookable-items.edit', $bookableItem)
             ->with('success', 'Activity updated successfully');
     }
 

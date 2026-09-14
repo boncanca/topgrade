@@ -53,6 +53,24 @@ class Booking extends Model
         return $this->belongsTo(Contact::class);
     }
 
+    public function canTransitionTo(BookingStatus $target): bool
+    {
+        $current = $this->status instanceof BookingStatus
+            ? $this->status
+            : BookingStatus::from($this->status);
+
+        return $current->canTransitionTo($target);
+    }
+
+    public function transitionTo(BookingStatus $target): void
+    {
+        if (! $this->canTransitionTo($target)) {
+            throw new \DomainException("Cannot transition booking from {$this->status->value} to {$target->value}.");
+        }
+
+        $this->update(['status' => $target]);
+    }
+
     public static function generateReference(): string
     {
         do {

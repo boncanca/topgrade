@@ -38,7 +38,7 @@ class ScheduleController extends Controller
             'ends_at' => 'required|date_format:Y-m-d\TH:i|after:starts_at',
             'capacity' => 'nullable|integer|min:1',
             'location' => 'nullable|string|max:255',
-            'status' => ['required', Rule::in(['active', 'cancelled', 'full'])],
+            'status' => ['required', Rule::in(['active', 'cancelled'])],
         ]);
 
         $validated['bookable_item_id'] = $bookableItem->id;
@@ -51,6 +51,8 @@ class ScheduleController extends Controller
 
     public function edit(BookableItem $bookableItem, Schedule $schedule): Response
     {
+        abort_unless($schedule->bookable_item_id === $bookableItem->id, 404);
+
         return Inertia::render('BookableItems/Schedules/Edit', [
             'activity' => $bookableItem,
             'schedule' => $schedule,
@@ -59,12 +61,14 @@ class ScheduleController extends Controller
 
     public function update(Request $request, BookableItem $bookableItem, Schedule $schedule): RedirectResponse
     {
+        abort_unless($schedule->bookable_item_id === $bookableItem->id, 404);
+
         $validated = $request->validate([
             'starts_at' => 'required|date_format:Y-m-d\TH:i',
             'ends_at' => 'required|date_format:Y-m-d\TH:i|after:starts_at',
             'capacity' => 'nullable|integer|min:1',
             'location' => 'nullable|string|max:255',
-            'status' => ['required', Rule::in(['active', 'cancelled', 'full'])],
+            'status' => ['required', Rule::in(['active', 'cancelled'])],
         ]);
 
         $schedule->update($validated);
@@ -75,6 +79,8 @@ class ScheduleController extends Controller
 
     public function destroy(BookableItem $bookableItem, Schedule $schedule): RedirectResponse
     {
+        abort_unless($schedule->bookable_item_id === $bookableItem->id, 404);
+
         $schedule->delete();
 
         return redirect()->route('bookable-items.schedules.index', $bookableItem)

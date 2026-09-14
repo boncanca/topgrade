@@ -18,7 +18,6 @@ class Schedule extends Model
         'capacity',
         'location',
         'status',
-        'recurrence_pattern',
     ];
 
     protected $casts = [
@@ -36,12 +35,33 @@ class Schedule extends Model
         return $this->hasMany(Booking::class);
     }
 
-    public function isAvailable(): bool
+    public function effectiveCapacity(): int
     {
-        $confirmedBookings = $this->bookings()
+        return (int) ($this->capacity ?? $this->bookableItem?->capacity ?? 0);
+    }
+
+    public function bookedCount(): int
+    {
+        return $this->bookings()
             ->whereIn('status', ['confirmed', 'completed'])
             ->count();
+    }
 
-        return $confirmedBookings < ($this->capacity ?? $this->bookableItem->capacity);
+    public function isFull(): bool
+    {
+        return $this->bookedCount() >= $this->effectiveCapacity();
+    }
+
+    public function isAvailable(): bool
+    {
+        if ($this->status !== 'active') {
+            return false;
+        }
+
+        if ($this->starts_at <= now()) {
+            return false;
+        }
+
+        return ! $this->isFull();
     }
 }

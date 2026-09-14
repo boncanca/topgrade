@@ -30,14 +30,8 @@ return new class extends Migration
             // Location for this specific session (can override activity location)
             $table->string('location')->nullable();
 
-            // Session status: active, cancelled, full, etc.
+            // Schedule status: active, cancelled
             $table->string('status')->default('active');
-
-            // Booking count (denormalized for performance)
-            $table->integer('bookings_count')->default(0);
-
-            // Recurrence info (for future recurring schedules)
-            $table->string('recurrence_pattern')->nullable(); // daily, weekly, monthly, etc.
 
             $table->timestamps();
 

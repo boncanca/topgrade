@@ -11,7 +11,9 @@ use App\Models\Inquiry;
 use App\Models\Schedule;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -132,36 +134,18 @@ class PublicBookingController
 
     public function show(BookableItem $bookableItem): Response
     {
-        if ($bookableItem->is_active && $bookableItem->schedules()->where('status', '!=', 'cancelled')->where('starts_at', '>=', now())->count() === 0) {
-            for ($i = 1; $i <= 3; $i++) {
-                $startsAt = now()->addDays($i * 3 + 1)->setHour(10)->setMinute(0)->setSecond(0);
-                $endsAt = (clone $startsAt)->addMinutes($bookableItem->duration_minutes ?? 60);
-
-                Schedule::create([
-                    'bookable_item_id' => $bookableItem->id,
-                    'starts_at' => $startsAt,
-                    'ends_at' => $endsAt,
-                    'capacity' => $bookableItem->capacity ?? 15,
-                    'location' => $bookableItem->location ?? 'Main Ground',
-                    'status' => 'active',
-                ]);
-            }
-        }
-
         $schedules = $bookableItem->schedules()
             ->where('status', '!=', 'cancelled')
-            ->where('starts_at', '>=', now())
+            ->where('starts_at', '>', now())
             ->orderBy('starts_at')
             ->get()
-            ->map(fn ($schedule) => [
+            ->map(fn (Schedule $schedule) => [
                 'id' => $schedule->id,
                 'starts_at' => $schedule->starts_at->toIso8601String(),
                 'ends_at' => $schedule->ends_at->toIso8601String(),
-                'capacity' => $schedule->capacity ?? $bookableItem->capacity,
+                'capacity' => $schedule->effectiveCapacity(),
                 'location' => $schedule->location ?? $bookableItem->location,
-                'available_spots' => ($schedule->capacity ?? $bookableItem->capacity) - $schedule->bookings()
-                    ->whereIn('status', ['confirmed', 'completed'])
-                    ->count(),
+                'available_spots' => max(0, $schedule->effectiveCapacity() - $schedule->bookedCount()),
             ]);
 
         return Inertia::render('Public/ActivityDetail', [
@@ -182,75 +166,74 @@ class PublicBookingController
             'notes' => 'nullable|string|max:1000',
         ]);
 
-        $activity = BookableItem::findOrFail($validated['bookable_item_id']);
-        $schedule = Schedule::findOrFail($validated['schedule_id']);
+        $booking = DB::transaction(function () use ($validated) {
+            /** @var Schedule $schedule */
+            $schedule = Schedule::where('id', $validated['schedule_id'])
+                ->lockForUpdate()
+                ->firstOrFail();
 
-        // Validate schedule belongs to activity
-        if ($schedule->bookable_item_id !== $activity->id) {
-            return back()
-                ->withInput()
-                ->withErrors(['schedule_id' => 'Invalid schedule for this activity.']);
-        }
+            // Validate schedule belongs to activity
+            if ((int) $schedule->bookable_item_id !== (int) $validated['bookable_item_id']) {
+                throw ValidationException::withMessages([
+                    'schedule_id' => 'Invalid schedule for this activity.',
+                ]);
+            }
 
-        // Check schedule is not cancelled or in the past
-        if ($schedule->status === 'cancelled') {
-            return back()
-                ->withInput()
-                ->withErrors(['schedule_id' => 'This session has been cancelled.']);
-        }
+            // Check schedule is not cancelled
+            if ($schedule->status === 'cancelled') {
+                throw ValidationException::withMessages([
+                    'schedule_id' => 'This session has been cancelled.',
+                ]);
+            }
 
-        if ($schedule->starts_at < now()) {
-            return back()
-                ->withInput()
-                ->withErrors(['schedule_id' => 'This session is in the past.']);
-        }
+            // Check schedule is not in the past
+            if ($schedule->starts_at <= now()) {
+                throw ValidationException::withMessages([
+                    'schedule_id' => 'This session is in the past.',
+                ]);
+            }
 
-        // Check capacity
-        $confirmedCount = $schedule->bookings()
-            ->whereIn('status', ['confirmed', 'completed'])
-            ->count();
+            // Check capacity
+            if ($schedule->isFull()) {
+                throw ValidationException::withMessages([
+                    'schedule_id' => 'This session is now full.',
+                ]);
+            }
 
-        $capacity = $schedule->capacity ?? $activity->capacity;
+            [$firstName, $lastName] = $this->parseParticipantName($validated['participant_name']);
 
-        if ($confirmedCount >= $capacity) {
-            return back()
-                ->withInput()
-                ->withErrors(['schedule_id' => 'This session is now full.']);
-        }
+            $phone = data_get($validated, 'participant_phone');
+            $notes = data_get($validated, 'notes');
 
-        [$firstName, $lastName] = $this->parseParticipantName($validated['participant_name']);
+            $contact = Contact::firstOrCreate(
+                ['email' => $validated['participant_email']],
+                [
+                    'first_name' => $firstName,
+                    'last_name' => $lastName,
+                    'phone' => $phone,
+                    'status' => 'active',
+                ]
+            );
 
-        $phone = data_get($validated, 'participant_phone');
-        $notes = data_get($validated, 'notes');
+            if ($phone && ! $contact->phone) {
+                $contact->update(['phone' => $phone]);
+            }
 
-        $contact = Contact::firstOrCreate(
-            ['email' => $validated['participant_email']],
-            [
-                'first_name' => $firstName,
-                'last_name' => $lastName,
-                'phone' => $phone,
-                'status' => 'active',
-            ]
-        );
-
-        if ($phone && ! $contact->phone) {
-            $contact->update(['phone' => $phone]);
-        }
-
-        $booking = Booking::create([
-            'bookable_item_id' => $validated['bookable_item_id'],
-            'schedule_id' => $validated['schedule_id'],
-            'contact_id' => $contact->id,
-            'reference' => Booking::generateReference(),
-            'participant_name' => $validated['participant_name'],
-            'participant_email' => $validated['participant_email'],
-            'participant_phone' => $phone,
-            'scheduled_at' => $schedule->starts_at,
-            'timezone' => $validated['timezone'],
-            'notes' => $notes,
-            'status' => 'pending',
-            'payment_status' => 'unpaid',
-        ]);
+            return Booking::create([
+                'bookable_item_id' => $schedule->bookable_item_id,
+                'schedule_id' => $schedule->id,
+                'contact_id' => $contact->id,
+                'reference' => Booking::generateReference(),
+                'participant_name' => $validated['participant_name'],
+                'participant_email' => $validated['participant_email'],
+                'participant_phone' => $phone,
+                'scheduled_at' => $schedule->starts_at,
+                'timezone' => $validated['timezone'],
+                'notes' => $notes,
+                'status' => 'pending',
+                'payment_status' => 'unpaid',
+            ]);
+        });
 
         Mail::to($booking->participant_email)->send(new BookingReceived($booking));
 
