@@ -50,11 +50,41 @@ describe('Schedule Architecture', function () {
         expect($schedule2->isAvailable())->toBeTrue();
     });
 
-    it('cancelled schedule blocks new bookings', function () {
+    it('cancelled schedule is not available', function () {
         $activity = BookableItem::factory()->create();
-        $schedule = Schedule::factory()->for($activity)->create(['status' => 'cancelled']);
+        $schedule = Schedule::factory()->for($activity)->create([
+            'status' => 'cancelled',
+            'starts_at' => now()->addDays(2),
+        ]);
 
-        expect($schedule->status)->toBe('cancelled');
+        expect($schedule->isAvailable())->toBeFalse();
+    });
+
+    it('past schedule is not available', function () {
+        $activity = BookableItem::factory()->create();
+        $schedule = Schedule::factory()->for($activity)->create([
+            'status' => 'active',
+            'starts_at' => now()->subDays(1),
+        ]);
+
+        expect($schedule->isAvailable())->toBeFalse();
+    });
+
+    it('full schedule is not available', function () {
+        $activity = BookableItem::factory()->create(['capacity' => 10]);
+        $schedule = Schedule::factory()->for($activity)->create([
+            'capacity' => 1,
+            'status' => 'active',
+            'starts_at' => now()->addDays(2),
+        ]);
+
+        Booking::factory()->for($schedule)->create([
+            'bookable_item_id' => $activity->id,
+            'status' => 'confirmed',
+        ]);
+
+        expect($schedule->isFull())->toBeTrue();
+        expect($schedule->isAvailable())->toBeFalse();
     });
 
     it('schedule overrides activity capacity', function () {

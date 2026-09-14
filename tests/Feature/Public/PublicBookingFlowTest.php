@@ -291,3 +291,116 @@ test('user can submit contact form inquiry', function () {
         'position' => 'Head Coach',
     ]);
 });
+
+test('activity detail page does not auto-create schedules when none exist', function () {
+    $activity = BookableItem::factory()->create([
+        'slug' => 'empty-activity',
+        'is_active' => true,
+    ]);
+
+    $response = $this->get("/bookings/{$activity->slug}");
+
+    $response->assertStatus(200);
+    $response->assertInertia(fn ($page) => $page
+        ->component('Public/ActivityDetail')
+        ->has('activity')
+        ->has('schedules', 0)
+    );
+
+    expect(Schedule::where('bookable_item_id', $activity->id)->count())->toBe(0);
+});
+
+test('scheduled_at is derived from schedule and cannot be overridden by client', function () {
+    $activity = BookableItem::factory()->create(['is_active' => true]);
+    $startsAt = now()->addDays(5)->setHour(14)->setMinute(0)->setSecond(0);
+    $schedule = Schedule::factory()->for($activity)->create([
+        'starts_at' => $startsAt,
+        'status' => 'active',
+    ]);
+
+    $clientAttemptedDate = now()->addDays(30)->toIso8601String();
+
+    $response = $this->post('/bookings', [
+        'bookable_item_id' => $activity->id,
+        'schedule_id' => $schedule->id,
+        'participant_name' => 'John Doe',
+        'participant_email' => 'johnderived@example.com',
+        'scheduled_at' => $clientAttemptedDate,
+        'timezone' => 'UTC',
+    ]);
+
+    $response->assertRedirect();
+
+    $booking = Booking::where('participant_email', 'johnderived@example.com')->first();
+    expect($booking)->not->toBeNull();
+    expect($booking->scheduled_at->toIso8601String())->toBe($startsAt->toIso8601String());
+    expect($booking->scheduled_at->toIso8601String())->not->toBe($clientAttemptedDate);
+});
+
+test('booking rejects schedule belonging to another activity', function () {
+    $activity1 = BookableItem::factory()->create(['is_active' => true]);
+    $activity2 = BookableItem::factory()->create(['is_active' => true]);
+    $schedule2 = Schedule::factory()->for($activity2)->create(['status' => 'active']);
+
+    $response = $this->post('/bookings', [
+        'bookable_item_id' => $activity1->id,
+        'schedule_id' => $schedule2->id,
+        'participant_name' => 'Cross Activity Attempter',
+        'participant_email' => 'cross@example.com',
+        'timezone' => 'UTC',
+    ]);
+
+    $response->assertSessionHasErrors('schedule_id');
+    expect(Booking::where('participant_email', 'cross@example.com')->exists())->toBeFalse();
+});
+
+test('completing a booking does not release capacity', function () {
+    $activity = BookableItem::factory()->create(['capacity' => 10]);
+    $schedule = Schedule::factory()->for($activity)->create([
+        'capacity' => 1,
+        'status' => 'active',
+    ]);
+
+    Booking::factory()->for($schedule)->create([
+        'bookable_item_id' => $activity->id,
+        'status' => BookingStatus::Completed,
+    ]);
+
+    expect($schedule->isFull())->toBeTrue();
+
+    $response = $this->post('/bookings', [
+        'bookable_item_id' => $activity->id,
+        'schedule_id' => $schedule->id,
+        'participant_name' => 'Over Capacity User',
+        'participant_email' => 'overcapacityuser@example.com',
+        'timezone' => 'UTC',
+    ]);
+
+    $response->assertSessionHasErrors('schedule_id');
+});
+
+test('cancelled booking frees capacity for new booking', function () {
+    $activity = BookableItem::factory()->create(['capacity' => 10]);
+    $schedule = Schedule::factory()->for($activity)->create([
+        'capacity' => 1,
+        'status' => 'active',
+    ]);
+
+    Booking::factory()->for($schedule)->create([
+        'bookable_item_id' => $activity->id,
+        'status' => BookingStatus::Cancelled,
+    ]);
+
+    expect($schedule->isFull())->toBeFalse();
+
+    $response = $this->post('/bookings', [
+        'bookable_item_id' => $activity->id,
+        'schedule_id' => $schedule->id,
+        'participant_name' => 'New Customer',
+        'participant_email' => 'newcustomer@example.com',
+        'timezone' => 'UTC',
+    ]);
+
+    $response->assertRedirect();
+    expect(Booking::where('participant_email', 'newcustomer@example.com')->exists())->toBeTrue();
+});
