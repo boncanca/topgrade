@@ -9,7 +9,6 @@ import {
     MapPin,
     Users,
     CheckCircle2,
-    Shield,
     AlertCircle
 } from '@lucide/vue';
 
@@ -217,19 +216,19 @@ function getSelectedSchedule(): Schedule | undefined {
                         <div class="grid sm:grid-cols-2 gap-4">
                             <div class="flex items-start gap-3 text-slate-300 text-sm">
                                 <CheckCircle2 class="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
-                                <span>UEFA-licensed lead coaches & academy assistants</span>
+                                <span>Dedicated club coaches and training staff</span>
                             </div>
                             <div class="flex items-start gap-3 text-slate-300 text-sm">
                                 <CheckCircle2 class="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
-                                <span>Full technical ball mastery & tactical match play</span>
+                                <span>Technical ball mastery & tactical match play</span>
                             </div>
                             <div class="flex items-start gap-3 text-slate-300 text-sm">
                                 <CheckCircle2 class="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
-                                <span>High-performance pitch and equipment setup</span>
+                                <span>Quality pitch and training equipment setup</span>
                             </div>
                             <div class="flex items-start gap-3 text-slate-300 text-sm">
                                 <CheckCircle2 class="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
-                                <span>Post-session player feedback & academy trial recommendation</span>
+                                <span>Post-session feedback & trial evaluation</span>
                             </div>
                         </div>
                     </div>
@@ -395,14 +394,13 @@ function getSelectedSchedule(): Schedule | undefined {
                         <button
                             type="submit"
                             :disabled="processing || schedules.length === 0"
-                            class="w-full py-3.5 bg-purple-600 hover:bg-purple-700 active:bg-purple-800 text-white font-semibold text-base rounded-lg transition-colors shadow-md disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                            class="w-full py-3.5 bg-[var(--brand-primary)] hover:opacity-90 active:opacity-100 text-white font-semibold text-base rounded-lg transition-opacity shadow-md disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                         >
-                            <span>{{ processing ? 'Processing Booking...' : 'Confirm Booking' }}</span>
+                            <span>{{ processing ? 'Processing...' : 'Book a Trial' }}</span>
                         </button>
 
-                        <div class="flex items-center justify-center gap-1.5 text-[11px] text-slate-400 pt-2">
-                            <Shield class="w-3.5 h-3.5 text-emerald-400" />
-                            <span>Instant confirmation • High safety standards</span>
+                        <div class="flex items-center justify-center text-xs text-slate-400 pt-2 text-center">
+                            <span>Try a session. See how they develop.</span>
                         </div>
                     </form>
                 </div>
