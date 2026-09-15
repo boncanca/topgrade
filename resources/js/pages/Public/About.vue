@@ -1,11 +1,49 @@
 <script setup lang="ts">
 import { Head, Link } from '@inertiajs/vue3';
 import PublicLayout from '@/layouts/PublicLayout.vue';
-import { ArrowRight, CheckCircle2 } from '@lucide/vue';
+import { ArrowRight, Trophy, Users, Target, MapPin, Award, CheckCircle } from '@lucide/vue';
 
 defineOptions({
     layout: PublicLayout,
 });
+
+const values = [
+    {
+        title: 'Player-First Development',
+        description: 'Every drill, match instruction, and session plan is focused on the long-term technical and personal development of each child.',
+        icon: Target,
+    },
+    {
+        title: 'High Coaching Standards',
+        description: 'Coaches committed to age-appropriate training, disciplined player habits, positive reinforcement, and tactical game understanding.',
+        icon: Award,
+    },
+    {
+        title: 'London Community Roots',
+        description: 'Operating as a non-profit Community Interest Company (CIC) to ensure football opportunities are accessible to youth across London.',
+        icon: Users,
+    },
+    {
+        title: 'Genuine Match Opportunity',
+        description: 'Active league competition in sanctioned London youth leagues, tournament showcases, and talent ID festival fixtures.',
+        icon: Trophy,
+    },
+];
+
+const facilities = [
+    {
+        name: 'Tottenham Training Base',
+        venue: 'Fredrick Knight Sports Ground / Willoughby Lane, N17',
+        surface: '3G Floodlit Astroturf',
+        details: 'Midweek technical training sessions, ball mastery clinics, and squad practice.',
+    },
+    {
+        name: 'Hackney Marshes Match Grounds',
+        venue: 'Homerton Road, Hackney, London E9',
+        surface: 'Natural Grass League Pitches',
+        details: 'Saturday morning youth league matches, inter-club friendlies, and festival games.',
+    },
+];
 </script>
 
 <template>
@@ -13,113 +51,189 @@ defineOptions({
 
     <div class="min-h-screen bg-slate-950 text-white">
         <!-- Hero Section -->
-        <section class="relative min-h-[45vh] flex items-end overflow-hidden pb-16 pt-32 border-b border-slate-800">
+        <section class="relative min-h-[55vh] flex items-end overflow-hidden pb-16 pt-32 border-b border-slate-800">
             <div
-                class="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-35"
-                style="background-image: url('/images/club/club-training-london.jpg')"
+                class="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-40"
+                style="background-image: url('/images/club/tactical_coaching.jpg')"
             />
-            <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/80 to-slate-950/60" />
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/80 to-slate-950/50" />
 
             <div class="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 w-full space-y-4">
-                <span class="inline-block px-3.5 py-1 rounded-full bg-slate-800 border border-slate-700 text-purple-300 text-xs font-semibold tracking-wider uppercase">
-                    About the Club
-                </span>
+                <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-slate-900 border border-purple-500/30 text-purple-300 text-xs font-bold uppercase tracking-wider">
+                    <span class="w-2 h-2 rounded-full bg-purple-400" />
+                    Our Story & Mission
+                </div>
 
-                <h1 class="text-4xl sm:text-6xl font-extrabold text-white tracking-tight">
-                    A club to grow with.
+                <h1 class="text-4xl sm:text-6xl font-extrabold text-white tracking-tight leading-tight max-w-3xl">
+                    A London football club built for development.
                 </h1>
                 <p class="text-slate-300 text-lg sm:text-xl max-w-2xl leading-relaxed">
-                    TopGrade London FC is a youth football club helping young players develop through training, teamwork and playing experience.
+                    TopGrade London FC is a grassroots Community Interest Company (CIC) providing young players with structured coaching, teamwork, and competitive playing pathways.
                 </p>
             </div>
         </section>
 
-        <!-- Club Environment -->
-        <section class="py-20 px-4 sm:px-6 lg:px-8 bg-slate-900">
-            <div class="max-w-6xl mx-auto grid gap-12 lg:grid-cols-2 items-center">
+        <!-- Club Overview & Philosophy -->
+        <section class="py-24 px-4 sm:px-6 lg:px-8 bg-slate-900/60 border-b border-slate-800">
+            <div class="max-w-7xl mx-auto grid gap-14 lg:grid-cols-2 items-center">
                 <div class="space-y-6">
                     <span class="text-xs font-bold uppercase tracking-widest text-[var(--brand-secondary)] block">
-                        Our Football Environment
+                        Our Environment
                     </span>
-                    <h2 class="text-3xl sm:text-4xl font-extrabold text-white">
-                        Train. Play. Progress.
+                    <h2 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+                        Developing footballers, building character.
                     </h2>
                     <p class="text-slate-300 text-base leading-relaxed">
-                        At TopGrade London FC, we believe player development happens when young footballers are given consistent coaching, clear guidance, and a positive team atmosphere.
+                        At TopGrade London FC, we believe youth football is more than just kicking a ball. It is a classroom for discipline, resilience, spatial intelligence, and lifelong friendship.
                     </p>
                     <p class="text-slate-300 text-base leading-relaxed">
-                        Every session is designed to build technical ball skill, decision-making, and understanding of the game in a supportive club culture.
+                        Our squads train weekly under dedicated coaches who emphasize ball control, quick thinking, and competitive bravery. Whether competing on the grass pitches of Hackney Marshes or training under the floodlights in Tottenham, every player receives the attention they need to progress.
                     </p>
 
-                    <div class="pt-2">
+                    <div class="pt-4 flex items-center gap-4">
                         <Link
                             href="/bookings"
-                            class="inline-flex items-center gap-2 px-6 py-3.5 bg-[var(--brand-primary)] hover:opacity-90 text-white font-semibold rounded-lg transition-opacity shadow-md"
+                            class="inline-flex items-center gap-2 px-6 py-3.5 bg-[var(--brand-primary)] hover:bg-purple-700 text-white font-semibold rounded-xl transition-all shadow-md"
                         >
-                            <span>Book a Trial</span>
+                            <span>Book a Trial Session</span>
                             <ArrowRight class="w-4 h-4" />
+                        </Link>
+                        <Link
+                            href="/contact"
+                            class="inline-flex items-center gap-2 px-6 py-3.5 bg-slate-900 hover:bg-slate-800 text-white font-semibold rounded-xl border border-slate-700 transition-colors text-sm"
+                        >
+                            <span>Contact Coaches</span>
                         </Link>
                     </div>
                 </div>
 
-                <div class="rounded-2xl overflow-hidden border border-slate-800 shadow-xl">
-                    <img
-                        src="/images/club/club-coach-mentoring.jpg"
-                        alt="TopGrade London FC Coach and Players"
-                        class="w-full h-80 sm:h-96 object-cover"
-                    />
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="space-y-4">
+                        <div class="rounded-2xl overflow-hidden border border-slate-800 shadow-lg aspect-4/3">
+                            <img
+                                src="/images/club/youth_match_action.jpg"
+                                alt="TopGrade London FC match action"
+                                class="w-full h-full object-cover"
+                            />
+                        </div>
+                        <div class="rounded-2xl overflow-hidden border border-slate-800 shadow-lg aspect-square">
+                            <img
+                                src="/images/club/club-coach-mentoring.jpg"
+                                alt="Coach mentoring TopGrade player"
+                                class="w-full h-full object-cover"
+                            />
+                        </div>
+                    </div>
+                    <div class="space-y-4 pt-8">
+                        <div class="rounded-2xl overflow-hidden border border-slate-800 shadow-lg aspect-square">
+                            <img
+                                src="/images/club/training_pitch_evening.jpg"
+                                alt="Floodlit training drills"
+                                class="w-full h-full object-cover"
+                            />
+                        </div>
+                        <div class="rounded-2xl overflow-hidden border border-slate-800 shadow-lg aspect-4/3">
+                            <img
+                                src="/images/club/squad_celebration.jpg"
+                                alt="Squad goal celebration"
+                                class="w-full h-full object-cover"
+                            />
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
 
-        <!-- Development Pillars -->
-        <section class="py-20 px-4 sm:px-6 lg:px-8 bg-slate-950">
-            <div class="max-w-6xl mx-auto">
+        <!-- Core Club Values -->
+        <section class="py-24 px-4 sm:px-6 lg:px-8 bg-slate-950">
+            <div class="max-w-7xl mx-auto">
                 <div class="text-center max-w-2xl mx-auto mb-16">
-                    <span class="text-xs font-bold uppercase tracking-widest text-slate-500 block mb-2">
-                        Club Approach
+                    <span class="text-xs font-bold uppercase tracking-widest text-[var(--brand-secondary)] block mb-2">
+                        Club Standards
                     </span>
                     <h2 class="text-3xl sm:text-4xl font-extrabold text-white">
-                        What We Focus On
+                        What Defines TopGrade London FC
+                    </h2>
+                    <p class="text-slate-400 text-sm mt-2">
+                        The core principles that guide our training sessions, matchdays, and squad culture.
+                    </p>
+                </div>
+
+                <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
+                    <div
+                        v-for="item in values"
+                        :key="item.title"
+                        class="p-7 rounded-2xl border border-slate-800 bg-slate-900/80 flex flex-col justify-between space-y-4 hover:border-purple-500/40 transition-colors"
+                    >
+                        <div>
+                            <div class="w-12 h-12 rounded-xl bg-purple-900/40 border border-purple-500/30 flex items-center justify-center text-purple-300 mb-5">
+                                <component :is="item.icon" class="w-6 h-6" />
+                            </div>
+                            <h3 class="text-xl font-bold text-white mb-2">
+                                {{ item.title }}
+                            </h3>
+                            <p class="text-slate-400 text-sm leading-relaxed">
+                                {{ item.description }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Facilities & London Locations -->
+        <section class="py-20 px-4 sm:px-6 lg:px-8 bg-slate-900/70 border-t border-slate-800">
+            <div class="max-w-6xl mx-auto">
+                <div class="text-center max-w-2xl mx-auto mb-16">
+                    <span class="text-xs font-bold uppercase tracking-widest text-[var(--brand-secondary)] block mb-2">
+                        Pitch Locations
+                    </span>
+                    <h2 class="text-3xl sm:text-4xl font-extrabold text-white">
+                        Where We Train & Play
                     </h2>
                 </div>
 
-                <div class="grid gap-8 md:grid-cols-3">
-                    <div class="rounded-xl border border-slate-800 bg-slate-900/80 p-8 space-y-3">
-                        <h3 class="text-xl font-bold text-white">Technical Ability</h3>
-                        <p class="text-slate-400 text-sm leading-relaxed">
-                            Ball mastery, control, passing rhythm, and 1v1 confidence are the foundation of everything we do on the training pitch.
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div
+                        v-for="f in facilities"
+                        :key="f.name"
+                        class="p-8 rounded-2xl bg-slate-950 border border-slate-800 space-y-4"
+                    >
+                        <h3 class="text-xl font-bold text-white">{{ f.name }}</h3>
+                        <div class="flex items-start gap-2 text-sm text-slate-300">
+                            <MapPin class="w-4 h-4 text-purple-400 shrink-0 mt-0.5" />
+                            <span>{{ f.venue }}</span>
+                        </div>
+                        <p class="text-xs text-purple-300 font-semibold uppercase tracking-wider">
+                            Surface: {{ f.surface }}
                         </p>
-                    </div>
-                    <div class="rounded-xl border border-slate-800 bg-slate-900/80 p-8 space-y-3">
-                        <h3 class="text-xl font-bold text-white">Teamwork & Respect</h3>
-                        <p class="text-slate-400 text-sm leading-relaxed">
-                            Learning to communicate, support teammates, accept coaching feedback, and respect opponents and officials.
-                        </p>
-                    </div>
-                    <div class="rounded-xl border border-slate-800 bg-slate-900/80 p-8 space-y-3">
-                        <h3 class="text-xl font-bold text-white">Playing Experience</h3>
-                        <p class="text-slate-400 text-sm leading-relaxed">
-                            Putting training into practice through small-sided games, structured drills, and matchday opportunities.
+                        <p class="text-sm text-slate-400 leading-relaxed">
+                            {{ f.details }}
                         </p>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Opportunity CTA -->
-        <section class="py-20 px-4 sm:px-6 lg:px-8 bg-slate-900 text-center border-t border-slate-800">
-            <div class="max-w-3xl mx-auto space-y-6">
+        <!-- Call to Action Banner -->
+        <section class="relative py-24 px-4 sm:px-6 lg:px-8 bg-slate-950 text-center border-t border-slate-800 overflow-hidden">
+            <div
+                class="absolute inset-0 bg-cover bg-center opacity-20"
+                style="background-image: url('/images/club/team-huddle.jpg')"
+            />
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/90 to-slate-950/75" />
+
+            <div class="relative z-10 max-w-3xl mx-auto space-y-6">
                 <h2 class="text-3xl sm:text-4xl font-extrabold text-white">
                     Experience TopGrade London FC
                 </h2>
-                <p class="text-slate-300 text-base max-w-xl mx-auto">
-                    Bring your child to a trial session and discover our training environment first-hand.
+                <p class="text-slate-300 text-base max-w-xl mx-auto leading-relaxed">
+                    Come see our coaches in action. Book an introductory trial session for your child at our London training ground.
                 </p>
                 <div class="pt-4">
                     <Link
                         href="/bookings"
-                        class="inline-flex items-center gap-2 px-8 py-4 bg-[var(--brand-primary)] hover:opacity-90 text-white font-semibold rounded-lg transition-opacity shadow-lg"
+                        class="inline-flex items-center gap-2 px-8 py-4 bg-[var(--brand-primary)] hover:bg-purple-700 text-white font-semibold rounded-xl transition-all shadow-lg"
                     >
                         <span>Book a Trial</span>
                         <ArrowRight class="w-4 h-4" />

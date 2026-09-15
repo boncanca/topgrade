@@ -156,29 +156,78 @@ watch(() => page.url, () => {
         </main>
 
         <!-- Footer -->
-        <footer class="border-t border-slate-200 dark:border-slate-800 bg-slate-900 text-white px-4 py-12 sm:px-6 lg:px-8">
-            <div class="mx-auto max-w-6xl">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
-                    <div>
-                        <h3 class="font-bold text-lg mb-4">TOPGRADE LONDON FC</h3>
-                        <p class="text-sm text-slate-400">Youth football club based in London. Developing young players through structured training, teamwork and playing experience.</p>
+        <footer class="border-t border-slate-800 bg-slate-950 text-white px-4 py-16 sm:px-6 lg:px-8">
+            <div class="mx-auto max-w-7xl">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-10 mb-12">
+                    <div class="md:col-span-1 space-y-4">
+                        <div class="flex items-center gap-3">
+                            <div class="bg-white rounded-full p-1.5 shadow-sm">
+                                <img src="/logo.png" alt="TopGrade London FC" class="h-9 w-auto" />
+                            </div>
+                            <span class="text-base font-bold tracking-wider text-white">
+                                TOPGRADE LONDON FC
+                            </span>
+                        </div>
+                        <p class="text-xs text-slate-400 leading-relaxed">
+                            A London youth football club and non-profit Community Interest Company (CIC) dedicated to technical player development, teamwork, and match play.
+                        </p>
+                        <div class="pt-1">
+                            <span class="inline-block px-2.5 py-1 rounded text-[10px] font-bold uppercase tracking-wider bg-purple-900/40 text-purple-300 border border-purple-500/30">
+                                London FA Sanctioned
+                            </span>
+                        </div>
                     </div>
+
                     <div>
-                        <h4 class="font-semibold mb-4">Quick Links</h4>
-                        <ul class="space-y-2 text-sm">
-                            <li v-for="item in footerNav" :key="item.href">
-                                <Link :href="item.href" class="text-slate-400 hover:text-white">{{ item.label }}</Link>
+                        <h4 class="font-bold text-sm uppercase tracking-wider text-purple-300 mb-4">Navigation</h4>
+                        <ul class="space-y-2.5 text-xs">
+                            <li><Link href="/" class="text-slate-400 hover:text-white transition-colors">Home</Link></li>
+                            <li><Link href="/about" class="text-slate-400 hover:text-white transition-colors">About the Club</Link></li>
+                            <li><Link href="/bookings" class="text-slate-400 hover:text-white transition-colors">Squads & Training</Link></li>
+                            <li><Link href="/articles" class="text-slate-400 hover:text-white transition-colors">Club News</Link></li>
+                            <li><Link href="/contact" class="text-slate-400 hover:text-white transition-colors">Contact Us</Link></li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 class="font-bold text-sm uppercase tracking-wider text-purple-300 mb-4">Training Grounds</h4>
+                        <ul class="space-y-3 text-xs text-slate-400">
+                            <li>
+                                <span class="font-semibold text-white block">Tottenham Training Ground:</span>
+                                <span>Fredrick Knight Sports Ground / Willoughby Lane, N17 (3G Pitch)</span>
+                            </li>
+                            <li>
+                                <span class="font-semibold text-white block">Hackney Marshes Match Grounds:</span>
+                                <span>Homerton Road, E9 (Saturday League Grass Pitches)</span>
                             </li>
                         </ul>
                     </div>
+
                     <div>
-                        <h4 class="font-semibold mb-4">Contact</h4>
-                        <p class="text-sm text-slate-400">Email: info@topgradefc.com</p>
-                        <p class="text-sm text-slate-400 mt-2">London, United Kingdom</p>
+                        <h4 class="font-bold text-sm uppercase tracking-wider text-purple-300 mb-4">Club Enquiries</h4>
+                        <ul class="space-y-2.5 text-xs text-slate-400">
+                            <li>
+                                <span class="text-slate-300 block">General & Trial Enquiries:</span>
+                                <a href="mailto:topgradelondonfc@hotmail.com" class="text-purple-400 hover:underline">topgradelondonfc@hotmail.com</a>
+                            </li>
+                            <li class="pt-1">
+                                <Link
+                                    href="/bookings"
+                                    class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[var(--brand-primary)] hover:bg-purple-700 text-white font-semibold transition-colors text-xs"
+                                >
+                                    <span>Book a Trial Session</span>
+                                </Link>
+                            </li>
+                        </ul>
                     </div>
                 </div>
-                <div class="border-t border-slate-800 pt-8 text-center text-sm text-slate-400">
-                    <p>© 2026 TopGrade London FC. All rights reserved.</p>
+
+                <div class="border-t border-slate-900 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+                    <p>© 2026 TopGrade London FC (CIC). All rights reserved.</p>
+                    <div class="flex items-center gap-6">
+                        <Link href="/privacy" class="hover:text-slate-300 transition-colors">Privacy Policy</Link>
+                        <Link href="/terms" class="hover:text-slate-300 transition-colors">Terms & Conditions</Link>
+                    </div>
                 </div>
             </div>
         </footer>
