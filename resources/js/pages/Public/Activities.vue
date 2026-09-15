@@ -34,7 +34,7 @@ defineOptions({
 
 function formatPrice(priceStr: string, currencyStr: string): string {
     if (priceStr === '0' || priceStr === '0.00') {
-        return 'FREE';
+        return 'FREE TRIAL';
     }
     return new Intl.NumberFormat('en-GB', {
         style: 'currency',
@@ -44,27 +44,27 @@ function formatPrice(priceStr: string, currencyStr: string): string {
 </script>
 
 <template>
-    <Head title="Book a Session - TopGrade London FC" />
+    <Head title="Club Activities & Training — TopGrade London FC" />
 
     <div class="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white transition-colors">
         <!-- Hero Section with Background Image -->
         <section class="relative min-h-[40vh] flex items-end overflow-hidden pb-12 pt-28 bg-slate-950 text-white">
             <div
-                class="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-40 scale-105 transition-transform duration-1000"
-                style="background-image: url('/images/hero_action.png')"
+                class="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-35"
+                style="background-image: url('/images/club/training-agility-drills.jpg')"
             />
-            <div class="absolute inset-0 bg-slate-950/80" />
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/80 to-slate-950/60" />
 
             <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full space-y-4">
-                <div class="inline-block px-3 py-1 rounded bg-slate-800 border border-slate-700 text-slate-300 text-xs font-semibold tracking-wider uppercase">
-                    Session Catalog
+                <div class="inline-block px-3 py-1 rounded-full bg-slate-800 border border-slate-700 text-purple-300 text-xs font-semibold tracking-wider uppercase">
+                    Squads & Training
                 </div>
 
                 <h1 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight">
-                    Academy Training Sessions
+                    Club Training & Squads
                 </h1>
                 <p class="text-slate-300 text-base max-w-2xl">
-                    Select a programme below to view available session slots, pitch locations, and book your player's place.
+                    Find the right age-group squad and session for your child, view training locations, and book an introductory trial.
                 </p>
             </div>
         </section>
@@ -83,7 +83,7 @@ function formatPrice(priceStr: string, currencyStr: string): string {
                                 <Clock class="w-3.5 h-3.5" />
                                 <span>{{ activity.duration_minutes }} mins</span>
                             </span>
-                            <span class="text-xl font-bold text-purple-600 dark:text-white">
+                            <span class="text-lg font-bold text-[var(--brand-primary)] dark:text-white">
                                 {{ formatPrice(activity.price, activity.currency) }}
                             </span>
                         </div>
@@ -99,15 +99,15 @@ function formatPrice(priceStr: string, currencyStr: string): string {
 
                     <div>
                         <div class="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 mb-6">
-                            <MapPin class="w-4 h-4 text-purple-600 dark:text-purple-400 shrink-0" />
+                            <MapPin class="w-4 h-4 text-[var(--brand-primary)] shrink-0" />
                             <span class="truncate">{{ activity.location }}</span>
                         </div>
 
                         <Link
                             :href="`/bookings/${activity.slug}`"
-                            class="w-full py-3 px-4 rounded-lg bg-purple-600 hover:bg-purple-700 text-white text-sm font-semibold flex items-center justify-center gap-2 transition-colors shadow-sm"
+                            class="w-full py-3 px-4 rounded-lg bg-[var(--brand-primary)] hover:opacity-90 text-white text-sm font-semibold flex items-center justify-center gap-2 transition-opacity shadow-xs"
                         >
-                            <span>Book Session</span>
+                            <span>Book a Trial</span>
                             <ArrowRight class="w-4 h-4" />
                         </Link>
                     </div>
@@ -116,8 +116,8 @@ function formatPrice(priceStr: string, currencyStr: string): string {
 
             <!-- Empty State -->
             <div v-else class="text-center py-16 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-4">
-                <h3 class="text-xl font-bold text-slate-900 dark:text-white">No Active Sessions Available</h3>
-                <p class="text-slate-600 dark:text-slate-400 text-sm">Check back soon for upcoming academy schedule announcements.</p>
+                <h3 class="text-xl font-bold text-slate-900 dark:text-white">No Active Squad Sessions Available</h3>
+                <p class="text-slate-600 dark:text-slate-400 text-sm">Check back soon for upcoming club schedule updates.</p>
             </div>
         </section>
     </div>

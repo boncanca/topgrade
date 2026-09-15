@@ -2,7 +2,7 @@
 import { Head, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import PublicLayout from '@/layouts/PublicLayout.vue';
-import { Mail, Phone, MapPin, Clock, CheckCircle2 } from '@lucide/vue';
+import { Mail, Phone, MapPin, CheckCircle2 } from '@lucide/vue';
 
 defineOptions({
     layout: PublicLayout,
@@ -31,27 +31,27 @@ function submit() {
 </script>
 
 <template>
-    <Head title="Contact TopGrade London FC" />
+    <Head title="Contact the Club — TopGrade London FC" />
 
     <div class="min-h-screen bg-slate-950 text-white">
         <!-- Hero Section -->
-        <section class="relative min-h-[35vh] flex items-end overflow-hidden pb-12 pt-28 border-b border-slate-800">
+        <section class="relative min-h-[40vh] flex items-end overflow-hidden pb-14 pt-32 border-b border-slate-800">
             <div
-                class="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-30"
-                style="background-image: url('/images/coaching_facility.png')"
+                class="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-35"
+                style="background-image: url('/images/club/club-training-london.jpg')"
             />
-            <div class="absolute inset-0 bg-slate-950/80" />
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/80 to-slate-950/60" />
 
             <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full space-y-4">
-                <div class="inline-block px-3 py-1 rounded bg-slate-800 border border-slate-700 text-slate-300 text-xs font-semibold tracking-wider uppercase">
+                <span class="inline-block px-3.5 py-1 rounded-full bg-slate-800 border border-slate-700 text-purple-300 text-xs font-semibold tracking-wider uppercase">
                     Contact Us
-                </div>
+                </span>
 
                 <h1 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight">
-                    Get In Touch With TGLFC
+                    Contact TopGrade London FC
                 </h1>
-                <p class="text-slate-300 text-base max-w-2xl">
-                    Have questions about trial sessions, team enrollment, or coaching? Send us a message.
+                <p class="text-slate-300 text-base sm:text-lg max-w-2xl">
+                    Have questions about club teams, trial sessions, or squad training? Send us a message.
                 </p>
             </div>
         </section>
@@ -62,16 +62,16 @@ function submit() {
                 <!-- Contact Info -->
                 <div class="space-y-8">
                     <div>
-                        <h2 class="text-2xl font-bold text-white mb-2">Academy Office & Support</h2>
-                        <p class="text-slate-400 text-sm">Our team is available Monday through Saturday to answer inquiries.</p>
+                        <h2 class="text-2xl font-bold text-white mb-2">Club Office & Enquiries</h2>
+                        <p class="text-slate-400 text-sm">We are here to help parents, players, and supporters with club information.</p>
                     </div>
 
-                    <div class="space-y-6">
+                    <div class="space-y-4">
                         <!-- Email -->
-                        <div class="flex items-start gap-4 p-4 rounded-xl bg-slate-900 border border-slate-800">
-                            <Mail class="w-5 h-5 text-purple-400 shrink-0 mt-0.5" />
+                        <div class="flex items-start gap-4 p-5 rounded-xl bg-slate-900 border border-slate-800">
+                            <Mail class="w-5 h-5 text-[var(--brand-secondary)] shrink-0 mt-0.5" />
                             <div>
-                                <h3 class="font-bold text-white text-sm">Email Address</h3>
+                                <h3 class="font-bold text-white text-sm">Email</h3>
                                 <a href="mailto:info@topgradefc.com" class="text-slate-300 hover:text-white text-sm transition-colors mt-0.5 block">
                                     info@topgradefc.com
                                 </a>
@@ -79,36 +79,23 @@ function submit() {
                         </div>
 
                         <!-- Phone -->
-                        <div class="flex items-start gap-4 p-4 rounded-xl bg-slate-900 border border-slate-800">
-                            <Phone class="w-5 h-5 text-purple-400 shrink-0 mt-0.5" />
+                        <div class="flex items-start gap-4 p-5 rounded-xl bg-slate-900 border border-slate-800">
+                            <Phone class="w-5 h-5 text-[var(--brand-secondary)] shrink-0 mt-0.5" />
                             <div>
                                 <h3 class="font-bold text-white text-sm">Telephone</h3>
-                                <a href="tel:+442012345678" class="text-slate-300 hover:text-white text-sm transition-colors mt-0.5 block">
-                                    +44 (0) 20 1234 5678
-                                </a>
-                            </div>
-                        </div>
-
-                        <!-- Address -->
-                        <div class="flex items-start gap-4 p-4 rounded-xl bg-slate-900 border border-slate-800">
-                            <MapPin class="w-5 h-5 text-purple-400 shrink-0 mt-0.5" />
-                            <div>
-                                <h3 class="font-bold text-white text-sm">Location</h3>
                                 <p class="text-slate-300 text-sm mt-0.5">
-                                    London, United Kingdom<br />
-                                    Topgrade Football Academy Grounds
+                                    +44 (0) 20 1234 5678
                                 </p>
                             </div>
                         </div>
 
-                        <!-- Hours -->
-                        <div class="flex items-start gap-4 p-4 rounded-xl bg-slate-900 border border-slate-800">
-                            <Clock class="w-5 h-5 text-purple-400 shrink-0 mt-0.5" />
+                        <!-- Location -->
+                        <div class="flex items-start gap-4 p-5 rounded-xl bg-slate-900 border border-slate-800">
+                            <MapPin class="w-5 h-5 text-[var(--brand-secondary)] shrink-0 mt-0.5" />
                             <div>
-                                <h3 class="font-bold text-white text-sm">Office Hours</h3>
+                                <h3 class="font-bold text-white text-sm">Club Location</h3>
                                 <p class="text-slate-300 text-sm mt-0.5">
-                                    Monday - Friday: 9:00 AM - 6:00 PM<br />
-                                    Saturday: 9:00 AM - 5:00 PM
+                                    London, United Kingdom
                                 </p>
                             </div>
                         </div>
@@ -155,34 +142,8 @@ function submit() {
                                 v-model="form.phone"
                                 type="tel"
                                 class="w-full rounded-lg border border-slate-800 bg-slate-950 px-4 py-2.5 text-sm text-white placeholder-slate-500 outline-none focus:border-purple-500 transition-colors"
-                                placeholder="+44 (0) 20 XXXX XXXX"
+                                placeholder="+44 7123 456789"
                             />
-                        </div>
-
-                        <!-- Company & Position (Optional Grid) -->
-                        <div class="grid gap-4 sm:grid-cols-2">
-                            <div>
-                                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1">
-                                    Company / Organization
-                                </label>
-                                <input
-                                    v-model="form.company"
-                                    type="text"
-                                    class="w-full rounded-lg border border-slate-800 bg-slate-950 px-4 py-2.5 text-sm text-white placeholder-slate-500 outline-none focus:border-purple-500 transition-colors"
-                                    placeholder="Company name"
-                                />
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1">
-                                    Position / Role
-                                </label>
-                                <input
-                                    v-model="form.position"
-                                    type="text"
-                                    class="w-full rounded-lg border border-slate-800 bg-slate-950 px-4 py-2.5 text-sm text-white placeholder-slate-500 outline-none focus:border-purple-500 transition-colors"
-                                    placeholder="Position title"
-                                />
-                            </div>
                         </div>
 
                         <!-- Subject -->
@@ -196,10 +157,10 @@ function submit() {
                                 class="w-full rounded-lg border border-slate-800 bg-slate-950 px-4 py-2.5 text-sm text-white outline-none focus:border-purple-500 transition-colors"
                             >
                                 <option value="">Select a subject</option>
-                                <option value="general">General Inquiry</option>
-                                <option value="trial">Trial Session</option>
-                                <option value="coaching">Coaching Inquiry</option>
-                                <option value="other">Other</option>
+                                <option value="Trial Session Enquiry">Trial Session Enquiry</option>
+                                <option value="Squad & Training Question">Squad & Training Question</option>
+                                <option value="Club Information">General Club Information</option>
+                                <option value="Other">Other</option>
                             </select>
                         </div>
 
@@ -221,22 +182,22 @@ function submit() {
                         <button
                             type="submit"
                             :disabled="form.processing"
-                            class="w-full rounded-lg bg-purple-600 px-6 py-3.5 font-semibold text-white transition-colors hover:bg-purple-700 disabled:opacity-50 shadow-md"
+                            class="w-full rounded-lg bg-[var(--brand-primary)] hover:opacity-90 px-6 py-3.5 font-semibold text-white transition-opacity disabled:opacity-50 shadow-md cursor-pointer"
                         >
                             {{ form.processing ? 'Sending Message...' : 'Send Message' }}
                         </button>
                     </form>
 
                     <!-- Success Message -->
-                    <div v-else class="text-center py-6 space-y-4">
+                    <div v-else class="text-center py-8 space-y-4">
                         <CheckCircle2 class="w-12 h-12 text-emerald-400 mx-auto" />
-                        <h3 class="text-2xl font-bold text-white">Message Sent!</h3>
-                        <p class="text-slate-300 text-sm">
-                            Thank you for reaching out. We will get back to you as soon as possible.
+                        <h3 class="text-2xl font-bold text-white">Message Sent</h3>
+                        <p class="text-slate-300 text-sm max-w-sm mx-auto">
+                            Thank you for contacting TopGrade London FC. A member of our club team will respond to your enquiry shortly.
                         </p>
                         <button
                             @click="submitted = false; form.reset()"
-                            class="rounded-lg bg-purple-600 px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-purple-700"
+                            class="rounded-lg bg-[var(--brand-primary)] hover:opacity-90 px-6 py-2.5 text-sm font-semibold text-white transition-opacity"
                         >
                             Send Another Message
                         </button>
@@ -246,4 +207,3 @@ function submit() {
         </section>
     </div>
 </template>
-

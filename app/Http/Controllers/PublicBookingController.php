@@ -53,6 +53,48 @@ class PublicBookingController
         return Inertia::render('Public/About');
     }
 
+    public function privacy(): Response
+    {
+        $page = Content::published()->where('slug', 'privacy')->first();
+
+        return Inertia::render('Public/Privacy', [
+            'page' => $page,
+        ]);
+    }
+
+    public function terms(): Response
+    {
+        $page = Content::published()->where('slug', 'terms')->first();
+
+        return Inertia::render('Public/Terms', [
+            'page' => $page,
+        ]);
+    }
+
+    public function articles(): Response
+    {
+        $articles = Content::published()
+            ->whereHas('contentType', fn ($q) => $q->where('slug', 'article'))
+            ->latest('published_at')
+            ->paginate(12);
+
+        return Inertia::render('Public/Articles/Index', [
+            'articles' => $articles,
+        ]);
+    }
+
+    public function articleShow(string $slug): Response
+    {
+        $article = Content::published()
+            ->whereHas('contentType', fn ($q) => $q->where('slug', 'article'))
+            ->where('slug', $slug)
+            ->firstOrFail();
+
+        return Inertia::render('Public/Articles/Show', [
+            'article' => $article,
+        ]);
+    }
+
     public function contact(): Response
     {
         return Inertia::render('Public/Contact');

@@ -14,20 +14,23 @@ use Illuminate\Support\Facades\Route;
 
 // Public routes
 Route::get('/', [PublicBookingController::class, 'home'])->name('home');
-Route::get('/training', [PublicBookingController::class, 'training'])->name('training');
 Route::get('/about', [PublicBookingController::class, 'about'])->name('about');
 Route::get('/contact', [PublicBookingController::class, 'contact'])->name('contact');
 Route::post('/contact', [PublicBookingController::class, 'submitContact'])->name('contact.store');
+Route::get('/privacy', [PublicBookingController::class, 'privacy'])->name('privacy');
+Route::get('/terms', [PublicBookingController::class, 'terms'])->name('terms');
 
-// Public booking sessions — catalog + detail + form submission + confirmation
-// Route names use 'sessions.*' prefix to avoid collision with dashboard 'bookings.*' resource names
+// Editorial: Articles
+Route::get('/articles', [PublicBookingController::class, 'articles'])->name('articles.index');
+Route::get('/articles/{slug}', [PublicBookingController::class, 'articleShow'])->name('articles.show');
+
+// Public club activities & booking sessions
+Route::get('/activities', [PublicBookingController::class, 'activities'])->name('activities.index');
 Route::get('/bookings', [PublicBookingController::class, 'activities'])->name('sessions.index');
 Route::get('/bookings/confirmation/{booking:reference}', [PublicBookingController::class, 'confirmation'])->name('sessions.confirmation');
 Route::get('/bookings/{bookableItem:slug}', [PublicBookingController::class, 'show'])->name('sessions.show');
 Route::post('/bookings', [PublicBookingController::class, 'book'])->name('sessions.book');
-
-// Keep /activities as a permanent redirect for backward compatibility
-Route::redirect('/activities', '/bookings', 301)->name('activities.index');
+Route::get('/training', [PublicBookingController::class, 'training'])->name('training');
 
 Route::middleware(['auth', 'verified', 'admin'])->group(function () {
     Route::get('dashboard', DashboardController::class)->name('dashboard');

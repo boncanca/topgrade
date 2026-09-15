@@ -5,6 +5,8 @@ use App\Enums\PaymentStatus;
 use App\Models\BookableItem;
 use App\Models\Booking;
 use App\Models\Contact;
+use App\Models\Content;
+use App\Models\ContentType;
 use App\Models\Schedule;
 
 test('homepage loads with featured activities and dynamic content page', function () {
@@ -403,4 +405,75 @@ test('cancelled booking frees capacity for new booking', function () {
 
     $response->assertRedirect();
     expect(Booking::where('participant_email', 'newcustomer@example.com')->exists())->toBeTrue();
+});
+
+test('activities alias route loads activities listing page', function () {
+    $response = $this->get('/activities');
+
+    $response->assertStatus(200);
+    $response->assertInertia(fn ($page) => $page
+        ->component('Public/Activities')
+        ->has('activities')
+    );
+});
+
+test('privacy policy page loads', function () {
+    $response = $this->get('/privacy');
+
+    $response->assertStatus(200);
+    $response->assertInertia(fn ($page) => $page
+        ->component('Public/Privacy')
+        ->has('page')
+    );
+});
+
+test('terms and conditions page loads', function () {
+    $response = $this->get('/terms');
+
+    $response->assertStatus(200);
+    $response->assertInertia(fn ($page) => $page
+        ->component('Public/Terms')
+        ->has('page')
+    );
+});
+
+test('articles listing page loads', function () {
+    $response = $this->get('/articles');
+
+    $response->assertStatus(200);
+    $response->assertInertia(fn ($page) => $page
+        ->component('Public/Articles/Index')
+        ->has('articles')
+    );
+});
+
+test('single article page loads when published', function () {
+    $articleType = ContentType::firstOrCreate(
+        ['slug' => 'article'],
+        ['name' => 'Article', 'kind' => 'collection', 'template' => 'article', 'is_system' => true, 'is_active' => true]
+    );
+
+    $article = Content::create([
+        'content_type_id' => $articleType->id,
+        'title' => 'TopGrade London FC Season Kickoff',
+        'slug' => 'topgrade-london-fc-season-kickoff',
+        'excerpt' => 'Welcome to the new club season.',
+        'content' => 'Full article content for club members.',
+        'status' => 'published',
+        'published_at' => now(),
+    ]);
+
+    $response = $this->get("/articles/{$article->slug}");
+
+    $response->assertStatus(200);
+    $response->assertInertia(fn ($page) => $page
+        ->component('Public/Articles/Show')
+        ->has('article')
+    );
+});
+
+test('single article returns 404 if draft or not found', function () {
+    $response = $this->get('/articles/non-existent-article');
+
+    $response->assertStatus(404);
 });
