@@ -50,24 +50,25 @@ const facilities = [
     <Head title="About the Club — TopGrade London FC" />
 
     <div class="min-h-screen bg-slate-950 text-white">
-        <!-- Hero Section -->
+        <!-- Hero Section (Light, Vibrant Overlay + Motion Entrance) -->
         <section class="relative min-h-[55vh] flex items-end overflow-hidden pb-16 pt-32 border-b border-slate-800">
             <div
-                class="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-40"
+                class="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-75 animate-ken-burns"
                 style="background-image: url('/images/club/tactical_coaching.jpg')"
             />
-            <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/80 to-slate-950/50" />
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/50 to-slate-950/20" />
+            <div class="absolute inset-0 bg-gradient-to-r from-slate-950/60 via-transparent to-slate-950/60" />
 
             <div class="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 w-full space-y-4">
-                <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-slate-900 border border-purple-500/30 text-purple-300 text-xs font-bold uppercase tracking-wider">
-                    <span class="w-2 h-2 rounded-full bg-purple-400" />
+                <div class="animate-fade-in-up [animation-delay:100ms] inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-slate-900/80 border border-purple-500/40 text-purple-200 text-xs font-bold uppercase tracking-wider backdrop-blur-md">
+                    <span class="w-2 h-2 rounded-full bg-purple-400 animate-pulse" />
                     Our Story & Mission
                 </div>
 
-                <h1 class="text-4xl sm:text-6xl font-extrabold text-white tracking-tight leading-tight max-w-3xl">
+                <h1 class="animate-fade-in-up [animation-delay:250ms] text-4xl sm:text-6xl font-extrabold text-white tracking-tight leading-tight max-w-3xl drop-shadow-md">
                     A London football club built for development.
                 </h1>
-                <p class="text-slate-300 text-lg sm:text-xl max-w-2xl leading-relaxed">
+                <p class="animate-fade-in-up [animation-delay:400ms] text-slate-100 text-lg sm:text-xl max-w-2xl leading-relaxed drop-shadow-sm font-normal">
                     TopGrade London FC is a grassroots Community Interest Company (CIC) providing young players with structured coaching, teamwork, and competitive playing pathways.
                 </p>
             </div>
@@ -215,25 +216,26 @@ const facilities = [
             </div>
         </section>
 
-        <!-- Call to Action Banner -->
+        <!-- Call to Action Banner (Clear, Visible Team Huddle Image) -->
         <section class="relative py-24 px-4 sm:px-6 lg:px-8 bg-slate-950 text-center border-t border-slate-800 overflow-hidden">
             <div
-                class="absolute inset-0 bg-cover bg-center opacity-20"
+                class="absolute inset-0 bg-cover bg-center opacity-65 animate-ken-burns"
                 style="background-image: url('/images/club/team-huddle.jpg')"
             />
-            <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/90 to-slate-950/75" />
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/60 to-slate-950/30" />
+            <div class="absolute inset-0 bg-gradient-to-r from-slate-950/50 via-transparent to-slate-950/50" />
 
             <div class="relative z-10 max-w-3xl mx-auto space-y-6">
-                <h2 class="text-3xl sm:text-4xl font-extrabold text-white">
+                <h2 class="text-3xl sm:text-4xl font-extrabold text-white drop-shadow-md">
                     Experience TopGrade London FC
                 </h2>
-                <p class="text-slate-300 text-base max-w-xl mx-auto leading-relaxed">
+                <p class="text-slate-100 text-base max-w-xl mx-auto leading-relaxed drop-shadow-sm font-normal">
                     Come see our coaches in action. Book an introductory trial session for your child at our London training ground.
                 </p>
                 <div class="pt-4">
                     <Link
                         href="/bookings"
-                        class="inline-flex items-center gap-2 px-8 py-4 bg-[var(--brand-primary)] hover:bg-purple-700 text-white font-semibold rounded-xl transition-all shadow-lg"
+                        class="inline-flex items-center gap-2 px-8 py-4 bg-[var(--brand-primary)] hover:bg-purple-700 text-white font-semibold rounded-xl transition-all duration-300 shadow-xl shadow-purple-950/60 hover:shadow-purple-600/40 hover:-translate-y-1"
                     >
                         <span>Book a Trial</span>
                         <ArrowRight class="w-4 h-4" />

@@ -47,24 +47,25 @@ function formatPrice(priceStr: string, currencyStr: string): string {
     <Head title="Club Squads & Training — TopGrade London FC" />
 
     <div class="min-h-screen bg-slate-950 text-white transition-colors">
-        <!-- Hero Section with Background Photography -->
-        <section class="relative min-h-[48vh] flex items-end overflow-hidden pb-14 pt-32 border-b border-slate-800">
+        <!-- Hero Section with Background Photography (Light, Clear Overlay + Motion Entrance) -->
+        <section class="relative min-h-[50vh] flex items-end overflow-hidden pb-14 pt-32 border-b border-slate-800">
             <div
-                class="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-35"
+                class="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-80 animate-ken-burns"
                 style="background-image: url('/images/club/training_pitch_evening.jpg')"
             />
-            <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/85 to-slate-950/60" />
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/50 to-slate-950/20" />
+            <div class="absolute inset-0 bg-gradient-to-r from-slate-950/60 via-transparent to-slate-950/60" />
 
             <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full space-y-4">
-                <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-slate-900 border border-purple-500/30 text-purple-300 text-xs font-bold uppercase tracking-wider">
+                <div class="animate-fade-in-up [animation-delay:100ms] inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-slate-900/80 border border-purple-500/40 text-purple-200 text-xs font-bold uppercase tracking-wider backdrop-blur-md">
                     <Award class="w-3.5 h-3.5 text-purple-400" />
                     Squad Pathways
                 </div>
 
-                <h1 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight">
+                <h1 class="animate-fade-in-up [animation-delay:250ms] text-3xl sm:text-5xl font-extrabold text-white tracking-tight drop-shadow-md">
                     Club Squads & Training Sessions
                 </h1>
-                <p class="text-slate-300 text-base sm:text-lg max-w-2xl leading-relaxed">
+                <p class="animate-fade-in-up [animation-delay:400ms] text-slate-100 text-base sm:text-lg max-w-2xl leading-relaxed drop-shadow-sm font-normal">
                     Find the right age-group squad and session for your child. Weekly training in Tottenham and matchdays at Hackney Marshes.
                 </p>
             </div>

@@ -8,10 +8,8 @@ import {
     Users,
     Target,
     MapPin,
-    Calendar,
     Award,
     Compass,
-    CheckCircle,
     Clock,
     Sparkles,
 } from '@lucide/vue';
@@ -64,7 +62,7 @@ defineOptions({
 
 const stats = [
     { label: 'Youth Squads', value: '8+', detail: 'Ages 4 to 17 years' },
-    { label: 'London Training Bases', value: '2', detail: 'Tottenham & Hackney' },
+    { label: 'London Bases', value: '2', detail: 'Tottenham & Hackney' },
     { label: 'Matchday Leagues', value: 'FA', detail: 'Sanctioned Youth Leagues' },
     { label: 'Player Progression', value: '100%', detail: 'Individual development' },
 ];
@@ -172,79 +170,85 @@ const trialSteps = [
 
     <div class="bg-slate-950 text-white selection:bg-purple-600 selection:text-white">
         <!-- 00 — MATCHDAY & TRAINING TICKER BAR -->
-        <div class="bg-gradient-to-r from-purple-950 via-slate-900 to-purple-950 border-b border-purple-900/40 text-xs py-2 px-4 sm:px-6 lg:px-8">
+        <div class="bg-gradient-to-r from-purple-950/90 via-slate-900 to-purple-950/90 border-b border-purple-900/40 text-xs py-2 px-4 sm:px-6 lg:px-8">
             <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-center sm:text-left">
                 <div class="flex items-center gap-2">
+                    <span class="relative flex h-2 w-2">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                    </span>
                     <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
                         Season Active
                     </span>
-                    <span class="text-slate-300 font-medium">
+                    <span class="text-slate-200 font-medium">
                         Training bases in Tottenham (N17) & Hackney Marshes (E9)
                     </span>
                 </div>
-                <div class="flex items-center gap-4 text-slate-400 text-[11px]">
+                <div class="flex items-center gap-4 text-slate-300 text-[11px]">
                     <span class="flex items-center gap-1">
                         <Award class="w-3.5 h-3.5 text-amber-400" />
                         London FA Sanctioned
                     </span>
-                    <span class="hidden md:inline">•</span>
+                    <span class="hidden md:inline text-slate-600">•</span>
                     <span class="hidden md:inline">Community Interest Company (CIC)</span>
                 </div>
             </div>
         </div>
 
-        <!-- 01 — HERO BANNER (Professional Football Club) -->
-        <section class="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
-            <!-- Background Photography with Vignette & Gradients -->
+        <!-- 01 — HERO BANNER (Light, Clear Overlay + Motion Entrance) -->
+        <section class="relative min-h-[92vh] flex items-center justify-center overflow-hidden">
+            <!-- Background Photography with Gentle, Balanced Gradient Overlay -->
             <div
-                class="absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-1000 scale-105"
+                class="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-80 animate-ken-burns"
                 style="background-image: url('/images/club/hero-football.jpg')"
             />
-            <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/85 to-slate-950/50" />
-            <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-purple-900/20 via-transparent to-transparent" />
+            <!-- Refined, lighter overlay: clear at top and center, smooth dark vignette toward bottom for contrast -->
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/50 to-slate-950/20" />
+            <div class="absolute inset-0 bg-gradient-to-r from-slate-950/60 via-transparent to-slate-950/60" />
+            <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-purple-900/15 via-transparent to-transparent" />
 
             <div class="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-24 sm:py-32 text-center flex flex-col items-center">
-                <!-- Crest & Badge Pill -->
-                <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-900/90 border border-purple-500/30 text-purple-300 text-xs font-bold tracking-widest uppercase mb-8 shadow-lg backdrop-blur-md">
+                <!-- Crest & Badge Pill (Float Animation) -->
+                <div class="animate-fade-in-up [animation-delay:100ms] inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-900/80 border border-purple-500/40 text-purple-200 text-xs font-bold tracking-widest uppercase mb-8 shadow-xl backdrop-blur-md hover:border-purple-400 transition-colors cursor-default">
                     <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
                     TopGrade London FC
                     <span class="text-slate-500">•</span>
-                    <span class="text-slate-400 font-normal">Youth Football Club</span>
+                    <span class="text-slate-300 font-normal">Youth Football Club</span>
                 </div>
 
-                <!-- Main Club Headline -->
-                <h1 class="text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight text-white mb-6 leading-[1.08] max-w-4xl">
-                    Talent starts with <span class="bg-gradient-to-r from-purple-400 via-pink-300 to-amber-200 bg-clip-text text-transparent">opportunity.</span>
+                <!-- Main Club Headline (Staggered Fade-in-Up) -->
+                <h1 class="animate-fade-in-up [animation-delay:250ms] text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight text-white mb-6 leading-[1.08] max-w-4xl drop-shadow-md">
+                    Talent starts with <span class="bg-gradient-to-r from-purple-300 via-pink-300 to-amber-200 bg-clip-text text-transparent">opportunity.</span>
                 </h1>
 
                 <!-- Subheadline -->
-                <p class="text-lg sm:text-xl text-slate-300 max-w-2xl mx-auto mb-10 leading-relaxed font-normal">
+                <p class="animate-fade-in-up [animation-delay:400ms] text-lg sm:text-xl text-slate-100 max-w-2xl mx-auto mb-10 leading-relaxed font-normal drop-shadow-sm">
                     London grassroots football club dedicated to helping young footballers develop technical skill, game understanding, and match experience.
                 </p>
 
-                <!-- Action CTA Buttons -->
-                <div class="flex flex-col sm:flex-row gap-4 w-full sm:w-auto justify-center mb-16">
+                <!-- Action CTA Buttons with Hover Lift & Glow -->
+                <div class="animate-fade-in-up [animation-delay:550ms] flex flex-col sm:flex-row gap-4 w-full sm:w-auto justify-center mb-16">
                     <Link
                         href="/bookings"
-                        class="inline-flex items-center justify-center gap-2 px-8 py-4 bg-[var(--brand-primary)] hover:bg-purple-700 text-white font-semibold text-base rounded-xl transition-all shadow-xl hover:shadow-purple-500/25 hover:-translate-y-0.5 active:translate-y-0"
+                        class="inline-flex items-center justify-center gap-2 px-8 py-4 bg-[var(--brand-primary)] hover:bg-purple-700 text-white font-semibold text-base rounded-xl transition-all duration-300 shadow-xl shadow-purple-950/50 hover:shadow-purple-600/40 hover:-translate-y-1 active:translate-y-0 active:scale-98"
                     >
                         <span>Book a Trial</span>
-                        <ArrowRight class="w-4 h-4" />
+                        <ArrowRight class="w-4 h-4 transition-transform group-hover:translate-x-1" />
                     </Link>
                     <Link
                         href="/bookings"
-                        class="inline-flex items-center justify-center gap-2 px-8 py-4 bg-slate-900/80 hover:bg-slate-800 text-white font-semibold text-base rounded-xl border border-slate-700 hover:border-slate-600 transition-all backdrop-blur-sm"
+                        class="inline-flex items-center justify-center gap-2 px-8 py-4 bg-slate-900/80 hover:bg-slate-800/90 text-white font-semibold text-base rounded-xl border border-slate-700 hover:border-slate-500 transition-all duration-300 backdrop-blur-md hover:-translate-y-1"
                     >
                         <span>Explore Squads</span>
                     </Link>
                 </div>
 
-                <!-- Quick Club Statistics Bar -->
-                <div class="w-full max-w-4xl grid grid-cols-2 md:grid-cols-4 gap-4 pt-8 border-t border-slate-800/80">
+                <!-- Quick Club Statistics Bar with Staggered Entrance -->
+                <div class="animate-fade-in-up [animation-delay:700ms] w-full max-w-4xl grid grid-cols-2 md:grid-cols-4 gap-4 pt-8 border-t border-slate-800/80">
                     <div
                         v-for="stat in stats"
                         :key="stat.label"
-                        class="p-4 rounded-xl bg-slate-900/60 border border-slate-800/60 backdrop-blur-xs text-center"
+                        class="p-4 rounded-xl bg-slate-900/60 hover:bg-slate-900/80 border border-slate-800/80 hover:border-purple-500/40 backdrop-blur-md text-center transition-all duration-300 hover:-translate-y-1 shadow-md"
                     >
                         <div class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
                             {{ stat.value }}
@@ -260,7 +264,7 @@ const trialSteps = [
             </div>
         </section>
 
-        <!-- 02 — CLUB ACTION & PHOTOGRAPHY GALLERY (New Visual Showcase) -->
+        <!-- 02 — CLUB ACTION & PHOTOGRAPHY GALLERY (Vibrant, Clear Photos with Rich Motion) -->
         <section class="py-20 px-4 sm:px-6 lg:px-8 bg-slate-900/60 border-y border-slate-800/80">
             <div class="max-w-7xl mx-auto">
                 <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
@@ -272,40 +276,42 @@ const trialSteps = [
                             Life at TopGrade London FC
                         </h2>
                     </div>
-                    <p class="text-slate-400 text-sm max-w-md">
+                    <p class="text-slate-300 text-sm max-w-md">
                         From Saturday league fixtures on grass to evening technical sessions on 3G turf, see our young players in action across London.
                     </p>
                 </div>
 
-                <!-- Image Mosaic Grid -->
+                <!-- Image Mosaic Grid with Hover Scale & Elevation -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div
                         v-for="(item, idx) in gallery"
                         :key="idx"
-                        :class="['group relative rounded-2xl overflow-hidden border border-slate-800 bg-slate-950 shadow-xl transition-all duration-300 hover:border-purple-500/50', item.colSpan]"
+                        :class="['group relative rounded-2xl overflow-hidden border border-slate-800 bg-slate-950 shadow-xl transition-all duration-500 hover:border-purple-500/70 hover:shadow-2xl hover:shadow-purple-900/30 hover:-translate-y-1.5', item.colSpan]"
                     >
                         <div class="aspect-16/10 sm:aspect-16/9 w-full overflow-hidden relative">
+                            <!-- Full clarity image with smooth zoom on hover -->
                             <img
                                 :src="item.image"
                                 :alt="item.alt"
-                                class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                                class="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-108"
                                 loading="lazy"
                             />
-                            <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent opacity-80 group-hover:opacity-70 transition-opacity" />
+                            <!-- Light bottom-only gradient for readable caption without dimming the photo -->
+                            <div class="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/25 to-transparent transition-opacity duration-300 group-hover:opacity-90" />
 
                             <!-- Badge in top corner -->
-                            <div class="absolute top-4 left-4">
-                                <span class="px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider bg-slate-900/80 text-purple-300 border border-purple-500/30 backdrop-blur-md">
+                            <div class="absolute top-4 left-4 transition-transform duration-300 group-hover:translate-x-1">
+                                <span class="px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider bg-slate-900/85 text-purple-200 border border-purple-500/40 backdrop-blur-md shadow-md">
                                     {{ item.tag }}
                                 </span>
                             </div>
 
                             <!-- Caption at bottom -->
-                            <div class="absolute bottom-4 left-4 right-4 text-left">
+                            <div class="absolute bottom-4 left-4 right-4 text-left transition-transform duration-300 group-hover:translate-y--0.5">
                                 <h3 class="text-lg sm:text-xl font-bold text-white group-hover:text-purple-300 transition-colors">
                                     {{ item.title }}
                                 </h3>
-                                <p class="text-xs sm:text-sm text-slate-300 mt-1 line-clamp-1">
+                                <p class="text-xs sm:text-sm text-slate-200 mt-1 line-clamp-1">
                                     {{ item.subtitle }}
                                 </p>
                             </div>
@@ -315,7 +321,7 @@ const trialSteps = [
             </div>
         </section>
 
-        <!-- 03 — TRAINING PHILOSOPHY (The 4 Pillars) -->
+        <!-- 03 — TRAINING PHILOSOPHY (The 4 Pillars with Interactive Motion) -->
         <section class="py-24 px-4 sm:px-6 lg:px-8 bg-slate-950">
             <div class="max-w-7xl mx-auto">
                 <div class="text-center max-w-2xl mx-auto mb-16">
@@ -334,13 +340,13 @@ const trialSteps = [
                     <div
                         v-for="pillar in pillars"
                         :key="pillar.title"
-                        class="p-7 rounded-2xl bg-slate-900/80 border border-slate-800 hover:border-purple-500/40 transition-all duration-300 flex flex-col justify-between group"
+                        class="p-7 rounded-2xl bg-slate-900/80 border border-slate-800 hover:border-purple-500/50 hover:bg-slate-900 transition-all duration-300 hover:-translate-y-2 hover:shadow-xl hover:shadow-purple-950/50 flex flex-col justify-between group cursor-default"
                     >
                         <div>
-                            <div class="w-12 h-12 rounded-xl bg-purple-900/40 border border-purple-500/30 flex items-center justify-center text-purple-300 mb-6 group-hover:bg-purple-600 group-hover:text-white transition-colors">
+                            <div class="w-12 h-12 rounded-xl bg-purple-900/40 border border-purple-500/30 flex items-center justify-center text-purple-300 mb-6 group-hover:bg-purple-600 group-hover:text-white group-hover:scale-110 group-hover:-rotate-3 transition-all duration-300 shadow-md">
                                 <component :is="pillar.icon" class="w-6 h-6" />
                             </div>
-                            <h3 class="text-xl font-bold text-white mb-3">
+                            <h3 class="text-xl font-bold text-white mb-3 group-hover:text-purple-300 transition-colors">
                                 {{ pillar.title }}
                             </h3>
                             <p class="text-slate-400 text-sm leading-relaxed mb-6">
@@ -367,10 +373,10 @@ const trialSteps = [
                     </div>
                     <Link
                         href="/bookings"
-                        class="text-sm font-semibold text-purple-400 hover:text-purple-300 flex items-center gap-1.5 transition-colors"
+                        class="text-sm font-semibold text-purple-400 hover:text-purple-300 flex items-center gap-1.5 transition-colors group"
                     >
                         <span>View All Squads</span>
-                        <ArrowRight class="w-4 h-4" />
+                        <ArrowRight class="w-4 h-4 transition-transform group-hover:translate-x-1" />
                     </Link>
                 </div>
 
@@ -378,12 +384,12 @@ const trialSteps = [
                     <div
                         v-for="activity in props.featuredActivities"
                         :key="activity.id"
-                        class="rounded-2xl bg-slate-950 border border-slate-800 hover:border-purple-500/50 p-6 flex flex-col justify-between transition-all duration-200 shadow-lg"
+                        class="rounded-2xl bg-slate-950 border border-slate-800 hover:border-purple-500/60 p-6 flex flex-col justify-between transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl hover:shadow-purple-950/40 shadow-lg group"
                     >
                         <div>
                             <div class="flex justify-between items-start mb-4">
                                 <span class="px-3 py-1 rounded-md bg-slate-900 text-purple-300 border border-slate-800 text-xs font-medium flex items-center gap-1.5">
-                                    <Clock class="w-3.5 h-3.5" />
+                                    <Clock class="w-3.5 h-3.5 text-purple-400" />
                                     {{ activity.duration_minutes }} mins
                                 </span>
                                 <span class="text-lg font-bold text-white">
@@ -398,7 +404,7 @@ const trialSteps = [
                                 </span>
                             </div>
 
-                            <h3 class="text-xl font-bold text-white mb-2">
+                            <h3 class="text-xl font-bold text-white mb-2 group-hover:text-purple-300 transition-colors">
                                 {{ activity.name }}
                             </h3>
 
@@ -415,7 +421,7 @@ const trialSteps = [
 
                             <Link
                                 :href="`/bookings/${activity.slug}`"
-                                class="w-full py-3 px-4 rounded-xl bg-[var(--brand-primary)] hover:bg-purple-700 text-white text-sm font-semibold flex items-center justify-center gap-2 transition-colors shadow-md"
+                                class="w-full py-3.5 px-4 rounded-xl bg-[var(--brand-primary)] hover:bg-purple-700 text-white text-sm font-semibold flex items-center justify-center gap-2 transition-all duration-200 shadow-md hover:shadow-purple-600/30"
                             >
                                 <span>Book a Trial</span>
                                 <ArrowRight class="w-4 h-4" />
@@ -445,7 +451,7 @@ const trialSteps = [
                     <div
                         v-for="ground in grounds"
                         :key="ground.name"
-                        class="p-8 rounded-2xl bg-slate-900/90 border border-slate-800 flex flex-col justify-between space-y-6"
+                        class="p-8 rounded-2xl bg-slate-900/90 border border-slate-800 hover:border-purple-500/50 flex flex-col justify-between space-y-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl shadow-lg group"
                     >
                         <div class="space-y-4">
                             <div class="flex justify-between items-start">
@@ -453,7 +459,7 @@ const trialSteps = [
                                     {{ ground.badge }}
                                 </span>
                             </div>
-                            <h3 class="text-2xl font-bold text-white">
+                            <h3 class="text-2xl font-bold text-white group-hover:text-purple-300 transition-colors">
                                 {{ ground.name }}
                             </h3>
                             <div class="flex items-start gap-2.5 text-sm text-slate-300">
@@ -475,10 +481,10 @@ const trialSteps = [
                         <div class="pt-4 border-t border-slate-800">
                             <Link
                                 href="/bookings"
-                                class="inline-flex items-center gap-2 text-sm font-semibold text-purple-400 hover:text-purple-300 transition-colors"
+                                class="inline-flex items-center gap-2 text-sm font-semibold text-purple-400 hover:text-purple-300 transition-colors group/link"
                             >
                                 <span>View Sessions at this Venue</span>
-                                <ArrowRight class="w-4 h-4" />
+                                <ArrowRight class="w-4 h-4 transition-transform group-hover/link:translate-x-1" />
                             </Link>
                         </div>
                     </div>
@@ -505,7 +511,7 @@ const trialSteps = [
                     <div
                         v-for="step in trialSteps"
                         :key="step.step"
-                        class="p-6 rounded-2xl bg-slate-950 border border-slate-800 relative space-y-4"
+                        class="p-7 rounded-2xl bg-slate-950 border border-slate-800 hover:border-purple-500/40 relative space-y-4 transition-all duration-300 hover:-translate-y-1 shadow-md"
                     >
                         <div class="text-3xl font-black text-purple-500/40">
                             {{ step.step }}
@@ -543,7 +549,7 @@ const trialSteps = [
                     <div
                         v-for="article in props.articles"
                         :key="article.id"
-                        class="p-6 rounded-2xl bg-slate-900 border border-slate-800 hover:border-purple-500/50 transition-colors"
+                        class="p-6 rounded-2xl bg-slate-900 border border-slate-800 hover:border-purple-500/50 transition-all duration-300 hover:-translate-y-1 shadow-md"
                     >
                         <h3 class="text-lg font-bold text-white mb-2">{{ article.title }}</h3>
                         <p class="text-slate-400 text-sm mb-4 line-clamp-3 leading-relaxed">{{ article.excerpt }}</p>
@@ -555,35 +561,37 @@ const trialSteps = [
             </div>
         </section>
 
-        <!-- 08 — FINAL STADIUM CALL TO ACTION -->
+        <!-- 08 — FINAL STADIUM CALL TO ACTION (Lighter Overlay: Clear Celebrating Players) -->
         <section class="relative py-28 px-4 sm:px-6 lg:px-8 bg-slate-950 text-white text-center overflow-hidden border-t border-slate-800">
             <div
-                class="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-25"
+                class="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-65 animate-ken-burns"
                 style="background-image: url('/images/club/squad_celebration.jpg')"
             />
-            <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/90 to-slate-950/70" />
+            <!-- Balanced gradient: allows team celebration and purple kits to be clearly seen, while providing crisp text contrast -->
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/60 to-slate-950/30" />
+            <div class="absolute inset-0 bg-gradient-to-r from-slate-950/50 via-transparent to-slate-950/50" />
 
             <div class="relative z-10 max-w-3xl mx-auto space-y-6">
-                <span class="inline-block px-3.5 py-1 rounded-full bg-purple-900/40 border border-purple-500/30 text-purple-300 text-xs font-bold tracking-widest uppercase">
+                <span class="inline-block px-3.5 py-1 rounded-full bg-purple-900/60 border border-purple-400/40 text-purple-200 text-xs font-bold tracking-widest uppercase shadow-md backdrop-blur-sm">
                     Take the Next Step
                 </span>
-                <h2 class="text-3xl sm:text-5xl font-extrabold tracking-tight text-white">
+                <h2 class="text-3xl sm:text-5xl font-extrabold tracking-tight text-white drop-shadow-md">
                     Think they have potential?
                 </h2>
-                <p class="text-slate-300 text-lg max-w-xl mx-auto leading-relaxed">
+                <p class="text-slate-100 text-lg max-w-xl mx-auto leading-relaxed drop-shadow-sm font-normal">
                     Give them the opportunity to train with TopGrade London FC coaches, play alongside teammates, and develop their game.
                 </p>
                 <div class="pt-4 flex flex-col sm:flex-row gap-4 justify-center">
                     <Link
                         href="/bookings"
-                        class="inline-flex items-center justify-center gap-2 px-8 py-4 bg-[var(--brand-primary)] hover:bg-purple-700 text-white font-semibold text-base rounded-xl transition-all shadow-xl hover:shadow-purple-500/25"
+                        class="inline-flex items-center justify-center gap-2 px-8 py-4 bg-[var(--brand-primary)] hover:bg-purple-700 text-white font-semibold text-base rounded-xl transition-all duration-300 shadow-xl shadow-purple-950/60 hover:shadow-purple-600/40 hover:-translate-y-1"
                     >
                         <span>Book a Trial</span>
                         <ArrowRight class="w-4 h-4" />
                     </Link>
                     <Link
                         href="/about"
-                        class="inline-flex items-center justify-center gap-2 px-8 py-4 bg-slate-900 hover:bg-slate-800 text-white font-semibold text-base rounded-xl border border-slate-700 transition-colors"
+                        class="inline-flex items-center justify-center gap-2 px-8 py-4 bg-slate-900/90 hover:bg-slate-800 text-white font-semibold text-base rounded-xl border border-slate-700 hover:border-slate-500 transition-all duration-300 backdrop-blur-md hover:-translate-y-1"
                     >
                         <span>About the Club</span>
                     </Link>

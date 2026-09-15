@@ -40,10 +40,11 @@ function formatPrice(priceStr: string, currencyStr: string): string {
         <!-- Hero Section -->
         <section class="relative min-h-[35vh] flex items-end overflow-hidden pb-12 pt-28 border-b border-slate-800">
             <div
-                class="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-30"
-                style="background-image: url('/images/hero_action.png')"
+                class="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-80 animate-ken-burns"
+                style="background-image: url('/images/club/training-agility-drills.jpg')"
             />
-            <div class="absolute inset-0 bg-slate-950/80" />
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/50 to-slate-950/20" />
+            <div class="absolute inset-0 bg-gradient-to-r from-slate-950/60 via-transparent to-slate-950/60" />
 
             <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full space-y-4">
                 <div class="inline-block px-3 py-1 rounded bg-slate-800 border border-slate-700 text-slate-300 text-xs font-semibold tracking-wider uppercase">
