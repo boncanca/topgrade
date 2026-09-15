@@ -29,7 +29,8 @@ const form = useForm({
     content: '',
     status: 'draft',
     published_at: '',
-    metadata_json: null as null,
+    metadata_json: null as Record<string, any> | null,
+    metadata_json_string: '',
     blocks: [] as Block[],
     seo: {
         title: '',
@@ -51,6 +52,13 @@ function generateSlug(): void {
 }
 
 function handleSubmit(): void {
+    if (form.metadata_json_string) {
+        try {
+            form.metadata_json = JSON.parse(form.metadata_json_string);
+        } catch {
+            // let server validate JSON
+        }
+    }
     form.submit(contentStore());
 }
 

@@ -215,7 +215,7 @@ function handleCancel(): void {
                                 <Button
                                     type="button"
                                     variant="ghost"
-                                    size="xs"
+                                    size="sm"
                                     :disabled="idx === 0"
                                     @click="moveUp(idx)"
                                     title="Move Up"
@@ -225,7 +225,7 @@ function handleCancel(): void {
                                 <Button
                                     type="button"
                                     variant="ghost"
-                                    size="xs"
+                                    size="sm"
                                     :disabled="idx === form.items.length - 1"
                                     @click="moveDown(idx)"
                                     title="Move Down"

@@ -21,8 +21,8 @@ interface ContentBlock {
     id: number;
     uuid: string;
     type: string;
-    payload: Record<string, unknown>;
-    settings: Record<string, unknown>;
+    payload: Record<string, any>;
+    settings: Record<string, any>;
     sort_order: number;
 }
 
@@ -35,6 +35,7 @@ interface Content {
     content: string;
     status: string;
     published_at: string | null;
+    metadata_json?: Record<string, any> | null;
     blocks: ContentBlock[];
     seo?: {
         title: string | null;
@@ -122,33 +123,10 @@ function handleDelete(): void {
         <form @submit.prevent="handleSubmit" class="space-y-12">
             <FormSection
                 title="Basic Information"
-                description="Title, slug, and content type for your page."
+                description="Title, slug, and summary for this page."
             >
                 <div class="space-y-6">
-                    <div>
-                        <label class="mb-2 block text-sm font-medium text-foreground">
-                            Content Type <span class="text-destructive">*</span>
-                        </label>
-                        <select
-                            v-model="form.content_type_id"
-                            :class="fieldClass"
-                        >
-                            <option value="">Select a content type</option>
-                            <option
-                                v-for="type in props.contentTypes"
-                                :key="type.id"
-                                :value="String(type.id)"
-                            >
-                                {{ type.name }}
-                            </option>
-                        </select>
-                        <p
-                            v-if="form.errors.content_type_id"
-                            class="mt-1 text-sm text-destructive"
-                        >
-                            {{ form.errors.content_type_id }}
-                        </p>
-                    </div>
+                    <input type="hidden" :value="form.content_type_id" />
 
                     <div>
                         <label class="mb-2 block text-sm font-medium text-foreground">

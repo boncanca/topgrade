@@ -29,7 +29,6 @@ import { index as bookingsIndex } from '@/routes/bookings';
 import { index as contactsIndex } from '@/routes/contacts';
 import { index as contentIndex } from '@/routes/content';
 import { index as inquiriesIndex } from '@/routes/inquiries';
-import { index as menusIndex } from '@/routes/menus';
 import { edit as profileEdit } from '@/routes/profile';
 import type { NavGroup } from '@/types';
 
@@ -62,11 +61,6 @@ const navGroups: NavGroup[] = [
                 href: inquiriesIndex(),
                 icon: MessageSquare,
             },
-        ],
-    },
-    {
-        title: 'Content',
-        items: [
             {
                 title: 'Pages',
                 href: contentIndex({ query: { type: 'page' } }),
@@ -77,15 +71,6 @@ const navGroups: NavGroup[] = [
                 href: contentIndex({ query: { type: 'article' } }),
                 icon: BookOpen,
             },
-            {
-                title: 'Menus',
-                href: menusIndex(),
-                icon: Menu,
-            },
-        ],
-    },
-    {
-        items: [
             {
                 title: 'Settings',
                 href: profileEdit(),

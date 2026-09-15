@@ -7,209 +7,179 @@ use App\Models\Content;
 use App\Models\ContentType;
 use App\Models\Menu;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Str;
 
 class TGLFCSeeder extends Seeder
 {
     public function run(): void
     {
-        // Create TGLFC training programs
-        BookableItem::firstOrCreate(
+        // 1. Seed Confirmed Football Club Activities
+        BookableItem::updateOrCreate(
             ['slug' => 'mini-kickers-ages-4-6'],
             [
-                'name' => 'Mini Kickers (Ages 4-6)',
-                'description' => 'Introduction to football fundamentals. Focus on coordination, basic ball control, and having fun with peers. Perfect first experience in organized football.',
+                'name' => 'Mini Kickers (Ages 4–6)',
+                'description' => 'Introduction to football fundamentals. Focus on coordination, basic ball control, and having fun with teammates.',
                 'duration_minutes' => 45,
-                'location' => 'Main Ground',
+                'location' => 'London Training Ground',
                 'price' => 15.00,
                 'currency' => 'GBP',
                 'capacity' => 12,
-                'booking_label' => 'Book Trial',
+                'booking_label' => 'Book a Trial',
                 'is_active' => true,
                 'requires_payment' => true,
             ]
         );
 
-        BookableItem::firstOrCreate(
-            ['slug' => 'u8-academy-training'],
+        BookableItem::updateOrCreate(
+            ['slug' => 'u8-squad-training'],
             [
-                'name' => 'U8 Academy Training',
-                'description' => 'Regular weekly training for under 8 academy members. Develops technical skills, tactical awareness, and team play in a competitive environment.',
+                'name' => 'U8 Squad Training',
+                'description' => 'Weekly training for under 8 club members. Develops technical skills, decision-making, and team play in a positive environment.',
                 'duration_minutes' => 60,
-                'location' => 'Main Ground',
+                'location' => 'London Training Ground',
                 'price' => 20.00,
                 'currency' => 'GBP',
                 'capacity' => 16,
-                'booking_label' => 'Enroll Now',
+                'booking_label' => 'Book a Trial',
                 'is_active' => true,
                 'requires_payment' => true,
             ]
         );
 
-        BookableItem::firstOrCreate(
-            ['slug' => 'u10-academy-training'],
+        BookableItem::updateOrCreate(
+            ['slug' => 'u10-squad-training'],
             [
-                'name' => 'U10 Academy Training',
-                'description' => 'Intensive training for under 10 competitive academy players. Emphasis on advanced technical skills, tactical positioning, and match preparation.',
+                'name' => 'U10 Squad Training',
+                'description' => 'Structured football training for under 10 club players. Emphasis on technical ball mastery, tactical awareness, and match preparation.',
                 'duration_minutes' => 75,
-                'location' => 'Main Ground',
+                'location' => 'London Training Ground',
                 'price' => 25.00,
                 'currency' => 'GBP',
                 'capacity' => 18,
-                'booking_label' => 'Enroll Now',
+                'booking_label' => 'Book a Trial',
                 'is_active' => true,
                 'requires_payment' => true,
             ]
         );
 
-        BookableItem::firstOrCreate(
-            ['slug' => 'u12-development-programme'],
+        BookableItem::updateOrCreate(
+            ['slug' => 'u12-youth-development'],
             [
-                'name' => 'U12 Development Programme',
-                'description' => 'Elite development programme for under 12 players. Advanced tactical training, strength & conditioning, and pathway to competitive leagues.',
+                'name' => 'U12 Youth Development',
+                'description' => 'Focused football development for under 12 players. Technical drills, tactical positioning, and competitive match experience.',
                 'duration_minutes' => 90,
-                'location' => 'Main Ground',
+                'location' => 'London Training Ground',
                 'price' => 30.00,
                 'currency' => 'GBP',
                 'capacity' => 20,
-                'booking_label' => 'Enroll Now',
+                'booking_label' => 'Book a Trial',
                 'is_active' => true,
                 'requires_payment' => true,
             ]
         );
 
-        BookableItem::firstOrCreate(
-            ['slug' => 'futsal-training-ages-8-12'],
-            [
-                'name' => 'Futsal Training (Ages 8-12)',
-                'description' => 'Fast-paced futsal training combining skill development with competitive play. Improves ball control, quick decision making, and shooting accuracy.',
-                'duration_minutes' => 60,
-                'location' => 'Indoor Arena',
-                'price' => 18.00,
-                'currency' => 'GBP',
-                'capacity' => 14,
-                'booking_label' => 'Book Now',
-                'is_active' => true,
-                'requires_payment' => true,
-            ]
-        );
-
-        BookableItem::firstOrCreate(
+        BookableItem::updateOrCreate(
             ['slug' => 'free-trial-session'],
             [
-                'name' => 'Free Trial Session',
-                'description' => 'Experience TopGrade FC! Join us for a free trial session to see if we\'re the right fit for your child. No commitment required.',
+                'name' => 'Introductory Trial Session',
+                'description' => 'Experience TopGrade London FC first-hand. Join a session to discover our coaching, team environment, and football values.',
                 'duration_minutes' => 45,
-                'location' => 'Main Ground',
+                'location' => 'London Training Ground',
                 'price' => 0.00,
                 'currency' => 'GBP',
                 'capacity' => 20,
-                'booking_label' => 'Book Free Trial',
+                'booking_label' => 'Book a Trial',
                 'is_active' => true,
                 'requires_payment' => false,
             ]
         );
 
-        $homeType = ContentType::where('slug', 'page')->first();
+        // 2. Ensure Page & Article Content Types exist
+        $pageType = ContentType::firstOrCreate(
+            ['slug' => 'page'],
+            [
+                'name' => 'Page',
+                'kind' => 'collection',
+                'template' => 'default',
+                'is_system' => true,
+                'is_active' => true,
+            ]
+        );
 
-        if ($homeType) {
-            $homeContent = Content::firstOrCreate(
-                ['slug' => 'home'],
+        ContentType::firstOrCreate(
+            ['slug' => 'article'],
+            [
+                'name' => 'Article',
+                'kind' => 'collection',
+                'template' => 'article',
+                'is_system' => true,
+                'is_active' => true,
+            ]
+        );
+
+        // 3. Seed 5 Core Club Pages
+        $pages = [
+            [
+                'slug' => 'home',
+                'title' => 'TopGrade London FC — Youth Football Club',
+                'excerpt' => 'A youth football club in London helping young players develop through training, teamwork and playing experience.',
+                'content' => 'TopGrade London FC provides structured youth football training and development for young players.',
+            ],
+            [
+                'slug' => 'about',
+                'title' => 'About TopGrade London FC',
+                'excerpt' => 'TopGrade London FC is a youth football club dedicated to helping young players develop through training, teamwork and playing experience.',
+                'content' => 'We provide structured youth football training, coaching, and match opportunities in London.',
+            ],
+            [
+                'slug' => 'contact',
+                'title' => 'Contact TopGrade London FC',
+                'excerpt' => 'Get in touch with TopGrade London FC for questions regarding club teams, trial bookings, and training sessions.',
+                'content' => 'Contact the club via email or our contact message form.',
+            ],
+            [
+                'slug' => 'privacy',
+                'title' => 'Privacy Policy',
+                'excerpt' => 'Privacy policy and data protection guidelines for TopGrade London FC.',
+                'content' => 'TopGrade London FC collects information you provide directly when booking a trial session or submitting a contact enquiry.',
+            ],
+            [
+                'slug' => 'terms',
+                'title' => 'Terms & Conditions',
+                'excerpt' => 'Terms and conditions for participation, trials, and sessions at TopGrade London FC.',
+                'content' => 'By booking a trial session or registering with TopGrade London FC, parents agree to provide accurate participant information.',
+            ],
+        ];
+
+        foreach ($pages as $p) {
+            $content = Content::updateOrCreate(
+                ['slug' => $p['slug']],
                 [
-                    'content_type_id' => $homeType->id,
-                    'title' => 'Home - Train Like A Champion',
-                    'excerpt' => 'Youth football excellence in London. Ages 4-18.',
-                    'content' => 'Welcome to TopGrade London FC.',
+                    'content_type_id' => $pageType->id,
+                    'title' => $p['title'],
+                    'excerpt' => $p['excerpt'],
+                    'content' => $p['content'],
                     'status' => 'published',
                     'published_at' => now(),
-                    'metadata_json' => [
-                        'tagline' => 'ALWAYS THE BEST — EST. 2022',
-                        'headline' => 'DEVELOP YOUR FOOTBALL FUTURE',
-                        'subheadline' => 'Youth football excellence in London. Ages 4–18. Professional coaching, competitive pathways, and a community that builds champions.',
-                        'stats' => [
-                            ['number' => '200+', 'label' => 'PLAYERS'],
-                            ['number' => '15+', 'label' => 'TEAMS'],
-                            ['number' => '4–18', 'label' => 'AGE RANGE'],
-                        ],
-                        'why_choose_title' => 'Why Choose TopGrade?',
-                        'why_choose_subtitle' => "We're committed to developing young footballers with professional coaching, modern facilities, and a supportive community.",
-                        'features' => [
-                            'Professional coaching staff with international experience',
-                            'Competitive pathways and opportunities',
-                            'State-of-the-art training facilities',
-                            'Strong community and player development focus',
-                        ],
-                    ],
                 ]
             );
 
-            if ($homeContent->blocks()->count() === 0) {
-                $homeContent->blocks()->create([
-                    'uuid' => (string) Str::uuid(),
-                    'type' => 'hero',
-                    'payload' => [
-                        'title' => 'DEVELOP YOUR FOOTBALL FUTURE',
-                        'subtitle' => 'Youth football excellence in London. Ages 4–18.',
-                        'button_text' => 'Book a Trial',
-                        'button_url' => '/activities',
-                    ],
-                    'settings' => [
-                        'theme' => 'dark',
-                        'align' => 'center',
-                    ],
-                    'sort_order' => 1,
-                ]);
-
-                $homeContent->blocks()->create([
-                    'uuid' => (string) Str::uuid(),
-                    'type' => 'cta',
-                    'payload' => [
-                        'title' => 'Ready to Join TopGrade?',
-                        'subtitle' => 'Book your first trial session today and start your journey to football excellence.',
-                        'button_text' => 'Book Your Trial Now',
-                        'button_url' => '/activities',
-                    ],
-                    'settings' => [
-                        'theme' => 'glass',
-                    ],
-                    'sort_order' => 2,
-                ]);
+            if ($p['slug'] === 'home') {
+                $content->blocks()->delete();
             }
         }
 
-        // Seed Main Navigation
+        // Backward compatibility for existing Menu relationships if present
         $headerMenu = Menu::firstOrCreate(
             ['slug' => 'main-navigation'],
-            [
-                'name' => 'Main Navigation',
-                'location' => 'main',
-            ]
+            ['name' => 'Main Navigation', 'location' => 'main']
         );
-
         if ($headerMenu->allItems()->count() === 0) {
             $headerMenu->allItems()->createMany([
                 ['label' => 'Home', 'url' => '/', 'sort_order' => 1],
-                ['label' => 'Training', 'url' => '/training', 'sort_order' => 2],
-                ['label' => 'About', 'url' => '/about', 'sort_order' => 3],
-                ['label' => 'Contact', 'url' => '/contact', 'sort_order' => 4],
-            ]);
-        }
-
-        // Seed Footer Navigation
-        $footerMenu = Menu::firstOrCreate(
-            ['slug' => 'footer-navigation'],
-            [
-                'name' => 'Footer Quick Links',
-                'location' => 'footer',
-            ]
-        );
-
-        if ($footerMenu->allItems()->count() === 0) {
-            $footerMenu->allItems()->createMany([
-                ['label' => 'Home', 'url' => '/', 'sort_order' => 1],
-                ['label' => 'Training', 'url' => '/training', 'sort_order' => 2],
-                ['label' => 'About', 'url' => '/about', 'sort_order' => 3],
-                ['label' => 'Contact', 'url' => '/contact', 'sort_order' => 4],
+                ['label' => 'About', 'url' => '/about', 'sort_order' => 2],
+                ['label' => 'Activities', 'url' => '/bookings', 'sort_order' => 3],
+                ['label' => 'Articles', 'url' => '/articles', 'sort_order' => 4],
+                ['label' => 'Contact', 'url' => '/contact', 'sort_order' => 5],
             ]);
         }
     }

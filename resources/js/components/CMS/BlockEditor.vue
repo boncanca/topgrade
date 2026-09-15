@@ -8,8 +8,8 @@ import { blockSchemas, type BlockFieldDefinition } from './blockSchemas';
 export interface Block {
     uuid: string;
     type: string;
-    payload: Record<string, unknown>;
-    settings: Record<string, unknown>;
+    payload: Record<string, any>;
+    settings: Record<string, any>;
 }
 
 const props = defineProps<{

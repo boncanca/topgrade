@@ -199,7 +199,7 @@ function getInitials(name: string): string {
                         v-for="(config, statusKey) in statusConfig"
                         :key="statusKey"
                         type="button"
-                        size="xs"
+                        size="sm"
                         :variant="inquiry.status === statusKey ? 'default' : 'outline'"
                         :disabled="processing"
                         class="text-xs h-7 px-2.5 transition-all"

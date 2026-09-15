@@ -377,7 +377,7 @@ function getInquiryStatusClass(status: string): string {
                                     </td>
                                     <td class="px-5 py-3.5 text-right">
                                         <Link
-                                            :href="bookingShow({ booking: booking.reference })"
+                                            :href="bookingShow({ booking: booking.id })"
                                             class="font-medium text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
                                         >
                                             Details

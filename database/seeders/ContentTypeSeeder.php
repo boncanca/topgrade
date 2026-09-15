@@ -18,16 +18,19 @@ class ContentTypeSeeder extends Seeder
         ];
 
         foreach ($types as $type) {
-            ContentType::create([
-                ...$type,
-                'is_system' => true,
-                'is_active' => true,
-            ]);
+            ContentType::firstOrCreate(
+                ['slug' => $type['slug']],
+                [
+                    ...$type,
+                    'is_system' => true,
+                    'is_active' => true,
+                ]
+            );
         }
 
         // Seed menus
-        Menu::create(['name' => 'Main Navigation', 'slug' => 'main', 'location' => 'main']);
-        Menu::create(['name' => 'Footer Navigation', 'slug' => 'footer', 'location' => 'footer']);
-        Menu::create(['name' => 'Mobile Navigation', 'slug' => 'mobile', 'location' => 'mobile']);
+        Menu::firstOrCreate(['slug' => 'main'], ['name' => 'Main Navigation', 'location' => 'main']);
+        Menu::firstOrCreate(['slug' => 'footer'], ['name' => 'Footer Navigation', 'location' => 'footer']);
+        Menu::firstOrCreate(['slug' => 'mobile'], ['name' => 'Mobile Navigation', 'location' => 'mobile']);
     }
 }

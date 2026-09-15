@@ -82,19 +82,49 @@ function deleteContent(item: ContentItem): void {
         preserveScroll: true,
     });
 }
+import { computed } from 'vue';
+import { usePage } from '@inertiajs/vue3';
+
+const page = usePage();
+const contentTypeParam = computed(() => {
+    try {
+        const url = new URL(page.url, 'http://localhost');
+        return url.searchParams.get('type');
+    } catch {
+        return null;
+    }
+});
+
+const pageTitle = computed(() => {
+    if (contentTypeParam.value === 'page') return 'Pages';
+    if (contentTypeParam.value === 'article') return 'Articles';
+    return 'Content';
+});
+
+const pageDescription = computed(() => {
+    if (contentTypeParam.value === 'page') return 'Manage editable website pages and sections.';
+    if (contentTypeParam.value === 'article') return 'Official club news, updates, and matchday announcements.';
+    return 'Manage pages, articles, and reusable site content.';
+});
+
+const createButtonText = computed(() => {
+    if (contentTypeParam.value === 'page') return 'Create Page';
+    if (contentTypeParam.value === 'article') return 'Create Article';
+    return 'Create Content';
+});
 </script>
 
 <template>
-    <Head title="Content" />
+    <Head :title="pageTitle" />
 
     <div class="flex flex-1 flex-col gap-6 p-4 md:p-6">
         <PageHeader
-            title="Content"
-            description="Manage pages, articles, and reusable site content."
+            :title="pageTitle"
+            :description="pageDescription"
         >
             <template #actions>
                 <Button as-child>
-                    <Link :href="contentCreate()">Create Content</Link>
+                    <Link :href="contentCreate()">{{ createButtonText }}</Link>
                 </Button>
             </template>
         </PageHeader>
