@@ -26,7 +26,7 @@ withDefaults(defineProps<Props>(), {
       'section-base py-16 md:py-24': true,
       'bg-dark-section text-sidebar-foreground': variant === 'dark',
       'bg-surface-light': variant === 'light',
-      'bg-gradient-primary text-white': variant === 'gradient',
+      'bg-purple-900 text-white': variant === 'gradient',
     }"
   >
     <div class="container-center">

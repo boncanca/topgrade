@@ -129,40 +129,39 @@ function getSelectedSchedule(): Schedule | undefined {
     <Head :title="`${activity.name} - TopGrade London FC`" />
 
     <div class="min-h-screen bg-slate-950 text-white">
-        <!-- Hero Section with Background Photography (Light, Clear Overlay + Motion Entrance) -->
-        <section class="relative min-h-[44vh] flex items-end overflow-hidden pb-12 pt-28 border-b border-slate-800">
-            <!-- Background Image with Light, Balanced Overlay -->
+        <!-- Hero Section with Background Photography -->
+        <section class="relative min-h-[40vh] flex items-end overflow-hidden pb-12 pt-28 border-b border-slate-800">
+            <!-- Background Image with Solid Dark Contrast -->
             <div
-                class="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-80 animate-ken-burns"
+                class="absolute inset-0 bg-cover bg-center opacity-50"
                 style="background-image: url('/images/club/training_pitch_evening.jpg')"
             />
-            <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/50 to-slate-950/20" />
-            <div class="absolute inset-0 bg-gradient-to-r from-slate-950/60 via-transparent to-slate-950/60" />
+            <div class="absolute inset-0 bg-black/70" />
 
-            <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full space-y-6">
+            <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full space-y-4">
                 <!-- Navigation Link -->
                 <Link
                     href="/bookings"
-                    class="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-slate-300 hover:text-white transition-colors bg-slate-900 px-3.5 py-1.5 rounded-full border border-slate-800"
+                    class="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-300 hover:text-white transition-colors bg-slate-900 px-3.5 py-1.5 rounded border border-slate-800"
                 >
                     <ArrowLeft class="w-4 h-4" />
-                    <span>Back to Training Programmes</span>
+                    <span>Back to Bookings</span>
                 </Link>
 
                 <div class="flex flex-wrap items-center gap-3">
-                    <span class="px-3 py-1 rounded-md bg-slate-800 border border-slate-700 text-slate-300 text-xs font-semibold">
+                    <span class="px-3 py-1 rounded bg-slate-900 border border-slate-800 text-slate-300 text-xs font-semibold">
                         {{ activity.duration_minutes }} Minutes
                     </span>
-                    <span class="px-3 py-1 rounded-md bg-slate-800 border border-slate-700 text-slate-300 text-xs font-semibold flex items-center gap-1">
+                    <span class="px-3 py-1 rounded bg-slate-900 border border-slate-800 text-slate-300 text-xs font-semibold flex items-center gap-1">
                         <Users class="w-3.5 h-3.5" />
                         <span>Max {{ activity.capacity }} Players</span>
                     </span>
-                    <span class="px-3 py-1 rounded-md bg-purple-600 text-white text-xs font-bold">
+                    <span class="px-3 py-1 rounded bg-purple-800 text-white text-xs font-bold uppercase tracking-wider">
                         {{ priceFormatted }}
                     </span>
                 </div>
 
-                <h1 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight">
+                <h1 class="text-3xl sm:text-5xl font-extrabold text-white uppercase tracking-tight">
                     {{ activity.name }}
                 </h1>
             </div>
@@ -395,7 +394,7 @@ function getSelectedSchedule(): Schedule | undefined {
                         <button
                             type="submit"
                             :disabled="processing || schedules.length === 0"
-                            class="w-full py-3.5 bg-[var(--brand-primary)] hover:opacity-90 active:opacity-100 text-white font-semibold text-base rounded-lg transition-opacity shadow-md disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                            class="w-full py-3.5 bg-purple-800 hover:bg-purple-900 active:bg-purple-950 text-white font-bold uppercase tracking-wider text-xs rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                         >
                             <span>{{ processing ? 'Processing...' : 'Book a Trial' }}</span>
                         </button>

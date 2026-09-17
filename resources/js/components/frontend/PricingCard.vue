@@ -37,7 +37,7 @@ withDefaults(defineProps<Props>(), {
     <!-- Highlighted badge -->
     <div
       v-if="highlighted"
-      class="absolute -right-12 top-6 w-40 rotate-45 bg-gradient-primary py-2 text-center text-sm font-bold text-white"
+      class="absolute -right-12 top-6 w-40 rotate-45 bg-purple-800 py-2 text-center text-sm font-bold text-white"
     >
       POPULAR
     </div>

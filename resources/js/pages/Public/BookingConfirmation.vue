@@ -148,13 +148,13 @@ function formatPrice(price: string | null, currency: string): string {
                 <div class="mt-8 flex flex-col gap-3 sm:flex-row">
                     <Link
                         href="/bookings"
-                        class="flex-1 rounded-lg border border-slate-300 bg-white px-6 py-3 text-center font-semibold text-slate-900 transition-colors hover:bg-slate-50"
+                        class="flex-1 rounded border border-slate-700 bg-slate-900 px-6 py-3 text-center text-xs font-bold uppercase tracking-wider text-white transition-colors hover:bg-slate-800"
                     >
                         Browse More Sessions
                     </Link>
                     <Link
                         href="/"
-                        class="flex-1 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 px-6 py-3 text-center font-semibold text-white transition-transform hover:scale-105"
+                        class="flex-1 rounded bg-purple-800 hover:bg-purple-900 px-6 py-3 text-center text-xs font-bold uppercase tracking-wider text-white transition-colors"
                     >
                         Back to Home
                     </Link>

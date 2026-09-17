@@ -35,6 +35,27 @@ test('activities listing page loads', function () {
     );
 });
 
+test('training page loads with active activities', function () {
+    BookableItem::factory()->count(3)->create(['is_active' => true]);
+
+    $response = $this->get('/training');
+
+    $response->assertStatus(200);
+    $response->assertInertia(fn ($page) => $page
+        ->component('Public/Training')
+        ->has('activities')
+    );
+});
+
+test('sitemap xml generates valid response', function () {
+    $response = $this->get('/sitemap.xml');
+
+    $response->assertStatus(200);
+    expect($response->getContent())->toContain('urlset')
+        ->toContain('/training')
+        ->toContain('/bookings');
+});
+
 test('activity detail page loads with available schedules', function () {
     $activity = BookableItem::factory()->create([
         'slug' => 'test-activity',

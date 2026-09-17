@@ -34,25 +34,24 @@ function submit() {
     <Head title="Contact the Club — TopGrade London FC" />
 
     <div class="min-h-screen bg-slate-950 text-white">
-        <!-- Hero Section (Light, Vibrant Overlay + Motion Entrance) -->
-        <section class="relative min-h-[45vh] flex items-end overflow-hidden pb-14 pt-32 border-b border-slate-800">
+        <!-- Hero Section -->
+        <section class="relative min-h-[40vh] flex items-end overflow-hidden pb-12 pt-28 border-b border-slate-800">
             <div
-                class="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-80 animate-ken-burns"
+                class="absolute inset-0 bg-cover bg-center opacity-50"
                 style="background-image: url('/images/club/club-training-london.jpg')"
             />
-            <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/50 to-slate-950/20" />
-            <div class="absolute inset-0 bg-gradient-to-r from-slate-950/60 via-transparent to-slate-950/60" />
+            <div class="absolute inset-0 bg-black/70" />
 
-            <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full space-y-4">
-                <span class="animate-fade-in-up [animation-delay:100ms] inline-block px-3.5 py-1 rounded-full bg-slate-900/80 border border-purple-500/40 text-purple-200 text-xs font-bold tracking-wider uppercase backdrop-blur-md">
-                    Contact Us
+            <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full space-y-3">
+                <span class="inline-block px-3 py-1 rounded bg-purple-900/60 border border-purple-700/60 text-purple-200 text-xs font-bold tracking-widest uppercase">
+                    Contact Club
                 </span>
 
-                <h1 class="animate-fade-in-up [animation-delay:250ms] text-3xl sm:text-5xl font-extrabold text-white tracking-tight drop-shadow-md">
+                <h1 class="text-3xl sm:text-5xl font-extrabold text-white uppercase tracking-tight">
                     Contact TopGrade London FC
                 </h1>
-                <p class="animate-fade-in-up [animation-delay:400ms] text-slate-100 text-base sm:text-lg max-w-2xl drop-shadow-sm font-normal">
-                    Have questions about club teams, trial sessions, or squad training? Send us a message.
+                <p class="text-slate-300 text-base max-w-2xl">
+                    Have questions about club teams, trial sessions, or weekly training? Contact our coaching and administrative staff.
                 </p>
             </div>
         </section>
@@ -63,40 +62,29 @@ function submit() {
                 <!-- Contact Info -->
                 <div class="space-y-8">
                     <div>
-                        <h2 class="text-2xl font-bold text-white mb-2">Club Office & Enquiries</h2>
+                        <h2 class="text-2xl font-extrabold text-white uppercase tracking-tight mb-2">Club Office & Enquiries</h2>
                         <p class="text-slate-400 text-sm">We are here to help parents, players, and supporters with club information.</p>
                     </div>
 
                     <div class="space-y-4">
                         <!-- Email -->
-                        <div class="flex items-start gap-4 p-5 rounded-xl bg-slate-900 border border-slate-800">
-                            <Mail class="w-5 h-5 text-[var(--brand-secondary)] shrink-0 mt-0.5" />
+                        <div class="flex items-start gap-4 p-5 rounded bg-slate-900 border border-slate-800">
+                            <Mail class="w-5 h-5 text-purple-400 shrink-0 mt-0.5" />
                             <div>
-                                <h3 class="font-bold text-white text-sm">Email</h3>
-                                <a href="mailto:info@topgradefc.com" class="text-slate-300 hover:text-white text-sm transition-colors mt-0.5 block">
-                                    info@topgradefc.com
+                                <h3 class="font-bold text-white text-sm uppercase tracking-wider">Email</h3>
+                                <a href="mailto:topgradelondonfc@hotmail.com" class="text-slate-300 hover:text-white text-sm transition-colors mt-0.5 block">
+                                    topgradelondonfc@hotmail.com
                                 </a>
                             </div>
                         </div>
 
-                        <!-- Phone -->
-                        <div class="flex items-start gap-4 p-5 rounded-xl bg-slate-900 border border-slate-800">
-                            <Phone class="w-5 h-5 text-[var(--brand-secondary)] shrink-0 mt-0.5" />
-                            <div>
-                                <h3 class="font-bold text-white text-sm">Telephone</h3>
-                                <p class="text-slate-300 text-sm mt-0.5">
-                                    +44 (0) 20 1234 5678
-                                </p>
-                            </div>
-                        </div>
-
                         <!-- Location -->
-                        <div class="flex items-start gap-4 p-5 rounded-xl bg-slate-900 border border-slate-800">
-                            <MapPin class="w-5 h-5 text-[var(--brand-secondary)] shrink-0 mt-0.5" />
+                        <div class="flex items-start gap-4 p-5 rounded bg-slate-900 border border-slate-800">
+                            <MapPin class="w-5 h-5 text-purple-400 shrink-0 mt-0.5" />
                             <div>
-                                <h3 class="font-bold text-white text-sm">Club Location</h3>
+                                <h3 class="font-bold text-white text-sm uppercase tracking-wider">Club Bases</h3>
                                 <p class="text-slate-300 text-sm mt-0.5">
-                                    London, United Kingdom
+                                    Tottenham (N17) & Hackney (E9), London
                                 </p>
                             </div>
                         </div>
@@ -183,7 +171,7 @@ function submit() {
                         <button
                             type="submit"
                             :disabled="form.processing"
-                            class="w-full rounded-lg bg-[var(--brand-primary)] hover:opacity-90 px-6 py-3.5 font-semibold text-white transition-opacity disabled:opacity-50 shadow-md cursor-pointer"
+                            class="w-full rounded bg-purple-800 hover:bg-purple-900 px-6 py-3.5 font-bold uppercase tracking-wider text-xs text-white transition-colors disabled:opacity-50 cursor-pointer"
                         >
                             {{ form.processing ? 'Sending Message...' : 'Send Message' }}
                         </button>
@@ -192,13 +180,13 @@ function submit() {
                     <!-- Success Message -->
                     <div v-else class="text-center py-8 space-y-4">
                         <CheckCircle2 class="w-12 h-12 text-emerald-400 mx-auto" />
-                        <h3 class="text-2xl font-bold text-white">Message Sent</h3>
+                        <h3 class="text-2xl font-bold text-white uppercase tracking-tight">Message Sent</h3>
                         <p class="text-slate-300 text-sm max-w-sm mx-auto">
                             Thank you for contacting TopGrade London FC. A member of our club team will respond to your enquiry shortly.
                         </p>
                         <button
                             @click="submitted = false; form.reset()"
-                            class="rounded-lg bg-[var(--brand-primary)] hover:opacity-90 px-6 py-2.5 text-sm font-semibold text-white transition-opacity"
+                            class="rounded bg-purple-800 hover:bg-purple-900 px-6 py-2.5 text-xs font-bold uppercase tracking-wider text-white transition-colors cursor-pointer"
                         >
                             Send Another Message
                         </button>

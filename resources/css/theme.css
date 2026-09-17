@@ -118,31 +118,6 @@
 
 /* Utility layers */
 @layer utilities {
-  /* Text gradients */
-  .text-gradient {
-    @apply bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent;
-  }
-
-  .text-gradient-primary {
-    background: linear-gradient(135deg, hsl(var(--color-primary)), hsl(var(--color-secondary)));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  /* Background gradients */
-  .bg-gradient-primary {
-    background: linear-gradient(135deg, hsl(var(--color-primary)), hsl(var(--color-secondary)));
-  }
-
-  .bg-gradient-hero {
-    background: linear-gradient(180deg, hsl(var(--color-dark-section) / 0.75), hsl(var(--color-dark-section) / 0.92));
-  }
-
-  .bg-gradient-accent {
-    background: linear-gradient(135deg, hsl(var(--color-accent)), hsl(var(--color-secondary)));
-  }
-
   /* Surface colors */
   .bg-surface-white {
     @apply bg-white dark:bg-slate-900;
@@ -159,10 +134,6 @@
   /* Shadows */
   .shadow-card {
     box-shadow: var(--shadow-card);
-  }
-
-  .shadow-glow {
-    box-shadow: var(--shadow-glow);
   }
 
   /* Typography */
@@ -216,7 +187,7 @@
   }
 
   .section-hero {
-    background: linear-gradient(180deg, hsl(var(--color-dark-section) / 0.75), hsl(var(--color-dark-section) / 0.92));
+    background-color: hsl(var(--color-dark-section));
     @apply py-20 text-sidebar-foreground md:py-32;
   }
 
@@ -341,19 +312,10 @@
   }
 
   /* Keyframe Animations */
-  @keyframes pulse-glow {
-    0%, 100% {
-      box-shadow: 0 0 20px hsl(270 70% 50% / 0.2);
-    }
-    50% {
-      box-shadow: 0 0 40px hsl(270 70% 50% / 0.5);
-    }
-  }
-
   @keyframes fade-in-up {
     0% {
       opacity: 0;
-      transform: translateY(20px);
+      transform: translateY(12px);
     }
     100% {
       opacity: 1;
@@ -361,40 +323,7 @@
     }
   }
 
-  @keyframes float-slow {
-    0%, 100% {
-      transform: translateY(0);
-    }
-    50% {
-      transform: translateY(-6px);
-    }
-  }
-
-  @keyframes ken-burns {
-    0% {
-      transform: scale(1);
-    }
-    50% {
-      transform: scale(1.06);
-    }
-    100% {
-      transform: scale(1);
-    }
-  }
-
-  .animate-pulse-glow {
-    animation: pulse-glow 2s ease-in-out infinite;
-  }
-
   .animate-fade-in-up {
-    animation: fade-in-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
-  }
-
-  .animate-float-slow {
-    animation: float-slow 4s ease-in-out infinite;
-  }
-
-  .animate-ken-burns {
-    animation: ken-burns 20s ease-in-out infinite;
+    animation: fade-in-up 0.5s ease-out both;
   }
 }

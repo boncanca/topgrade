@@ -10,7 +10,11 @@ use App\Http\Controllers\MediaController;
 use App\Http\Controllers\MenuController;
 use App\Http\Controllers\PublicBookingController;
 use App\Http\Controllers\ScheduleController;
+use App\Models\BookableItem;
+use App\Models\Content;
 use Illuminate\Support\Facades\Route;
+use Spatie\Sitemap\Sitemap;
+use Spatie\Sitemap\Tags\Url;
 
 // Public routes
 Route::get('/', [PublicBookingController::class, 'home'])->name('home');
@@ -31,6 +35,43 @@ Route::get('/bookings/confirmation/{booking:reference}', [PublicBookingControlle
 Route::get('/bookings/{bookableItem:slug}', [PublicBookingController::class, 'show'])->name('sessions.show');
 Route::post('/bookings', [PublicBookingController::class, 'book'])->name('sessions.book');
 Route::get('/training', [PublicBookingController::class, 'training'])->name('training');
+
+// XML Sitemap
+Route::get('/sitemap.xml', function () {
+    $sitemap = Sitemap::create()
+        ->add(Url::create('/')->setPriority(1.0)->setChangeFrequency('daily'))
+        ->add(Url::create('/training')->setPriority(0.9)->setChangeFrequency('weekly'))
+        ->add(Url::create('/bookings')->setPriority(0.9)->setChangeFrequency('weekly'))
+        ->add(Url::create('/about')->setPriority(0.8)->setChangeFrequency('monthly'))
+        ->add(Url::create('/articles')->setPriority(0.8)->setChangeFrequency('daily'))
+        ->add(Url::create('/contact')->setPriority(0.7)->setChangeFrequency('monthly'))
+        ->add(Url::create('/privacy')->setPriority(0.3)->setChangeFrequency('yearly'))
+        ->add(Url::create('/terms')->setPriority(0.3)->setChangeFrequency('yearly'));
+
+    // Dynamic published articles
+    Content::published()
+        ->whereHas('contentType', fn ($q) => $q->where('slug', 'article'))
+        ->each(function ($article) use ($sitemap) {
+            $sitemap->add(
+                Url::create("/articles/{$article->slug}")
+                    ->setLastModificationDate($article->updated_at ?? now())
+                    ->setPriority(0.7)
+                    ->setChangeFrequency('weekly')
+            );
+        });
+
+    // Dynamic active bookable items
+    BookableItem::where('is_active', true)->each(function ($item) use ($sitemap) {
+        $sitemap->add(
+            Url::create("/bookings/{$item->slug}")
+                ->setLastModificationDate($item->updated_at ?? now())
+                ->setPriority(0.7)
+                ->setChangeFrequency('weekly')
+        );
+    });
+
+    return $sitemap->toResponse(request());
+})->name('sitemap');
 
 Route::middleware(['auth', 'verified', 'admin'])->group(function () {
     Route::get('dashboard', DashboardController::class)->name('dashboard');

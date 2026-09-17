@@ -32,7 +32,7 @@ withDefaults(defineProps<Props>(), {
         :alt="title"
         class="h-full w-full object-cover transition-transform group-hover:scale-105"
       />
-      <div v-if="featured" class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+      <div v-if="featured" class="absolute inset-0 bg-black/40" />
     </div>
 
     <!-- Tags -->

@@ -18,10 +18,10 @@ defineProps<Props>();
 
 <template>
   <section
-    class="relative min-h-[500px] overflow-hidden bg-gradient-hero py-20 md:min-h-screen md:py-32"
+    class="relative min-h-[500px] overflow-hidden bg-slate-950 py-20 md:min-h-screen md:py-32"
     :style="backgroundImage ? { backgroundImage: `url('${backgroundImage}')` } : {}"
   >
-    <div class="absolute inset-0 bg-gradient-hero pointer-events-none" />
+    <div class="absolute inset-0 bg-slate-950/80 pointer-events-none" />
 
     <div class="container-center relative z-10">
       <div class="max-w-3xl">

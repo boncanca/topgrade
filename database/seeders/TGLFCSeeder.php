@@ -176,10 +176,11 @@ class TGLFCSeeder extends Seeder
         if ($headerMenu->allItems()->count() === 0) {
             $headerMenu->allItems()->createMany([
                 ['label' => 'Home', 'url' => '/', 'sort_order' => 1],
-                ['label' => 'About', 'url' => '/about', 'sort_order' => 2],
-                ['label' => 'Activities', 'url' => '/bookings', 'sort_order' => 3],
-                ['label' => 'Articles', 'url' => '/articles', 'sort_order' => 4],
-                ['label' => 'Contact', 'url' => '/contact', 'sort_order' => 5],
+                ['label' => 'Training', 'url' => '/training', 'sort_order' => 2],
+                ['label' => 'Bookings', 'url' => '/bookings', 'sort_order' => 3],
+                ['label' => 'About', 'url' => '/about', 'sort_order' => 4],
+                ['label' => 'Articles', 'url' => '/articles', 'sort_order' => 5],
+                ['label' => 'Contact', 'url' => '/contact', 'sort_order' => 6],
             ]);
         }
     }

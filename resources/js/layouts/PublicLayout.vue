@@ -34,8 +34,9 @@ function applyTheme() {
 
 const defaultNav = [
     { label: 'Home', href: '/' },
+    { label: 'Training', href: '/training' },
+    { label: 'Bookings', href: '/bookings' },
     { label: 'About', href: '/about' },
-    { label: 'Activities', href: '/bookings' },
     { label: 'Articles', href: '/articles' },
     { label: 'Contact', href: '/contact' },
 ];
@@ -44,8 +45,9 @@ const headerNav = defaultNav;
 
 const footerNav = [
     { label: 'Home', href: '/' },
+    { label: 'Training', href: '/training' },
+    { label: 'Bookings', href: '/bookings' },
     { label: 'About', href: '/about' },
-    { label: 'Activities', href: '/bookings' },
     { label: 'Articles', href: '/articles' },
     { label: 'Contact', href: '/contact' },
     { label: 'Privacy Policy', href: '/privacy' },
@@ -64,15 +66,15 @@ watch(() => page.url, () => {
         style="--brand-primary: #6B21A8; --brand-secondary: #C026D3; --brand-accent: #F59E0B;"
     >
         <!-- Header -->
-        <header class="fixed top-0 left-0 right-0 z-50 bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm border-b border-slate-200 dark:border-slate-800 shadow-sm transition-colors">
+        <header class="fixed top-0 left-0 right-0 z-50 bg-white dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800 transition-colors">
             <div class="mx-auto max-w-7xl flex items-center justify-between h-16 px-4 sm:px-6 lg:px-8">
                 <!-- Logo -->
                 <Link href="/" class="flex items-center gap-3">
-                    <div class="bg-white rounded-full p-1.5 shadow-sm">
-                        <img src="/logo.png" alt="TopGrade London FC" class="h-10 w-auto" />
+                    <div class="bg-white rounded p-1">
+                        <img src="/logo.png" alt="TopGrade London FC" class="h-9 w-auto" />
                     </div>
-                    <span class="text-lg font-bold text-slate-900 dark:text-white tracking-wider hidden sm:block">
-                        TOPGRADE LONDON FC
+                    <span class="text-base font-extrabold text-slate-900 dark:text-white tracking-wider hidden sm:block uppercase">
+                        TopGrade London FC
                     </span>
                 </Link>
 
@@ -82,7 +84,7 @@ watch(() => page.url, () => {
                         v-for="item in headerNav"
                         :key="item.href"
                         :href="item.href"
-                        class="px-4 py-2 text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors rounded-md"
+                        class="px-3.5 py-2 text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors"
                     >
                         {{ item.label }}
                     </Link>
@@ -91,15 +93,18 @@ watch(() => page.url, () => {
                     <button
                         @click="toggleTheme"
                         type="button"
-                        class="p-2 ml-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                        class="p-2 ml-2 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors"
                         :title="isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'"
                         :aria-label="isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'"
                     >
-                        <Sun v-if="isDark" class="w-5 h-5 text-amber-400" />
-                        <Moon v-else class="w-5 h-5 text-slate-700" />
+                        <Sun v-if="isDark" class="w-4 h-4 text-amber-400" />
+                        <Moon v-else class="w-4 h-4 text-slate-700" />
                     </button>
 
-                    <Link href="/bookings" class="ml-4 px-4 py-2 bg-[var(--brand-primary)] text-white text-sm font-semibold rounded-lg hover:opacity-90 transition-opacity shadow-sm">
+                    <Link
+                        href="/bookings"
+                        class="ml-3 px-4 py-2 bg-purple-800 hover:bg-purple-900 text-white text-xs font-bold uppercase tracking-wider rounded transition-colors"
+                    >
                         Book a Trial
                     </Link>
                 </nav>
@@ -179,43 +184,52 @@ watch(() => page.url, () => {
                     </div>
 
                     <div>
-                        <h4 class="font-bold text-sm uppercase tracking-wider text-purple-300 mb-4">Navigation</h4>
-                        <ul class="space-y-2.5 text-xs">
+                        <h4 class="font-bold text-xs uppercase tracking-widest text-slate-300 mb-4">Navigation</h4>
+                        <ul class="space-y-2 text-xs">
                             <li><Link href="/" class="text-slate-400 hover:text-white transition-colors">Home</Link></li>
+                            <li><Link href="/training" class="text-slate-400 hover:text-white transition-colors">Training Schedule</Link></li>
+                            <li><Link href="/bookings" class="text-slate-400 hover:text-white transition-colors">Bookings</Link></li>
                             <li><Link href="/about" class="text-slate-400 hover:text-white transition-colors">About the Club</Link></li>
-                            <li><Link href="/bookings" class="text-slate-400 hover:text-white transition-colors">Squads & Training</Link></li>
                             <li><Link href="/articles" class="text-slate-400 hover:text-white transition-colors">Club News</Link></li>
                             <li><Link href="/contact" class="text-slate-400 hover:text-white transition-colors">Contact Us</Link></li>
                         </ul>
                     </div>
 
                     <div>
-                        <h4 class="font-bold text-sm uppercase tracking-wider text-purple-300 mb-4">Training Grounds</h4>
+                        <h4 class="font-bold text-xs uppercase tracking-widest text-slate-300 mb-4">Training & Home Venues</h4>
                         <ul class="space-y-3 text-xs text-slate-400">
                             <li>
-                                <span class="font-semibold text-white block">Tottenham Training Ground:</span>
-                                <span>Fredrick Knight Sports Ground / Willoughby Lane, N17 (3G Pitch)</span>
+                                <span class="font-semibold text-white block">Frederick Knight Sports Centre</span>
+                                <span>Tottenham Powerleague, Willoughby Lane, N17 0RT</span>
                             </li>
                             <li>
-                                <span class="font-semibold text-white block">Hackney Marshes Match Grounds:</span>
-                                <span>Homerton Road, E9 (Saturday League Grass Pitches)</span>
+                                <span class="font-semibold text-white block">Tottenham Community Sports Centre</span>
+                                <span>701–703 High Road, London N17 8AD</span>
+                            </li>
+                            <li>
+                                <span class="font-semibold text-white block">Mabley Green Park</span>
+                                <span>Lee Conservancy Road, Homerton, Hackney, London E9 5HW</span>
+                            </li>
+                            <li>
+                                <span class="font-semibold text-white block">Hackney Marshes</span>
+                                <span>Homerton Road, Hackney, London E9 5PF</span>
                             </li>
                         </ul>
                     </div>
 
                     <div>
-                        <h4 class="font-bold text-sm uppercase tracking-wider text-purple-300 mb-4">Club Enquiries</h4>
+                        <h4 class="font-bold text-xs uppercase tracking-widest text-slate-300 mb-4">Club Enquiries</h4>
                         <ul class="space-y-2.5 text-xs text-slate-400">
                             <li>
                                 <span class="text-slate-300 block">General & Trial Enquiries:</span>
                                 <a href="mailto:topgradelondonfc@hotmail.com" class="text-purple-400 hover:underline">topgradelondonfc@hotmail.com</a>
                             </li>
-                            <li class="pt-1">
+                            <li class="pt-2">
                                 <Link
                                     href="/bookings"
-                                    class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[var(--brand-primary)] hover:bg-purple-700 text-white font-semibold transition-colors text-xs"
+                                    class="inline-block px-4 py-2 rounded bg-purple-800 hover:bg-purple-900 text-white font-bold uppercase tracking-wider transition-colors text-xs"
                                 >
-                                    <span>Book a Trial Session</span>
+                                    Book a Trial
                                 </Link>
                             </li>
                         </ul>
