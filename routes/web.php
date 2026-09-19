@@ -15,6 +15,7 @@ use App\Http\Controllers\StripeWebhookController;
 use App\Models\BookableItem;
 use App\Models\Content;
 use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
 use Spatie\Sitemap\Sitemap;
 use Spatie\Sitemap\Tags\Url;
 
@@ -28,7 +29,6 @@ Route::post('/webhooks/stripe', [StripeWebhookController::class, 'handle'])->nam
 Route::get('/about', [PublicPageController::class, 'about'])->name('about');
 Route::get('/contact', [PublicPageController::class, 'contact'])->name('contact');
 Route::post('/contact', [PublicPageController::class, 'submitContact'])->name('contact.store');
-
 // Privacy Policy (canonical /privacy-policy with /privacy alias)
 Route::get('/privacy-policy', [PublicPageController::class, 'privacy'])->name('privacy');
 Route::get('/privacy', [PublicPageController::class, 'privacy']);
@@ -85,6 +85,17 @@ Route::get('/sitemap.xml', function () {
 
     return $sitemap->toResponse(request());
 })->name('sitemap');
+
+// Local & Testing Matchday Error Page Previews (strictly disabled in production)
+if (app()->environment(['local', 'testing'])) {
+    Route::get('/errors/{code}', function (int $code) {
+        abort_if(! in_array($code, [403, 404, 419, 500, 503]), 404);
+
+        return Inertia::render('Error', ['status' => $code])
+            ->toResponse(request())
+            ->setStatusCode($code);
+    })->name('errors.preview');
+}
 
 Route::middleware(['auth', 'verified', 'admin'])->group(function () {
     Route::get('dashboard', DashboardController::class)->name('dashboard');
