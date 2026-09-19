@@ -2,7 +2,7 @@
 
 namespace App\Mail;
 
-use App\Models\Booking;
+use App\Models\Inquiry;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
@@ -11,17 +11,17 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class BookingReceived extends Mailable implements ShouldQueue
+class ContactReceivedCustomerNotification extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
-    public function __construct(public Booking $booking) {}
+    public function __construct(public Inquiry $inquiry) {}
 
     public function envelope(): Envelope
     {
         return new Envelope(
             from: new Address(
-                config('topgrade.emails.no_reply', 'no-reply@topgradelondonfc.co.uk'),
+                config('topgrade.emails.info', 'info@topgradelondonfc.co.uk'),
                 config('mail.from.name', 'TopGrade London FC')
             ),
             replyTo: [
@@ -30,17 +30,17 @@ class BookingReceived extends Mailable implements ShouldQueue
                     config('mail.from.name', 'TopGrade London FC')
                 ),
             ],
-            subject: 'Your Booking Has Been Received - Reference: '.$this->booking->reference,
-            to: [$this->booking->participant_email],
+            subject: 'Thank You for Contacting TopGrade London FC',
+            to: [$this->inquiry->email],
         );
     }
 
     public function content(): Content
     {
         return new Content(
-            view: 'mail.booking-received',
+            view: 'mail.contact-received-customer',
             with: [
-                'booking' => $this->booking,
+                'inquiry' => $this->inquiry,
             ],
         );
     }

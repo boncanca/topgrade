@@ -11,7 +11,7 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class BookingReceived extends Mailable implements ShouldQueue
+class NewBookingAdminNotification extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
@@ -26,19 +26,19 @@ class BookingReceived extends Mailable implements ShouldQueue
             ),
             replyTo: [
                 new Address(
-                    config('topgrade.emails.info', 'info@topgradelondonfc.co.uk'),
-                    config('mail.from.name', 'TopGrade London FC')
+                    $this->booking->participant_email,
+                    $this->booking->participant_name
                 ),
             ],
-            subject: 'Your Booking Has Been Received - Reference: '.$this->booking->reference,
-            to: [$this->booking->participant_email],
+            subject: 'New Booking Received: '.$this->booking->reference.' — '.$this->booking->participant_name,
+            to: [config('topgrade.emails.bookings', 'bookings@topgradelondonfc.co.uk')],
         );
     }
 
     public function content(): Content
     {
         return new Content(
-            view: 'mail.booking-received',
+            view: 'mail.new-booking-admin',
             with: [
                 'booking' => $this->booking,
             ],
