@@ -61,106 +61,125 @@ function formatPrice(price: string | null, currency: string): string {
 <template>
     <Head :title="`Booking Confirmed - ${booking.reference}`" />
 
-    <div class="bg-white">
-        <div class="min-h-screen">
-        <!-- Confirmation Section -->
-        <section class="flex items-center justify-center px-4 py-20 sm:px-6 lg:px-8">
-            <div class="w-full max-w-2xl rounded-lg border border-slate-200 bg-white p-8 sm:p-12 shadow-md">
-                <!-- Success Icon -->
-                <div class="flex justify-center">
-                    <CheckCircle class="h-16 w-16 text-green-500" />
-                </div>
-
-                <!-- Confirmation Message -->
-                <h1 class="mt-6 text-center text-4xl font-bold text-slate-900">Booking Confirmed!</h1>
-                <p class="mt-2 text-center text-slate-600">
-                    Your booking has been successfully created. A confirmation email has been sent to
-                    <span class="font-semibold text-slate-900">{{ booking.participant_email }}</span>
-                </p>
-
-                <!-- Booking Reference -->
-                <div class="mt-8 rounded-lg bg-slate-50 p-4 text-center">
-                    <p class="text-xs uppercase tracking-wide text-slate-500">Booking Reference</p>
-                    <p class="mt-2 font-mono text-2xl font-bold text-purple-600">{{ booking.reference }}</p>
-                    <p class="mt-2 text-xs text-slate-600">Save this for your records</p>
-                </div>
-
-                <!-- Booking Details -->
-                <div class="mt-8 space-y-6">
-                    <!-- Activity -->
-                    <div class="border-t border-slate-200 pt-6">
-                        <p class="text-xs uppercase tracking-wide text-slate-500">Activity</p>
-                        <p class="mt-2 text-2xl font-bold text-slate-900">{{ booking.bookable_item.name }}</p>
-                        <p class="mt-2 text-sm text-slate-600">
-                            {{ booking.bookable_item.duration_minutes }} minutes • {{ booking.bookable_item.location }}
-                        </p>
-                    </div>
-
-                    <!-- Scheduled -->
-                    <div class="border-t border-slate-200 pt-6">
-                        <p class="text-xs uppercase tracking-wide text-slate-500">Scheduled For</p>
-                        <p class="mt-2 text-lg font-semibold text-slate-900">{{ formatScheduled(booking.scheduled_at) }}</p>
-                        <p class="mt-1 text-sm text-slate-600">Timezone: {{ booking.timezone }}</p>
-                    </div>
-
-                    <!-- Participant -->
-                    <div class="border-t border-slate-200 pt-6">
-                        <p class="text-xs uppercase tracking-wide text-slate-500">Participant</p>
-                        <p class="mt-2 font-semibold text-slate-900">{{ booking.participant_name }}</p>
-                        <p class="mt-1 text-sm text-slate-600">{{ booking.participant_email }}</p>
-                        <p v-if="booking.participant_phone" class="mt-1 text-sm text-slate-600">
-                            {{ booking.participant_phone }}
-                        </p>
-                    </div>
-
-                    <!-- Price -->
-                    <div class="border-t border-slate-200 pt-6">
-                        <p class="text-xs uppercase tracking-wide text-slate-500">Price</p>
-                        <p class="mt-2 text-3xl font-bold text-purple-600">
-                            {{ formatPrice(booking.amount, booking.currency) }}
-                        </p>
-                    </div>
-
-                    <!-- Status -->
-                    <div class="border-t border-slate-200 pt-6">
-                        <p class="text-xs uppercase tracking-wide text-slate-500">Booking Status</p>
-                        <div class="mt-2 flex items-center gap-2">
-                            <div class="h-3 w-3 rounded-full bg-blue-500"></div>
-                            <p class="font-semibold text-slate-900">{{ booking.status.charAt(0).toUpperCase() + booking.status.slice(1) }}</p>
-                        </div>
-                        <p class="mt-2 text-sm text-slate-600">
-                            Your booking is pending confirmation. We'll notify you once it's confirmed.
-                        </p>
-                    </div>
-                </div>
-
-                <!-- Next Steps -->
-                <div class="mt-8 rounded-lg border border-purple-200 bg-purple-50 p-4">
-                    <p class="font-semibold text-purple-900">What happens next?</p>
-                    <ul class="mt-3 space-y-2 text-sm text-purple-800">
-                        <li>✓ Check your email for confirmation details</li>
-                        <li>✓ You'll receive a reminder 24 hours before the activity</li>
-                        <li>✓ Arrive 15 minutes early for check-in</li>
-                    </ul>
-                </div>
-
-                <!-- Actions -->
-                <div class="mt-8 flex flex-col gap-3 sm:flex-row">
-                    <Link
-                        href="/bookings"
-                        class="flex-1 rounded border border-slate-700 bg-slate-900 px-6 py-3 text-center text-xs font-bold uppercase tracking-wider text-white transition-colors hover:bg-slate-800"
-                    >
-                        Browse More Sessions
-                    </Link>
-                    <Link
-                        href="/"
-                        class="flex-1 rounded bg-purple-800 hover:bg-purple-900 px-6 py-3 text-center text-xs font-bold uppercase tracking-wider text-white transition-colors"
-                    >
-                        Back to Home
-                    </Link>
+    <div class="min-h-screen bg-tg-bg text-tg-text relative py-12 sm:py-20 px-4 sm:px-6 lg:px-8 flex items-center justify-center">
+        <!-- Pitch Grid overlay effect -->
+        <div class="w-full max-w-2xl rounded-xs border border-tg-border bg-tg-bg-deep/90 p-6 sm:p-12 shadow-2xl relative z-10 backdrop-blur-none">
+            <!-- Success Icon -->
+            <div class="flex justify-center">
+                <div class="rounded-full bg-tg-accent/15 border border-tg-accent/30 p-3">
+                    <CheckCircle class="h-12 w-12 text-tg-accent" />
                 </div>
             </div>
-        </section>
+
+            <!-- Confirmation Message -->
+            <h1
+                class="mt-6 text-center text-3xl sm:text-4xl font-normal uppercase tracking-tight text-tg-text-strong"
+                style="font-family: var(--tg-display);"
+            >
+                Booking Confirmed!
+            </h1>
+            <p class="mt-2 text-center text-tg-text-muted text-sm sm:text-base max-w-md mx-auto">
+                Your session has been successfully booked. A confirmation email has been dispatched to
+                <span class="font-semibold text-tg-text-strong">{{ booking.participant_email }}</span>
+            </p>
+
+            <!-- Booking Reference -->
+            <div class="mt-8 rounded-xs bg-tg-bg border border-tg-border p-5 text-center">
+                <p class="text-xs uppercase tracking-widest text-tg-text-muted font-semibold">Booking Reference</p>
+                <p class="mt-1 font-mono text-2xl sm:text-3xl font-bold text-tg-accent tracking-wider">{{ booking.reference }}</p>
+                <p class="mt-1 text-xs text-tg-text-muted">Save this reference for check-in</p>
+            </div>
+
+            <!-- Booking Details -->
+            <div class="mt-8 space-y-5">
+                <!-- Activity -->
+                <div class="border-t border-tg-border pt-5">
+                    <p class="text-xs uppercase tracking-widest text-tg-accent font-semibold">Activity Session</p>
+                    <p
+                        class="mt-1 text-xl sm:text-2xl font-normal uppercase text-tg-text-strong"
+                        style="font-family: var(--tg-display);"
+                    >
+                        {{ booking.bookable_item.name }}
+                    </p>
+                    <p class="mt-1 text-sm text-tg-text-muted">
+                        {{ booking.bookable_item.duration_minutes }} minutes • {{ booking.bookable_item.location }}
+                    </p>
+                </div>
+
+                <!-- Scheduled -->
+                <div class="border-t border-tg-border pt-5">
+                    <p class="text-xs uppercase tracking-widest text-tg-accent font-semibold">Scheduled Date & Time</p>
+                    <p class="mt-1 text-base sm:text-lg font-semibold text-tg-text-strong">{{ formatScheduled(booking.scheduled_at) }}</p>
+                    <p class="mt-0.5 text-xs text-tg-text-muted">Timezone: {{ booking.timezone }}</p>
+                </div>
+
+                <!-- Participant -->
+                <div class="border-t border-tg-border pt-5">
+                    <p class="text-xs uppercase tracking-widest text-tg-accent font-semibold">Participant Details</p>
+                    <p class="mt-1 font-semibold text-tg-text-strong">{{ booking.participant_name }}</p>
+                    <p class="mt-0.5 text-sm text-tg-text-muted">{{ booking.participant_email }}</p>
+                    <p v-if="booking.participant_phone" class="mt-0.5 text-sm text-tg-text-muted">
+                        {{ booking.participant_phone }}
+                    </p>
+                </div>
+
+                <!-- Price -->
+                <div class="border-t border-tg-border pt-5">
+                    <p class="text-xs uppercase tracking-widest text-tg-accent font-semibold">Session Fee</p>
+                    <p class="mt-1 text-2xl sm:text-3xl font-bold text-tg-text-strong">
+                        {{ formatPrice(booking.amount, booking.currency) }}
+                    </p>
+                </div>
+
+                <!-- Status -->
+                <div class="border-t border-tg-border pt-5">
+                    <p class="text-xs uppercase tracking-widest text-tg-accent font-semibold">Booking Status</p>
+                    <div class="mt-1.5 flex items-center gap-2">
+                        <div class="h-2.5 w-2.5 rounded-full bg-tg-accent"></div>
+                        <p class="font-semibold text-tg-text-strong text-sm">
+                            {{ booking.status.charAt(0).toUpperCase() + booking.status.slice(1) }}
+                        </p>
+                    </div>
+                    <p class="mt-1 text-xs text-tg-text-muted">
+                        Your booking is confirmed. We will send session reminders prior to kick-off.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Next Steps -->
+            <div class="mt-8 rounded-xs border border-tg-border bg-tg-bg p-5">
+                <p class="text-xs font-bold uppercase tracking-wider text-tg-accent">What Happens Next?</p>
+                <ul class="mt-3 space-y-2 text-sm text-tg-text">
+                    <li class="flex items-start gap-2">
+                        <span class="text-tg-accent font-bold">✓</span>
+                        <span>Check your inbox for confirmation and session guidelines</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="text-tg-accent font-bold">✓</span>
+                        <span>You will receive an automated reminder 24 hours prior to training</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="text-tg-accent font-bold">✓</span>
+                        <span>Arrive 15 minutes before kick-off for boots on & coach sign-in</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Actions -->
+            <div class="mt-8 flex flex-col gap-3 sm:flex-row">
+                <Link
+                    href="/bookings"
+                    class="tg-btn ghost flex-1 justify-center text-center text-xs py-3"
+                >
+                    Browse More Sessions
+                </Link>
+                <Link
+                    href="/"
+                    class="tg-btn flex-1 justify-center text-center text-xs py-3"
+                >
+                    Back to Home
+                </Link>
+            </div>
         </div>
     </div>
 </template>

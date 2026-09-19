@@ -46,25 +46,28 @@ function formatPrice(priceStr: string, currencyStr: string): string {
 <template>
     <Head title="Bookings & Sessions — TopGrade London FC" />
 
-    <div class="min-h-screen bg-slate-950 text-white">
+    <div class="min-h-screen bg-tg-bg text-tg-text">
         <!-- Hero Section: Solid Athletic Presentation -->
-        <section class="relative min-h-[40vh] flex items-end overflow-hidden pb-12 pt-28 border-b border-slate-800">
+        <section class="relative min-h-[36vh] sm:min-h-[40vh] flex items-end overflow-hidden pb-12 pt-24 sm:pt-28 border-b border-tg-border">
             <div
-                class="absolute inset-0 bg-cover bg-center opacity-50"
+                class="absolute inset-0 bg-cover bg-center opacity-35"
                 style="background-image: url('/images/club/training_pitch_evening.jpg')"
             />
-            <div class="absolute inset-0 bg-black/70" />
+            <div class="absolute inset-0 bg-gradient-to-t from-tg-bg via-tg-bg/85 to-transparent" />
 
             <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full space-y-3">
-                <span class="inline-block px-3 py-1 rounded bg-purple-900/60 border border-purple-700/60 text-purple-200 text-xs font-bold tracking-widest uppercase">
-                    Squad Bookings
+                <span class="inline-block px-3 py-1 rounded-xs bg-tg-bg-deep border border-tg-border text-tg-accent text-xs font-bold tracking-widest uppercase">
+                    Club Bookings
                 </span>
 
-                <h1 class="text-3xl sm:text-5xl font-extrabold text-white uppercase tracking-tight">
-                    Club Squad Bookings & Sessions
+                <h1
+                    class="text-3xl sm:text-5xl font-normal uppercase tracking-tight text-tg-text-strong"
+                    style="font-family: var(--tg-display);"
+                >
+                    Training Sessions & Bookings
                 </h1>
-                <p class="text-slate-300 text-base max-w-2xl">
-                    Select a squad session for your child. Weekly training in Tottenham and Saturday league match play at Hackney Marshes.
+                <p class="text-tg-text text-sm sm:text-base max-w-2xl">
+                    Select an introductory trial or training session for your child. Weekly coaching in Tottenham and Saturday league match play at Hackney Marshes.
                 </p>
             </div>
         </section>
@@ -75,51 +78,59 @@ function formatPrice(priceStr: string, currencyStr: string): string {
                 <div
                     v-for="activity in activities"
                     :key="activity.id"
-                    class="rounded bg-slate-900 border border-slate-800 p-6 flex flex-col justify-between space-y-6"
+                    class="rounded-sm bg-tg-bg-deep/80 border border-tg-border p-6 flex flex-col justify-between space-y-6 transition-all hover:border-tg-border-strong"
                 >
                     <div class="space-y-4">
                         <div class="flex justify-between items-start">
-                            <span class="px-2.5 py-1 rounded bg-slate-950 text-slate-300 border border-slate-800 text-xs font-medium flex items-center gap-1.5">
-                                <Clock class="w-3.5 h-3.5 text-purple-400" />
+                            <span class="px-2.5 py-1 rounded-xs bg-tg-bg text-tg-text-muted border border-tg-border text-xs font-medium flex items-center gap-1.5">
+                                <Clock class="w-3.5 h-3.5 text-tg-accent" />
                                 <span>{{ activity.duration_minutes }} mins</span>
                             </span>
-                            <span class="text-base font-extrabold text-white">
+                            <span class="text-base font-bold text-tg-text-strong">
                                 {{ formatPrice(activity.price, activity.currency) }}
                             </span>
                         </div>
 
-                        <h3 class="text-xl font-bold text-white uppercase tracking-tight">
+                        <h3
+                            class="text-xl font-normal text-tg-text-strong uppercase tracking-tight"
+                            style="font-family: var(--tg-display);"
+                        >
                             {{ activity.name }}
                         </h3>
 
-                        <p class="text-slate-400 text-xs leading-relaxed line-clamp-3">
+                        <p class="text-tg-text-muted text-xs leading-relaxed line-clamp-3">
                             {{ activity.description }}
                         </p>
                     </div>
 
-                    <div class="pt-4 border-t border-slate-800 space-y-4">
-                        <div class="flex items-center gap-2 text-xs text-slate-400">
-                            <MapPin class="w-3.5 h-3.5 text-purple-400 shrink-0" />
+                    <div class="pt-4 border-t border-tg-border space-y-4">
+                        <div class="flex items-center gap-2 text-xs text-tg-text-muted">
+                            <MapPin class="w-3.5 h-3.5 text-tg-accent shrink-0" />
                             <span class="truncate">{{ activity.location }}</span>
                         </div>
 
                         <Link
                             :href="`/bookings/${activity.slug}`"
-                            class="w-full py-3 px-4 rounded bg-purple-800 hover:bg-purple-900 text-white text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-colors"
+                            class="tg-btn w-full justify-center text-xs"
                         >
-                            <span>Book a Trial</span>
-                            <ArrowRight class="w-4 h-4" />
+                            <span>{{ activity.slug.includes('trial') ? 'Book a Trial' : 'Book Session' }}</span>
+                            <ArrowRight class="w-3.5 h-3.5" />
                         </Link>
                     </div>
                 </div>
             </div>
 
             <!-- Empty State -->
-            <div v-else class="text-center py-16 bg-slate-900 rounded border border-slate-800 space-y-4 max-w-xl mx-auto p-8">
-                <h3 class="text-lg font-bold text-white uppercase tracking-tight">No Active Sessions Available</h3>
-                <p class="text-slate-400 text-xs leading-relaxed">Check back soon for upcoming schedule updates or contact the club directly.</p>
+            <div v-else class="text-center py-16 bg-tg-bg-deep rounded-sm border border-tg-border space-y-4 max-w-xl mx-auto p-8">
+                <h3
+                    class="text-lg font-normal text-tg-text-strong uppercase tracking-tight"
+                    style="font-family: var(--tg-display);"
+                >
+                    No Active Sessions Available
+                </h3>
+                <p class="text-tg-text-muted text-xs leading-relaxed">Check back soon for upcoming schedule updates or contact the club directly.</p>
                 <div class="pt-2">
-                    <Link href="/contact" class="inline-block px-5 py-2.5 rounded bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold uppercase tracking-wider transition-colors">
+                    <Link href="/contact" class="tg-btn ghost text-xs">
                         Contact the Club
                     </Link>
                 </div>
