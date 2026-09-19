@@ -246,6 +246,8 @@ class StripePaymentService implements PaymentService
             return false;
         }
 
+        $wasAlreadyPaid = ($booking->payment_status === PaymentStatus::Paid);
+
         DB::transaction(function () use ($payment, $booking, $session) {
             $paymentIntentId = $session['payment_intent'] ?? null;
 
@@ -268,17 +270,19 @@ class StripePaymentService implements PaymentService
             }
         });
 
-        // Dispatch notifications only after verified payment
-        try {
-            Mail::to($booking->participant_email)->send(new PaymentReceived($booking));
+        // Dispatch notifications only on initial payment confirmation
+        if (! $wasAlreadyPaid) {
+            try {
+                Mail::to($booking->participant_email)->send(new PaymentReceived($booking));
 
-            $adminEmail = config('topgrade.emails.bookings', 'bookings@topgradelondonfc.co.uk');
-            Mail::to($adminEmail)->send(new NewBookingAdminNotification($booking));
-        } catch (\Throwable $e) {
-            Log::error('Failed to dispatch booking emails after payment confirmation.', [
-                'booking_id' => $booking->id,
-                'error' => $e->getMessage(),
-            ]);
+                $adminEmail = config('topgrade.emails.bookings', 'bookings@topgradelondonfc.co.uk');
+                Mail::to($adminEmail)->send(new NewBookingAdminNotification($booking));
+            } catch (\Throwable $e) {
+                Log::error('Failed to dispatch booking emails after payment confirmation.', [
+                    'booking_id' => $booking->id,
+                    'error' => $e->getMessage(),
+                ]);
+            }
         }
 
         return true;

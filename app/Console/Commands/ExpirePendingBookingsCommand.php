@@ -30,7 +30,7 @@ class ExpirePendingBookingsCommand extends Command
             DB::transaction(function () use ($booking) {
                 $booking->update([
                     'status' => BookingStatus::Cancelled->value,
-                    'payment_status' => PaymentStatus::Failed->value,
+                    'payment_status' => PaymentStatus::Cancelled->value,
                 ]);
 
                 Payment::where('booking_id', $booking->id)

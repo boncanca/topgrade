@@ -215,7 +215,7 @@ test('bookings:expire-pending console command marks expired pending bookings and
     $payment->refresh();
 
     expect($booking->status)->toBe(BookingStatus::Cancelled);
-    expect($booking->payment_status)->toBe(PaymentStatus::Failed);
+    expect($booking->payment_status)->toBe(PaymentStatus::Cancelled);
     expect($payment->status)->toBe('cancelled');
 });
 
@@ -504,4 +504,234 @@ test('stripe webhook payment_intent.payment_failed marks payment failed and book
     expect($payment->status)->toBe('failed');
     expect($booking->status)->toBe(BookingStatus::Cancelled);
     expect($booking->payment_status)->toBe(PaymentStatus::Failed);
+});
+
+test('expiry race convergence: bookings:expire-pending runs first, then stripe checkout.session.expired arrives second', function () {
+    $activity = BookableItem::factory()->create(['capacity' => 2]);
+    $schedule = Schedule::factory()->for($activity)->create(['capacity' => 2, 'status' => 'active']);
+
+    $booking = Booking::factory()->for($schedule)->create([
+        'bookable_item_id' => $activity->id,
+        'status' => BookingStatus::Pending,
+        'payment_status' => PaymentStatus::Unpaid,
+        'payment_expires_at' => now()->subMinutes(5),
+    ]);
+    $payment = Payment::create([
+        'booking_id' => $booking->id,
+        'reference' => Payment::generateReference(),
+        'gateway_session_id' => 'cs_test_race_1',
+        'status' => 'pending',
+        'amount' => 25.00,
+        'currency' => 'GBP',
+        'customer_email' => $booking->participant_email,
+        'expires_at' => now()->subMinutes(5),
+    ]);
+
+    // 1. Application scheduled command runs first
+    $this->artisan('bookings:expire-pending')->assertExitCode(0);
+
+    $booking->refresh();
+    $payment->refresh();
+    expect($booking->status)->toBe(BookingStatus::Cancelled);
+    expect($booking->payment_status)->toBe(PaymentStatus::Cancelled);
+    expect($payment->status)->toBe('cancelled');
+    expect($schedule->bookedCount())->toBe(0);
+
+    // 2. Stripe checkout.session.expired arrives second
+    $payloadArray = [
+        'id' => 'evt_test_race_exp_1',
+        'type' => 'checkout.session.expired',
+        'data' => [
+            'object' => [
+                'id' => 'cs_test_race_1',
+                'metadata' => [
+                    'booking_id' => (string) $booking->id,
+                    'booking_reference' => $booking->reference,
+                    'payment_reference' => $payment->reference,
+                ],
+            ],
+        ],
+    ];
+    $rawPayload = json_encode($payloadArray);
+    $sigHeader = generateStripeSignatureHeader($rawPayload, config('services.stripe.webhook_secret'));
+
+    $res = $this->call('POST', '/webhooks/stripe', [], [], [], [
+        'HTTP_STRIPE_SIGNATURE' => $sigHeader,
+    ], $rawPayload);
+    $res->assertStatus(200);
+
+    // State remains cancelled, no errors thrown, capacity count remains exactly 0
+    $booking->refresh();
+    $payment->refresh();
+    expect($booking->status)->toBe(BookingStatus::Cancelled);
+    expect($booking->payment_status)->toBe(PaymentStatus::Cancelled);
+    expect($payment->status)->toBe('cancelled');
+    expect($schedule->bookedCount())->toBe(0);
+});
+
+test('expiry race convergence: stripe checkout.session.expired arrives first, then bookings:expire-pending runs second', function () {
+    $activity = BookableItem::factory()->create(['capacity' => 2]);
+    $schedule = Schedule::factory()->for($activity)->create(['capacity' => 2, 'status' => 'active']);
+
+    $booking = Booking::factory()->for($schedule)->create([
+        'bookable_item_id' => $activity->id,
+        'status' => BookingStatus::Pending,
+        'payment_status' => PaymentStatus::Unpaid,
+        'payment_expires_at' => now()->subMinutes(5),
+    ]);
+    $payment = Payment::create([
+        'booking_id' => $booking->id,
+        'reference' => Payment::generateReference(),
+        'gateway_session_id' => 'cs_test_race_2',
+        'status' => 'pending',
+        'amount' => 25.00,
+        'currency' => 'GBP',
+        'customer_email' => $booking->participant_email,
+        'expires_at' => now()->subMinutes(5),
+    ]);
+
+    // 1. Stripe checkout.session.expired arrives first
+    $payloadArray = [
+        'id' => 'evt_test_race_exp_2',
+        'type' => 'checkout.session.expired',
+        'data' => [
+            'object' => [
+                'id' => 'cs_test_race_2',
+                'metadata' => [
+                    'booking_id' => (string) $booking->id,
+                    'booking_reference' => $booking->reference,
+                    'payment_reference' => $payment->reference,
+                ],
+            ],
+        ],
+    ];
+    $rawPayload = json_encode($payloadArray);
+    $sigHeader = generateStripeSignatureHeader($rawPayload, config('services.stripe.webhook_secret'));
+
+    $res = $this->call('POST', '/webhooks/stripe', [], [], [], [
+        'HTTP_STRIPE_SIGNATURE' => $sigHeader,
+    ], $rawPayload);
+    $res->assertStatus(200);
+
+    $booking->refresh();
+    $payment->refresh();
+    expect($booking->status)->toBe(BookingStatus::Cancelled);
+    expect($booking->payment_status)->toBe(PaymentStatus::Cancelled);
+    expect($payment->status)->toBe('cancelled');
+    expect($schedule->bookedCount())->toBe(0);
+
+    // 2. Application scheduled command runs second
+    $this->artisan('bookings:expire-pending')
+        ->expectsOutputToContain('Expired 0 pending booking(s).')
+        ->assertExitCode(0);
+
+    expect($schedule->bookedCount())->toBe(0);
+});
+
+test('replayed or duplicate webhook produces exactly one customer receipt and one admin notification', function () {
+    Mail::fake();
+
+    $activity = BookableItem::factory()->create();
+    $schedule = Schedule::factory()->for($activity)->create();
+    $booking = Booking::factory()->for($schedule)->create([
+        'bookable_item_id' => $activity->id,
+        'status' => BookingStatus::Pending,
+        'payment_status' => PaymentStatus::Unpaid,
+    ]);
+    $payment = Payment::create([
+        'booking_id' => $booking->id,
+        'reference' => Payment::generateReference(),
+        'gateway_session_id' => 'cs_test_replay_99',
+        'status' => 'pending',
+        'amount' => 50.00,
+        'currency' => 'GBP',
+        'customer_email' => $booking->participant_email,
+    ]);
+
+    $payload1 = [
+        'id' => 'evt_test_replay_first',
+        'type' => 'checkout.session.completed',
+        'data' => [
+            'object' => [
+                'id' => 'cs_test_replay_99',
+                'payment_status' => 'paid',
+                'payment_intent' => 'pi_test_replay_intent',
+                'metadata' => [
+                    'booking_id' => (string) $booking->id,
+                    'booking_reference' => $booking->reference,
+                    'payment_reference' => $payment->reference,
+                ],
+            ],
+        ],
+    ];
+    $rawPayload1 = json_encode($payload1);
+    $sigHeader1 = generateStripeSignatureHeader($rawPayload1, config('services.stripe.webhook_secret'));
+
+    // First delivery
+    $this->call('POST', '/webhooks/stripe', [], [], [], [
+        'HTTP_STRIPE_SIGNATURE' => $sigHeader1,
+    ], $rawPayload1)->assertStatus(200);
+
+    // Second delivery with a distinct event_id (simulating Stripe re-sending or webhook replay)
+    $payload2 = $payload1;
+    $payload2['id'] = 'evt_test_replay_second';
+    $rawPayload2 = json_encode($payload2);
+    $sigHeader2 = generateStripeSignatureHeader($rawPayload2, config('services.stripe.webhook_secret'));
+
+    $this->call('POST', '/webhooks/stripe', [], [], [], [
+        'HTTP_STRIPE_SIGNATURE' => $sigHeader2,
+    ], $rawPayload2)->assertStatus(200);
+
+    // Invariant: exactly 1 customer receipt and 1 admin notice dispatched in total
+    Mail::assertQueued(PaymentReceived::class, 1);
+    Mail::assertQueued(NewBookingAdminNotification::class, 1);
+});
+
+test('stripe checkout.session.expired does not cancel an already confirmed booking', function () {
+    $activity = BookableItem::factory()->create();
+    $schedule = Schedule::factory()->for($activity)->create();
+
+    $booking = Booking::factory()->for($schedule)->create([
+        'bookable_item_id' => $activity->id,
+        'status' => BookingStatus::Confirmed,
+        'payment_status' => PaymentStatus::Paid,
+    ]);
+    $payment = Payment::create([
+        'booking_id' => $booking->id,
+        'reference' => Payment::generateReference(),
+        'gateway_session_id' => 'cs_test_late_expired',
+        'status' => 'succeeded',
+        'amount' => 50.00,
+        'currency' => 'GBP',
+        'customer_email' => $booking->participant_email,
+    ]);
+
+    $payload = [
+        'id' => 'evt_test_late_exp',
+        'type' => 'checkout.session.expired',
+        'data' => [
+            'object' => [
+                'id' => 'cs_test_late_expired',
+                'metadata' => [
+                    'booking_id' => (string) $booking->id,
+                    'booking_reference' => $booking->reference,
+                    'payment_reference' => $payment->reference,
+                ],
+            ],
+        ],
+    ];
+    $rawPayload = json_encode($payload);
+    $sigHeader = generateStripeSignatureHeader($rawPayload, config('services.stripe.webhook_secret'));
+
+    $this->call('POST', '/webhooks/stripe', [], [], [], [
+        'HTTP_STRIPE_SIGNATURE' => $sigHeader,
+    ], $rawPayload)->assertStatus(200);
+
+    $booking->refresh();
+    $payment->refresh();
+
+    // Invariant: confirmed booking and succeeded payment are untouched
+    expect($booking->status)->toBe(BookingStatus::Confirmed);
+    expect($booking->payment_status)->toBe(PaymentStatus::Paid);
+    expect($payment->status)->toBe('succeeded');
 });
