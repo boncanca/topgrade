@@ -6,6 +6,7 @@ use App\Models\Booking;
 use App\Models\Contact;
 use App\Models\Schedule;
 use App\Models\User;
+use App\Services\PaymentService;
 
 test('full operational journey: admin creates activity and schedule, visitor books, admin confirms and completes', function () {
     $admin = User::factory()->admin()->create();
@@ -57,6 +58,17 @@ test('full operational journey: admin creates activity and schedule, visitor boo
     );
 
     // 4. Visitor submits a booking with contact information
+    $mockPayment = Mockery::mock(PaymentService::class);
+    $mockPayment->shouldReceive('isConfigured')->andReturn(true);
+    $mockPayment->shouldReceive('createCheckoutSession')->andReturnUsing(function ($booking) {
+        return [
+            'id' => 'cs_test_op',
+            'url' => "/bookings/confirmation/{$booking->reference}",
+            'reference' => 'PAY-OP123',
+        ];
+    });
+    app()->instance(PaymentService::class, $mockPayment);
+
     $bookingResponse = $this->post('/bookings', [
         'bookable_item_id' => $activity->id,
         'schedule_id' => $schedule->id,

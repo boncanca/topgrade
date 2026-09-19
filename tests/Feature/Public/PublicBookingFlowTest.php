@@ -93,8 +93,8 @@ test('can create a booking as guest with schedule', function () {
     $this->assertNotNull($booking);
     $this->assertEquals($activity->id, $booking->bookable_item_id);
     $this->assertEquals($schedule->id, $booking->schedule_id);
-    $this->assertEquals(BookingStatus::Pending, $booking->status);
-    $this->assertEquals(PaymentStatus::Unpaid, $booking->payment_status);
+    $this->assertEquals(BookingStatus::Confirmed, $booking->status);
+    $this->assertEquals(PaymentStatus::NotRequired, $booking->payment_status);
     $this->assertNotNull($booking->reference);
 });
 

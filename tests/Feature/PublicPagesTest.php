@@ -1,6 +1,6 @@
 <?php
 
-use App\Mail\BookingReceived;
+use App\Mail\BookingConfirmed;
 use App\Mail\ContactReceivedAdminNotification;
 use App\Mail\ContactReceivedCustomerNotification;
 use App\Mail\NewBookingAdminNotification;
@@ -240,7 +240,7 @@ test('booking flow dispatches both customer and admin notifications and rejects 
     expect($booking)->not->toBeNull();
 
     // Verify customer notification sent
-    Mail::assertQueued(BookingReceived::class, function ($mail) use ($booking) {
+    Mail::assertQueued(BookingConfirmed::class, function ($mail) use ($booking) {
         return $mail->hasTo('alex.morgan@example.com') &&
             $mail->booking->id === $booking->id;
     });
