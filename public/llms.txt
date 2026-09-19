@@ -9,7 +9,7 @@ TopGrade London FC is a youth football club operating as a Community Interest Co
 - **Company Number**: 14087076 (Registered in England and Wales)
 - **Registered Office**: 30 Broadwater Road, London, England, N17 6ES
 - **Structure**: Community Interest Company (CIC)
-- **Contact Email**: topgradelondonfc@hotmail.com
+- **Contact Email**: info@topgradelondonfc.co.uk
 
 ## Age Groups & Phases
 - **Foundation Phase (U7 – U8)**: First touch, ball mastery, agility, and positive introduction to team football.
@@ -27,11 +27,12 @@ TopGrade London FC is a youth football club operating as a Community Interest Co
 - **Matchday Venues**: Frederick Knight Sports Centre (Tottenham), Mabley Green (Hackney), and Hackney Marshes (Hackney).
 
 ## Safeguarding & Policies
-TopGrade London FC operates under strict child safeguarding principles with emergency escalation procedures. The club complies with UK GDPR and child data protection requirements, strictly necessary cookie policies (no marketing trackers), and WCAG 2.2 AA accessibility guidelines.
+TopGrade London FC operates under strict child safeguarding principles with emergency escalation procedures. The club complies with UK GDPR and child data protection requirements, strictly necessary cookie policies (no marketing trackers), and WCAG 2.2 AA accessibility guidelines. Full details are published in our Privacy Policy and Terms & Conditions.
 
 ## Official Links
 - Website: https://topgradelondonfc.co.uk
 - Bookings & Trials: https://topgradelondonfc.co.uk/bookings
 - Training: https://topgradelondonfc.co.uk/training
-- Safeguarding: https://topgradelondonfc.co.uk/safeguarding
+- Privacy Policy: https://topgradelondonfc.co.uk/privacy
+- Terms & Conditions: https://topgradelondonfc.co.uk/terms
 - Contact: https://topgradelondonfc.co.uk/contact

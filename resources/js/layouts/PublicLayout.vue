@@ -30,11 +30,9 @@ const infoLinks = [
 ];
 
 const supportLinks = [
-    { label: 'Safeguarding', href: '/safeguarding' },
     { label: 'Privacy Policy', href: '/privacy' },
-    { label: 'Cookies Policy', href: '/cookies' },
-    { label: 'Accessibility', href: '/accessibility' },
     { label: 'Terms & Conditions', href: '/terms' },
+    { label: 'Contact Club', href: '/contact' },
 ];
 
 // Close mobile menu when page changes
@@ -232,11 +230,11 @@ watch(() => page.url, () => {
                             </p>
                             <p class="pt-1">
                                 <a
-                                    href="mailto:topgradelondonfc@hotmail.com"
-                                    class="text-tg-accent hover:underline"
-                                >
-                                    topgradelondonfc@hotmail.com
-                                </a>
+                                     href="mailto:info@topgradelondonfc.co.uk"
+                                     class="text-tg-accent hover:underline"
+                                 >
+                                     info@topgradelondonfc.co.uk
+                                 </a>
                             </p>
                         </div>
                     </div>
@@ -248,11 +246,8 @@ watch(() => page.url, () => {
                 >
                     <p>© 2026 TopGrade London FC CIC. All rights reserved.</p>
                     <div class="flex flex-wrap items-center gap-6">
-                        <Link href="/safeguarding" class="tg-link text-xs">Safeguarding</Link>
-                        <Link href="/privacy" class="tg-link text-xs">Privacy</Link>
-                        <Link href="/cookies" class="tg-link text-xs">Cookies</Link>
-                        <Link href="/accessibility" class="tg-link text-xs">Accessibility</Link>
-                        <Link href="/terms" class="tg-link text-xs">Terms</Link>
+                        <Link href="/privacy" class="tg-link text-xs">Privacy Policy</Link>
+                        <Link href="/terms" class="tg-link text-xs">Terms &amp; Conditions</Link>
                     </div>
                 </div>
             </div>

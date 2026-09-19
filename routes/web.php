@@ -24,9 +24,6 @@ Route::get('/', [PublicBookingController::class, 'home'])->name('home');
 Route::get('/about', [PublicPageController::class, 'about'])->name('about');
 Route::get('/contact', [PublicPageController::class, 'contact'])->name('contact');
 Route::post('/contact', [PublicPageController::class, 'submitContact'])->name('contact.store');
-Route::get('/safeguarding', [PublicPageController::class, 'safeguarding'])->name('safeguarding');
-Route::get('/accessibility', [PublicPageController::class, 'accessibility'])->name('accessibility');
-Route::get('/cookies', [PublicPageController::class, 'cookies'])->name('cookies');
 Route::get('/privacy', [PublicPageController::class, 'privacy'])->name('privacy');
 Route::get('/terms', [PublicPageController::class, 'terms'])->name('terms');
 
@@ -51,11 +48,8 @@ Route::get('/sitemap.xml', function () {
         ->add(Url::create('/about')->setPriority(0.8)->setChangeFrequency('monthly'))
         ->add(Url::create('/articles')->setPriority(0.8)->setChangeFrequency('daily'))
         ->add(Url::create('/contact')->setPriority(0.7)->setChangeFrequency('monthly'))
-        ->add(Url::create('/safeguarding')->setPriority(0.5)->setChangeFrequency('monthly'))
-        ->add(Url::create('/accessibility')->setPriority(0.4)->setChangeFrequency('yearly'))
-        ->add(Url::create('/cookies')->setPriority(0.4)->setChangeFrequency('yearly'))
-        ->add(Url::create('/privacy')->setPriority(0.4)->setChangeFrequency('yearly'))
-        ->add(Url::create('/terms')->setPriority(0.4)->setChangeFrequency('yearly'));
+        ->add(Url::create('/privacy')->setPriority(0.5)->setChangeFrequency('yearly'))
+        ->add(Url::create('/terms')->setPriority(0.5)->setChangeFrequency('yearly'));
 
     // Dynamic published articles
     Content::published()

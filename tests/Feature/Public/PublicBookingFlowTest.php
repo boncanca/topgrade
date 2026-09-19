@@ -439,6 +439,23 @@ test('activities alias route loads activities listing page', function () {
 });
 
 test('privacy policy page loads', function () {
+    $pageType = ContentType::firstOrCreate(['slug' => 'page'], [
+        'name' => 'Page',
+        'kind' => 'collection',
+        'template' => 'default',
+        'is_system' => true,
+        'is_active' => true,
+    ]);
+
+    Content::create([
+        'content_type_id' => $pageType->id,
+        'title' => 'Privacy Policy',
+        'slug' => 'privacy',
+        'content' => '<p>Privacy policy content</p>',
+        'status' => 'published',
+        'published_at' => now(),
+    ]);
+
     $response = $this->get('/privacy');
 
     $response->assertStatus(200);
@@ -449,6 +466,23 @@ test('privacy policy page loads', function () {
 });
 
 test('terms and conditions page loads', function () {
+    $pageType = ContentType::firstOrCreate(['slug' => 'page'], [
+        'name' => 'Page',
+        'kind' => 'collection',
+        'template' => 'default',
+        'is_system' => true,
+        'is_active' => true,
+    ]);
+
+    Content::create([
+        'content_type_id' => $pageType->id,
+        'title' => 'Terms & Conditions',
+        'slug' => 'terms',
+        'content' => '<p>Terms and conditions content</p>',
+        'status' => 'published',
+        'published_at' => now(),
+    ]);
+
     $response = $this->get('/terms');
 
     $response->assertStatus(200);

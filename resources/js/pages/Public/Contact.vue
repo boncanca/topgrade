@@ -85,8 +85,8 @@ function submit() {
                             <Mail class="w-5 h-5 text-tg-accent shrink-0 mt-0.5" />
                             <div>
                                 <h3 class="font-bold text-tg-text-strong text-xs uppercase tracking-wider">Email</h3>
-                                <a href="mailto:topgradelondonfc@hotmail.com" class="text-tg-accent hover:underline text-sm transition-colors mt-0.5 block">
-                                    topgradelondonfc@hotmail.com
+                                <a href="mailto:info@topgradelondonfc.co.uk" class="text-tg-accent hover:underline text-sm transition-colors mt-0.5 block">
+                                    info@topgradelondonfc.co.uk
                                 </a>
                             </div>
                         </div>

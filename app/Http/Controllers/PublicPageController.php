@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\ContactReceivedAdminNotification;
+use App\Mail\ContactReceivedCustomerNotification;
 use App\Models\Contact;
 use App\Models\Content;
 use App\Models\Inquiry;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -34,6 +37,16 @@ class PublicPageController
             'message' => 'required|string|max:5000',
         ]);
 
+        // Rate-limiting / Duplicate submission prevention (identical inquiry within 60s)
+        $recentDuplicate = Inquiry::where('email', $validated['email'])
+            ->where('message', $validated['message'])
+            ->where('created_at', '>=', now()->subSeconds(60))
+            ->first();
+
+        if ($recentDuplicate) {
+            return back()->with('success', 'Your message has already been received. Thank you!');
+        }
+
         [$firstName, $lastName] = $this->parseParticipantName($validated['name']);
 
         $contact = Contact::firstOrCreate(
@@ -56,7 +69,7 @@ class PublicPageController
             ]));
         }
 
-        Inquiry::create([
+        $inquiry = Inquiry::create([
             'contact_id' => $contact->id,
             'name' => $validated['name'],
             'email' => $validated['email'],
@@ -68,39 +81,19 @@ class PublicPageController
             'user_agent' => $request->userAgent(),
         ]);
 
+        $adminRecipient = config('topgrade.emails.info', 'info@topgradelondonfc.co.uk');
+        Mail::to($adminRecipient)->send(new ContactReceivedAdminNotification($inquiry));
+        Mail::to($inquiry->email)->send(new ContactReceivedCustomerNotification($inquiry));
+
         return back()->with('success', 'Your message has been sent successfully!');
-    }
-
-    public function safeguarding(): Response
-    {
-        $page = Content::published()->where('slug', 'safeguarding')->first();
-
-        return Inertia::render('Public/Safeguarding', [
-            'page' => $page,
-        ]);
-    }
-
-    public function accessibility(): Response
-    {
-        $page = Content::published()->where('slug', 'accessibility')->first();
-
-        return Inertia::render('Public/Accessibility', [
-            'page' => $page,
-        ]);
-    }
-
-    public function cookies(): Response
-    {
-        $page = Content::published()->where('slug', 'cookies')->first();
-
-        return Inertia::render('Public/Cookies', [
-            'page' => $page,
-        ]);
     }
 
     public function privacy(): Response
     {
-        $page = Content::published()->where('slug', 'privacy')->first();
+        $page = Content::published()
+            ->where('slug', 'privacy')
+            ->with('blocks')
+            ->firstOrFail();
 
         return Inertia::render('Public/Privacy', [
             'page' => $page,
@@ -109,7 +102,10 @@ class PublicPageController
 
     public function terms(): Response
     {
-        $page = Content::published()->where('slug', 'terms')->first();
+        $page = Content::published()
+            ->where('slug', 'terms')
+            ->with('blocks')
+            ->firstOrFail();
 
         return Inertia::render('Public/Terms', [
             'page' => $page,
