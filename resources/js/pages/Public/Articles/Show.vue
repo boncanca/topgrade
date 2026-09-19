@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { Head, Link } from '@inertiajs/vue3';
+import { Link } from '@inertiajs/vue3';
 import PublicLayout from '@/layouts/PublicLayout.vue';
+import SeoHead from '@/components/SEO/SeoHead.vue';
 import { ArrowLeft, ArrowRight } from '@lucide/vue';
 
 interface Article {
@@ -22,7 +23,12 @@ defineOptions({
 </script>
 
 <template>
-    <Head :title="`${article.title} — TopGrade London FC`" />
+    <SeoHead
+        :title="`${article.title} | TopGrade London FC`"
+        :description="article.excerpt || article.title"
+        :path="`/articles/${article.slug}`"
+        type="article"
+    />
 
     <div class="min-h-screen bg-tg-bg text-tg-text py-16 sm:py-24 px-4 sm:px-6 lg:px-8">
         <article class="max-w-4xl mx-auto space-y-8">

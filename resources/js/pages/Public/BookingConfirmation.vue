@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { Head, Link } from '@inertiajs/vue3';
+import { Link } from '@inertiajs/vue3';
 import { CheckCircle } from '@lucide/vue';
 import PublicLayout from '@/layouts/PublicLayout.vue';
+import SeoHead from '@/components/SEO/SeoHead.vue';
 
 interface Activity {
     id: number;
@@ -59,7 +60,12 @@ function formatPrice(price: string | null, currency: string): string {
 </script>
 
 <template>
-    <Head :title="`Booking Confirmed - ${booking.reference}`" />
+    <SeoHead
+        :title="`Booking Confirmed · ${booking.reference} | TopGrade London FC`"
+        description="TopGrade London FC training session booking confirmation."
+        :path="`/bookings/confirmation/${booking.reference}`"
+        :noindex="true"
+    />
 
     <div class="min-h-screen bg-tg-bg text-tg-text relative py-12 sm:py-20 px-4 sm:px-6 lg:px-8 flex items-center justify-center">
         <!-- Pitch Grid overlay effect -->

@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { Head, Link } from '@inertiajs/vue3';
+import { Link } from '@inertiajs/vue3';
 import PublicLayout from '@/layouts/PublicLayout.vue';
+import SeoHead from '@/components/SEO/SeoHead.vue';
 import { Newspaper } from '@lucide/vue';
 
 interface Article {
@@ -28,7 +29,11 @@ defineOptions({
 </script>
 
 <template>
-    <Head title="Club News & Articles — TopGrade London FC" />
+    <SeoHead
+        title="News & Articles | TopGrade London FC"
+        description="Latest club news, squad announcements, training updates, and matchday reports from TopGrade London FC in North and East London."
+        path="/articles"
+    />
 
     <div class="min-h-screen bg-tg-bg text-tg-text">
         <!-- Hero Section -->
@@ -104,7 +109,7 @@ defineOptions({
                     No Articles Published Yet
                 </h3>
                 <p class="text-tg-text-muted text-sm leading-relaxed">
-                    Check back soon for upcoming club announcements, squad fixtures, and academy news.
+                    Check back soon for upcoming club announcements, squad fixtures, and club news.
                 </p>
                 <div class="pt-2">
                     <Link href="/" class="tg-btn ghost text-xs py-2 px-4">

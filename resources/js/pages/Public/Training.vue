@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { Head, Link } from '@inertiajs/vue3';
+import { Link } from '@inertiajs/vue3';
 import PublicLayout from '@/layouts/PublicLayout.vue';
+import SeoHead from '@/components/SEO/SeoHead.vue';
 import { Clock, MapPin, ArrowRight, CheckCircle2 } from '@lucide/vue';
 
 interface Activity {
@@ -48,7 +49,11 @@ const weeklySchedule = [
 </script>
 
 <template>
-    <Head title="Training Schedule & Venues — TopGrade London FC" />
+    <SeoHead
+        title="Football Training | TopGrade London FC"
+        description="Weekly youth football training timetable for U7 to U16 players at Frederick Knight Sports Centre and Tottenham Community Sports Centre in London."
+        path="/training"
+    />
 
     <div class="min-h-screen bg-tg-bg text-tg-text">
         <!-- Hero Section: Clean, Solid Sports Presentation -->

@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { Head, Link } from '@inertiajs/vue3';
+import { Link } from '@inertiajs/vue3';
 import PublicLayout from '@/layouts/PublicLayout.vue';
+import SeoHead from '@/components/SEO/SeoHead.vue';
 import { MapPin, Clock, ArrowRight } from '@lucide/vue';
 
 interface Activity {
@@ -34,7 +35,11 @@ defineOptions({
 </script>
 
 <template>
-    <Head title="Bookings & Sessions — TopGrade London FC" />
+    <SeoHead
+        title="Bookings | TopGrade London FC"
+        description="Book youth football trial sessions and squad training with TopGrade London FC in Tottenham and Hackney."
+        path="/bookings"
+    />
 
     <div class="min-h-screen bg-tg-bg text-tg-text">
         <!-- Hero Section: Solid Athletic Presentation -->

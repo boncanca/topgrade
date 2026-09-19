@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { Head, Link } from '@inertiajs/vue3';
+import { Link } from '@inertiajs/vue3';
 import PublicLayout from '@/layouts/PublicLayout.vue';
+import SeoHead from '@/components/SEO/SeoHead.vue';
 import { ArrowRight, Trophy, Users, Target, MapPin, Award } from '@lucide/vue';
 
 defineOptions({
@@ -63,7 +64,11 @@ const facilities = [
 </script>
 
 <template>
-    <Head title="About the Club — TopGrade London FC" />
+    <SeoHead
+        title="About TopGrade London FC | Youth Football Club"
+        description="Learn about TopGrade London FC, our grassroots Community Interest Company (CIC) values, dedicated coaching philosophy, and training facilities in Tottenham and Hackney."
+        path="/about"
+    />
 
     <div class="min-h-screen bg-tg-bg text-tg-text">
         <!-- Hero Section: Clean, Solid Sports Presentation -->

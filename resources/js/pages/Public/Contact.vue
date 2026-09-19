@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { Head, useForm } from '@inertiajs/vue3';
+import { useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import PublicLayout from '@/layouts/PublicLayout.vue';
+import SeoHead from '@/components/SEO/SeoHead.vue';
 import { Mail, Phone, MapPin, CheckCircle2 } from '@lucide/vue';
 
 defineOptions({
@@ -31,7 +32,11 @@ function submit() {
 </script>
 
 <template>
-    <Head title="Contact the Club — TopGrade London FC" />
+    <SeoHead
+        title="Contact TopGrade London FC | London Youth Football"
+        description="Contact TopGrade London FC coaching staff and management for training sessions, trial bookings, and youth squad enquiries in Tottenham and Hackney."
+        path="/contact"
+    />
 
     <div class="min-h-screen bg-tg-bg text-tg-text">
         <!-- Hero Section -->

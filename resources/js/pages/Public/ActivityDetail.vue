@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { Head, Link, router } from '@inertiajs/vue3';
+import { Link, router } from '@inertiajs/vue3';
 import { ref, computed, watch } from 'vue';
 import { Button } from '@/components/ui/button';
 import PublicLayout from '@/layouts/PublicLayout.vue';
+import SeoHead from '@/components/SEO/SeoHead.vue';
 import {
     ArrowLeft,
     Clock,
@@ -120,7 +121,11 @@ function getSelectedSchedule(): Schedule | undefined {
 </script>
 
 <template>
-    <Head :title="`${activity.name} - TopGrade London FC`" />
+    <SeoHead
+        :title="`${activity.name} | TopGrade London FC`"
+        :description="activity.description"
+        :path="`/bookings/${activity.slug}`"
+    />
 
     <div class="min-h-screen bg-tg-bg text-tg-text">
         <!-- Hero Section with Background Photography -->

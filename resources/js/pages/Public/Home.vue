@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import { Head, Link } from '@inertiajs/vue3';
+import { Link } from '@inertiajs/vue3';
 import PublicLayout from '@/layouts/PublicLayout.vue';
 import BlockRenderer from '@/components/CMS/BlockRenderer.vue';
+import SeoHead from '@/components/SEO/SeoHead.vue';
+import JsonLd from '@/components/SEO/JsonLd.vue';
 import { ref, onMounted, onUnmounted, nextTick } from 'vue';
 import {
     ArrowRight,
@@ -54,7 +56,7 @@ const quickStats = [
     { label: 'Age Groups', value: 'U7 – U16', detail: 'Youth football squads' },
     { label: 'Weekly Training', value: '3 Days', detail: 'Tuesdays, Wednesdays & Thursdays' },
     { label: 'Home Grounds', value: '3 Venues', detail: 'Tottenham & Hackney' },
-    { label: 'Affiliation', value: 'London FA', detail: 'Sanctioned Youth Leagues' },
+    { label: 'Matchday', value: 'League', detail: 'Sanctioned youth fixtures' },
 ];
 
 const pillars = [
@@ -111,6 +113,52 @@ const trainingSchedule = [
     },
 ];
 
+// Verified Schema.org SportsClub / Organization entity
+const sportsClubSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'SportsClub',
+    'name': 'TopGrade London FC',
+    'legalName': 'TOPGRADE LONDON FC CIC',
+    'url': 'https://topgradelondonfc.co.uk',
+    'logo': 'https://topgradelondonfc.co.uk/logo.png',
+    'image': 'https://topgradelondonfc.co.uk/images/og/topgrade-london-fc.jpg',
+    'description': 'TopGrade London FC is a youth football club based in Tottenham, London, providing structured coaching, teams, and matchday football for young players aged U7 to U16.',
+    'email': 'topgradelondonfc@hotmail.com',
+    'sport': 'Football',
+    'address': {
+        '@type': 'PostalAddress',
+        'streetAddress': '30 Broadwater Road',
+        'addressLocality': 'Tottenham',
+        'addressRegion': 'London',
+        'postalCode': 'N17 6ES',
+        'addressCountry': 'GB',
+    },
+    'location': [
+        {
+            '@type': 'Place',
+            'name': 'Frederick Knight Sports Centre',
+            'address': {
+                '@type': 'PostalAddress',
+                'streetAddress': 'Willoughby Lane',
+                'addressLocality': 'Tottenham',
+                'postalCode': 'N17 0RT',
+                'addressCountry': 'GB',
+            },
+        },
+        {
+            '@type': 'Place',
+            'name': 'Tottenham Community Sports Centre',
+            'address': {
+                '@type': 'PostalAddress',
+                'streetAddress': '701–703 High Road',
+                'addressLocality': 'Tottenham',
+                'postalCode': 'N17 8AD',
+                'addressCountry': 'GB',
+            },
+        },
+    ],
+};
+
 // Squads are informational club entities with varied editorial visual rhythm
 const squads = [
     {
@@ -121,6 +169,8 @@ const squads = [
         layoutClass: 'md:col-span-5',
         aspectClass: 'aspect-[4/3] md:aspect-[3/4]',
         cropPosition: 'object-center',
+        floatY: '-4px',
+        rotate: '-0.3deg',
     },
     {
         name: 'U9 – U10',
@@ -130,6 +180,8 @@ const squads = [
         layoutClass: 'md:col-span-7 md:pt-12',
         aspectClass: 'aspect-[16/10]',
         cropPosition: 'object-top',
+        floatY: '-6px',
+        rotate: '0.25deg',
     },
     {
         name: 'U11 – U12',
@@ -139,6 +191,8 @@ const squads = [
         layoutClass: 'md:col-span-8',
         aspectClass: 'aspect-[16/9] md:aspect-[21/10]',
         cropPosition: 'object-center',
+        floatY: '-5px',
+        rotate: '-0.2deg',
     },
     {
         name: 'U13 – U14',
@@ -148,6 +202,8 @@ const squads = [
         layoutClass: 'md:col-span-4 md:-mt-8',
         aspectClass: 'aspect-[3/4]',
         cropPosition: 'object-center',
+        floatY: '-6px',
+        rotate: '0.35deg',
     },
     {
         name: 'U15 – U16',
@@ -157,6 +213,8 @@ const squads = [
         layoutClass: 'md:col-span-12',
         aspectClass: 'aspect-[16/9] md:aspect-[2.4/1]',
         cropPosition: 'object-center',
+        floatY: '-4px',
+        rotate: '-0.15deg',
     },
 ];
 
@@ -168,6 +226,8 @@ const momentsRibbon = [
         image: '/images/club/club-training-london.jpg',
         aspect: 'aspect-[3/4]',
         offsetClass: 'lg:translate-y-0',
+        floatY: '-4px',
+        rotate: '-0.35deg',
     },
     {
         num: '02',
@@ -175,6 +235,8 @@ const momentsRibbon = [
         image: '/484977737_1109608517845156_6730033439051003629_n.jpg',
         aspect: 'aspect-[4/5]',
         offsetClass: 'lg:translate-y-16',
+        floatY: '-6px',
+        rotate: '0.3deg',
     },
     {
         num: '03',
@@ -182,6 +244,8 @@ const momentsRibbon = [
         image: '/images/club/squad_celebration.jpg',
         aspect: 'aspect-[3/4]',
         offsetClass: 'lg:translate-y-6',
+        floatY: '-5px',
+        rotate: '-0.25deg',
     },
     {
         num: '04',
@@ -189,6 +253,8 @@ const momentsRibbon = [
         image: '/484192970_1108922961247045_3935375872642678849_n.jpg',
         aspect: 'aspect-[4/5]',
         offsetClass: 'lg:translate-y-24',
+        floatY: '-6px',
+        rotate: '0.4deg',
     },
     {
         num: '05',
@@ -196,6 +262,8 @@ const momentsRibbon = [
         image: '/images/club/tactical_coaching.jpg',
         aspect: 'aspect-[3/4]',
         offsetClass: 'lg:translate-y-8',
+        floatY: '-4px',
+        rotate: '-0.3deg',
     },
     {
         num: '06',
@@ -203,6 +271,8 @@ const momentsRibbon = [
         image: '/images/club/floodlit-match.png',
         aspect: 'aspect-[4/5]',
         offsetClass: 'lg:translate-y-20',
+        floatY: '-5px',
+        rotate: '0.25deg',
     },
 ];
 
@@ -273,15 +343,15 @@ onMounted(async () => {
      * routing gracefully through negative space.
      */
     const STOPS = [
-        { sec: 'hero', at: 0.00, x: 0, y: 32, s: 0.95, r: 0, o: 0.95, p: 0.22, m: { y: 28, s: 0.65, o: 0.85 } },
-        { sec: 'hero', at: 0.85, x: -38, y: 28, s: 0.45, r: 160, o: 0.85, p: 0.14, m: { x: -30, y: 28, s: 0.32, o: 0.75 } },
-        { sec: 'develop', at: 0.50, x: -42, y: 8, s: 0.42, r: 250, o: 0.80, p: 0.08, m: { x: -36, y: 12, s: 0.28, o: 0.65 } },
-        { sec: 'creed', at: 0.50, x: 0, y: 0, s: 2.90, r: 430, o: 1.00, p: 0.22, m: { s: 2.35 } },
-        { sec: 'train', at: 0.35, x: 40, y: -8, s: 0.40, r: 580, o: 0.80, p: 0.08, m: { x: 34, y: -12, s: 0.26, o: 0.65 } },
-        { sec: 'teams', at: 0.50, x: -38, y: 0, s: 0.42, r: 690, o: 0.80, p: 0.08, m: { x: -32, y: -6, s: 0.26, o: 0.65 } },
-        { sec: 'gallery', at: 0.45, x: 36, y: 4, s: 0.44, r: 780, o: 0.82, p: 0.08, m: { x: 30, y: 6, s: 0.28, o: 0.70 } },
-        { sec: 'matchday', at: 0.50, x: -36, y: 16, s: 0.42, r: 870, o: 0.80, p: 0.08, m: { x: -30, y: 18, s: 0.26, o: 0.65 } },
-        { sec: 'cta', at: 0.50, x: 0, y: 35, s: 0.78, r: 960, o: 0.90, p: 0.18, m: { y: 32, s: 0.55, o: 0.75 } }
+        { sec: 'hero', at: 0.00, x: 0, y: 32, s: 0.95, r: 0, o: 0.70, p: 0.12, m: { y: 28, s: 0.65, o: 0.65 } },
+        { sec: 'hero', at: 0.85, x: -38, y: 28, s: 0.45, r: 160, o: 0.65, p: 0.10, m: { x: -30, y: 28, s: 0.32, o: 0.60 } },
+        { sec: 'develop', at: 0.50, x: -42, y: 8, s: 0.42, r: 250, o: 0.65, p: 0.07, m: { x: -36, y: 12, s: 0.28, o: 0.60 } },
+        { sec: 'creed', at: 0.50, x: 0, y: 0, s: 2.90, r: 430, o: 0.95, p: 0.16, m: { s: 2.35, o: 0.90 } },
+        { sec: 'train', at: 0.35, x: 40, y: -8, s: 0.40, r: 580, o: 0.80, p: 0.04, m: { x: 34, y: -12, s: 0.26, o: 0.75 } },
+        { sec: 'teams', at: 0.50, x: -38, y: 0, s: 0.42, r: 690, o: 0.68, p: 0.07, m: { x: -32, y: -6, s: 0.26, o: 0.65 } },
+        { sec: 'gallery', at: 0.45, x: 36, y: 4, s: 0.44, r: 780, o: 0.65, p: 0.07, m: { x: 30, y: 6, s: 0.28, o: 0.60 } },
+        { sec: 'matchday', at: 0.50, x: -36, y: 16, s: 0.42, r: 870, o: 0.80, p: 0.04, m: { x: -30, y: 18, s: 0.26, o: 0.75 } },
+        { sec: 'cta', at: 0.50, x: 0, y: 35, s: 0.78, r: 960, o: 0.75, p: 0.10, m: { y: 32, s: 0.55, o: 0.70 } }
     ];
 
     interface Point {
@@ -413,28 +483,27 @@ onUnmounted(() => {
 </script>
 
 <template>
-    <Head>
-        <title>TopGrade London FC — Official Youth Football Club</title>
-        <meta
-            name="description"
-            content="TopGrade London FC provides structured youth football training, technical coaching, and league match play for ages U7 to U16 in Tottenham and Hackney. Book a trial session."
-        />
-    </Head>
+    <SeoHead
+        title="TopGrade London FC | Youth Football Club in London"
+        description="TopGrade London FC is a youth football club based in Tottenham, London, with teams, training and matchday football for young players."
+        path="/"
+    />
+    <JsonLd :schema="sportsClubSchema" />
 
     <div class="relative overflow-hidden bg-tg-bg text-tg-text selection:bg-tg-accent selection:text-white">
-        <!-- Creed Zoom Dimming Backdrop -->
+        <!-- Creed Zoom Dimming Backdrop (z-index: 4, below ball z-index 5) -->
         <div
             id="creed-backdrop"
             class="creed-backdrop fixed inset-0 pointer-events-none transition-opacity duration-200"
-            style="background: rgba(8, 4, 15, 0.94); z-index: 2; opacity: 0;"
+            style="background: rgba(8, 4, 15, 0.94); z-index: 4; opacity: 0;"
             aria-hidden="true"
         />
 
-        <!-- Official Match Ball Physics Layer -->
+        <!-- Official Match Ball Physics Layer (z-index: 5, above pitch grid z-index 2, behind section surfaces z-index 10) -->
         <div
             id="ball"
             class="ball-layer fixed left-1/2 top-1/2 pointer-events-none will-change-transform"
-            style="z-index: 3;"
+            style="z-index: 5;"
             aria-hidden="true"
         >
             <img
@@ -449,9 +518,10 @@ onUnmounted(() => {
             />
         </div>
 
-        <!-- 00 — OFFICIAL CLUB STATUS BAR -->
+        <!-- 00 — OFFICIAL CLUB STATUS BAR (z-index: 10) -->
         <div
-            class="relative z-10 text-xs py-2.5 px-4 sm:px-6 lg:px-8 bg-tg-bg-deep/90 border-b border-tg-border text-tg-text-muted"
+            class="relative z-10 text-xs py-2.5 px-4 sm:px-6 lg:px-8 border-b border-tg-border text-tg-text-muted"
+            style="background: var(--surface-dense);"
         >
             <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
                 <div class="flex items-center gap-2.5">
@@ -461,7 +531,9 @@ onUnmounted(() => {
                     <span class="hidden sm:inline">North &amp; East London Youth Football Club</span>
                 </div>
                 <div class="flex items-center gap-4 text-xs font-semibold">
-                    <span class="text-tg-text-strong">London FA Affiliated</span>
+                    <span class="text-tg-text-strong">Youth Football · U7–U16</span>
+                    <span class="text-tg-border">•</span>
+                    <span>Tottenham &amp; Hackney Grounds</span>
                     <span class="text-tg-border">•</span>
                     <span>Community Interest Company (CIC)</span>
                 </div>
@@ -472,7 +544,7 @@ onUnmounted(() => {
         <section
             id="hero"
             class="relative min-h-[92vh] sm:min-h-[105vh] flex flex-col items-center justify-start text-center pt-16 sm:pt-28 pb-16 sm:pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden"
-            style="z-index: 4;"
+            style="z-index: 10; background: var(--surface-hero);"
         >
             <div class="max-w-5xl mx-auto flex flex-col items-center relative z-10">
                 <!-- Drop Animated Crest -->
@@ -579,7 +651,8 @@ onUnmounted(() => {
 
         <!-- 02 — MARQUEE TICKER: Energetic Club Identity -->
         <div
-            class="overflow-hidden py-3 relative z-10 bg-tg-purple-deep/90 border-y border-tg-border"
+            class="overflow-hidden py-3 relative z-10 border-y border-tg-border"
+            style="background: rgba(42, 11, 87, 0.85);"
             aria-hidden="true"
         >
             <div class="marquee-track flex gap-12 whitespace-nowrap text-white font-normal" style="font-family: var(--tg-display); font-size: 1.35rem; letter-spacing: 0.05em;">
@@ -612,7 +685,7 @@ onUnmounted(() => {
         <section
             id="develop"
             class="py-20 sm:py-32 px-4 sm:px-6 lg:px-8 relative z-10 border-b border-tg-border"
-            style="background: rgba(8, 4, 15, 0.88);"
+            style="background: var(--surface-section);"
         >
             <div class="max-w-7xl mx-auto">
                 <div class="grid lg:grid-cols-12 gap-10 lg:gap-16 items-center">
@@ -681,10 +754,10 @@ onUnmounted(() => {
         <!-- 04 — CREED SECTION: Dominant Monumental Payoff -->
         <section
             id="creed"
-            class="min-h-[90vh] sm:min-h-[100vh] flex flex-col items-center justify-center text-center px-4 relative"
-            style="z-index: 5;"
+            class="min-h-[90vh] sm:min-h-[100vh] flex flex-col items-center justify-center text-center px-4 relative z-10"
+            style="background: transparent;"
         >
-            <div class="max-w-3xl mx-auto relative z-10">
+            <div class="max-w-3xl mx-auto relative z-20">
                 <h2
                     class="font-normal uppercase tracking-tight mb-4 text-tg-text-strong"
                     style="
@@ -707,7 +780,7 @@ onUnmounted(() => {
         <section
             id="train"
             class="py-20 sm:py-32 px-4 sm:px-6 lg:px-8 relative z-10 border-y border-tg-border"
-            style="background: rgba(8, 4, 15, 0.88);"
+            style="background: var(--surface-dense);"
         >
             <div class="max-w-7xl mx-auto">
                 <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6 pb-6 border-b border-tg-border">
@@ -867,7 +940,7 @@ onUnmounted(() => {
         <section
             id="teams"
             class="py-20 sm:py-32 px-4 sm:px-6 lg:px-8 relative z-10 border-b border-tg-border"
-            style="background: rgba(8, 4, 15, 0.88);"
+            style="background: var(--surface-section);"
         >
             <div class="max-w-7xl mx-auto">
                 <!-- Section Header -->
@@ -896,12 +969,15 @@ onUnmounted(() => {
                         data-reveal
                         :style="{ '--d': `${80 + idx * 50}ms` }"
                     >
-                        <!-- Varied Aspect Ratio Photo Container -->
-                        <div :class="[squad.aspectClass, 'relative w-full overflow-hidden rounded-sm bg-tg-bg-deep border border-tg-border shadow-sm']">
+                        <!-- Varied Aspect Ratio Photo Container with Float Hover -->
+                        <div
+                            :class="[squad.aspectClass, 'tg-float-card relative w-full overflow-hidden rounded-sm bg-tg-bg-deep border border-tg-border shadow-sm']"
+                            :style="{ '--float-y': squad.floatY, '--rotate': squad.rotate }"
+                        >
                             <img
                                 :src="squad.image"
                                 :alt="`TopGrade London FC ${squad.name} Squad`"
-                                :class="['w-full h-full object-cover transition-transform duration-700 group-hover:scale-105', squad.cropPosition]"
+                                :class="['tg-float-img w-full h-full object-cover', squad.cropPosition]"
                             />
                             <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none" />
 
@@ -932,7 +1008,7 @@ onUnmounted(() => {
                 <div class="mt-16 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-tg-border">
                     <div class="flex items-center gap-2.5 text-xs text-tg-text-muted">
                         <CheckCircle2 class="w-4 h-4 shrink-0 text-tg-accent" />
-                        <span>Competitive youth squads participating in London FA sanctioned youth leagues.</span>
+                        <span>Competitive youth squads participating in local sanctioned youth football leagues.</span>
                     </div>
 
                     <a
@@ -950,7 +1026,7 @@ onUnmounted(() => {
         <section
             id="gallery"
             class="py-20 sm:py-32 px-4 sm:px-6 lg:px-8 relative z-10 border-b border-tg-border"
-            style="background: rgba(8, 4, 15, 0.88);"
+            style="background: var(--surface-section);"
         >
             <div class="max-w-7xl mx-auto">
                 <div class="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6 pb-6 border-b border-tg-border">
@@ -978,17 +1054,18 @@ onUnmounted(() => {
                         data-reveal
                         :style="{ '--d': `${100 + mIdx * 60}ms` }"
                     >
-                        <!-- Vertical Card Image -->
+                        <!-- Vertical Card Image with Float Hover -->
                         <div
                             :class="[
                                 moment.aspect,
-                                'relative w-full rounded-sm overflow-hidden bg-tg-bg-deep border border-tg-border shadow-md'
+                                'tg-float-card relative w-full rounded-sm overflow-hidden bg-tg-bg-deep border border-tg-border shadow-md'
                             ]"
+                            :style="{ '--float-y': moment.floatY, '--rotate': moment.rotate }"
                         >
                             <img
                                 :src="moment.image"
                                 :alt="moment.title"
-                                class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                                class="tg-float-img w-full h-full object-cover"
                             />
                             <div class="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-transparent pointer-events-none" />
 
@@ -1011,7 +1088,7 @@ onUnmounted(() => {
         <section
             id="matchday"
             class="py-20 sm:py-32 px-4 sm:px-6 lg:px-8 relative z-10 border-b border-tg-border"
-            style="background: rgba(8, 4, 15, 0.88);"
+            style="background: var(--surface-dense);"
         >
             <div class="max-w-7xl mx-auto">
                 <div class="grid lg:grid-cols-12 gap-12 lg:gap-16 items-center">
@@ -1077,6 +1154,7 @@ onUnmounted(() => {
         <section
             id="cta"
             class="py-20 sm:py-28 px-4 sm:px-6 lg:px-8 relative z-10 flex justify-center text-center"
+            style="background: var(--surface-dense);"
         >
             <div
                 data-reveal="scale"
