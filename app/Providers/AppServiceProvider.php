@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Services\Mail\BrevoMailService;
+use App\Services\Mail\TransactionalMailService;
 use App\Services\PaymentService;
 use App\Services\StripePaymentService;
 use Carbon\CarbonImmutable;
@@ -21,6 +23,11 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(
             PaymentService::class,
             StripePaymentService::class
+        );
+
+        $this->app->bind(
+            TransactionalMailService::class,
+            BrevoMailService::class
         );
     }
 

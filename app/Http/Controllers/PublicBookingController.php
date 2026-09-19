@@ -4,8 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\BookingStatus;
 use App\Enums\PaymentStatus;
-use App\Mail\BookingConfirmed;
-use App\Mail\NewBookingAdminNotification;
+use App\Jobs\SendTransactionalBookingEmailJob;
 use App\Models\BookableItem;
 use App\Models\Booking;
 use App\Models\Contact;
@@ -17,7 +16,6 @@ use App\Services\PaymentService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -323,16 +321,16 @@ class PublicBookingController
                 'payment_expires_at' => null,
             ]);
 
+            DB::afterCommit(function () use ($createdBooking) {
+                SendTransactionalBookingEmailJob::dispatch($createdBooking->id, 'booking-confirmation');
+                SendTransactionalBookingEmailJob::dispatch($createdBooking->id, 'booking-notification');
+            });
+
             return [$createdBooking, null];
         });
 
-        // 1. FREE SESSION: confirm immediately & dispatch notifications
+        // 1. FREE SESSION: confirm immediately & redirect (emails handled post-commit)
         if (! $requiresPayment) {
-            Mail::to($booking->participant_email)->send(new BookingConfirmed($booking));
-
-            $adminEmail = config('topgrade.emails.bookings', 'bookings@topgradelondonfc.co.uk');
-            Mail::to($adminEmail)->send(new NewBookingAdminNotification($booking));
-
             return redirect()->route('sessions.confirmation', $booking->reference);
         }
 

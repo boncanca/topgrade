@@ -3,16 +3,15 @@
 namespace App\Services;
 
 use App\Enums\BookingStatus;
+use App\Enums\CancellationReason;
 use App\Enums\PaymentStatus;
-use App\Mail\NewBookingAdminNotification;
-use App\Mail\PaymentReceived;
+use App\Jobs\SendTransactionalBookingEmailJob;
 use App\Models\Booking;
 use App\Models\Payment;
 use App\Support\Money;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
 use RuntimeException;
 
 class StripePaymentService implements PaymentService
@@ -248,7 +247,7 @@ class StripePaymentService implements PaymentService
 
         $wasAlreadyPaid = ($booking->payment_status === PaymentStatus::Paid);
 
-        DB::transaction(function () use ($payment, $booking, $session) {
+        DB::transaction(function () use ($payment, $booking, $session, $wasAlreadyPaid) {
             $paymentIntentId = $session['payment_intent'] ?? null;
 
             if ($payment) {
@@ -268,22 +267,15 @@ class StripePaymentService implements PaymentService
                     'payment_status' => PaymentStatus::Paid->value,
                 ]);
             }
-        });
 
-        // Dispatch notifications only on initial payment confirmation
-        if (! $wasAlreadyPaid) {
-            try {
-                Mail::to($booking->participant_email)->send(new PaymentReceived($booking));
-
-                $adminEmail = config('topgrade.emails.bookings', 'bookings@topgradelondonfc.co.uk');
-                Mail::to($adminEmail)->send(new NewBookingAdminNotification($booking));
-            } catch (\Throwable $e) {
-                Log::error('Failed to dispatch booking emails after payment confirmation.', [
-                    'booking_id' => $booking->id,
-                    'error' => $e->getMessage(),
-                ]);
+            // Dispatch notifications strictly post-commit and only on initial payment confirmation
+            if (! $wasAlreadyPaid) {
+                DB::afterCommit(function () use ($booking) {
+                    SendTransactionalBookingEmailJob::dispatch($booking->id, 'payment-received');
+                    SendTransactionalBookingEmailJob::dispatch($booking->id, 'booking-notification');
+                });
             }
-        }
+        });
 
         return true;
     }
@@ -308,17 +300,34 @@ class StripePaymentService implements PaymentService
             $booking = Booking::where('reference', $bookingRef)->first();
         }
 
-        if ($payment && $payment->status === 'pending') {
-            $payment->update(['status' => 'cancelled']);
+        if (! $booking) {
+            if ($payment && $payment->status === 'pending') {
+                $payment->update(['status' => 'cancelled']);
+            }
+
+            return true;
         }
 
-        if ($booking && $booking->status === BookingStatus::Pending) {
-            $booking->update([
-                'status' => BookingStatus::Cancelled->value,
-                'payment_status' => PaymentStatus::Cancelled->value,
-            ]);
-            Log::info("Cancelled expired booking reservation {$booking->reference} due to session expiry.");
-        }
+        DB::transaction(function () use ($payment, $booking) {
+            if ($payment && $payment->status === 'pending') {
+                $payment->update(['status' => 'cancelled']);
+            }
+
+            if ($booking->status === BookingStatus::Pending) {
+                $booking->update([
+                    'status' => BookingStatus::Cancelled->value,
+                    'payment_status' => PaymentStatus::Cancelled->value,
+                ]);
+
+                Log::info("Cancelled expired booking reservation {$booking->reference} due to session expiry.");
+
+                DB::afterCommit(function () use ($booking) {
+                    SendTransactionalBookingEmailJob::dispatch($booking->id, 'booking-cancellation', [
+                        'reason' => CancellationReason::PaymentExpired->value,
+                    ]);
+                });
+            }
+        });
 
         return true;
     }
@@ -335,17 +344,34 @@ class StripePaymentService implements PaymentService
         $payment = Payment::where('gateway_payment_intent_id', $intentId)->first();
         $booking = $payment?->booking;
 
-        if ($payment && $payment->status === 'pending') {
-            $payment->update(['status' => 'failed']);
+        if (! $booking) {
+            if ($payment && $payment->status === 'pending') {
+                $payment->update(['status' => 'failed']);
+            }
+
+            return true;
         }
 
-        if ($booking && $booking->status === BookingStatus::Pending) {
-            $booking->update([
-                'status' => BookingStatus::Cancelled->value,
-                'payment_status' => PaymentStatus::Failed->value,
-            ]);
-            Log::info("Cancelled booking reservation {$booking->reference} due to payment intent failure.");
-        }
+        DB::transaction(function () use ($payment, $booking) {
+            if ($payment && $payment->status === 'pending') {
+                $payment->update(['status' => 'failed']);
+            }
+
+            if ($booking->status === BookingStatus::Pending) {
+                $booking->update([
+                    'status' => BookingStatus::Cancelled->value,
+                    'payment_status' => PaymentStatus::Failed->value,
+                ]);
+
+                Log::info("Cancelled booking reservation {$booking->reference} due to payment intent failure.");
+
+                DB::afterCommit(function () use ($booking) {
+                    SendTransactionalBookingEmailJob::dispatch($booking->id, 'payment-failed', [
+                        'reason' => CancellationReason::PaymentFailed->customerExplanation(),
+                    ]);
+                });
+            }
+        });
 
         return true;
     }

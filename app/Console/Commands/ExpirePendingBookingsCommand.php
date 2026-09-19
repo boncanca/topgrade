@@ -3,7 +3,9 @@
 namespace App\Console\Commands;
 
 use App\Enums\BookingStatus;
+use App\Enums\CancellationReason;
 use App\Enums\PaymentStatus;
+use App\Jobs\SendTransactionalBookingEmailJob;
 use App\Models\Booking;
 use App\Models\Payment;
 use Illuminate\Console\Command;
@@ -27,18 +29,34 @@ class ExpirePendingBookingsCommand extends Command
         $count = 0;
 
         foreach ($expiredBookings as $booking) {
-            DB::transaction(function () use ($booking) {
-                $booking->update([
-                    'status' => BookingStatus::Cancelled->value,
-                    'payment_status' => PaymentStatus::Cancelled->value,
-                ]);
+            $transitioned = false;
 
-                Payment::where('booking_id', $booking->id)
-                    ->where('status', 'pending')
-                    ->update(['status' => 'cancelled']);
+            DB::transaction(function () use ($booking, &$transitioned) {
+                $affected = Booking::where('id', $booking->id)
+                    ->where('status', BookingStatus::Pending->value)
+                    ->update([
+                        'status' => BookingStatus::Cancelled->value,
+                        'payment_status' => PaymentStatus::Cancelled->value,
+                    ]);
+
+                if ($affected > 0) {
+                    $transitioned = true;
+
+                    Payment::where('booking_id', $booking->id)
+                        ->where('status', 'pending')
+                        ->update(['status' => 'cancelled']);
+
+                    DB::afterCommit(function () use ($booking) {
+                        SendTransactionalBookingEmailJob::dispatch($booking->id, 'booking-cancellation', [
+                            'reason' => CancellationReason::PaymentExpired->value,
+                        ]);
+                    });
+                }
             });
 
-            $count++;
+            if ($transitioned) {
+                $count++;
+            }
         }
 
         $this->info("Expired {$count} pending booking(s).");

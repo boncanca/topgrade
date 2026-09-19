@@ -18,8 +18,13 @@ return [
         'key' => env('POSTMARK_API_KEY'),
     ],
 
-    'resend' => [
-        'key' => env('RESEND_API_KEY'),
+    'brevo' => [
+        'key' => env('BREVO_API_KEY'),
+        'from_email' => env('BREVO_FROM_EMAIL', 'no-reply@topgradelondonfc.co.uk'),
+        'from_name' => env('BREVO_FROM_NAME', 'TopGrade London FC'),
+        'bookings_from_name' => env('BREVO_BOOKINGS_FROM_NAME', 'TopGrade London FC Bookings'),
+        'bookings_email' => env('BREVO_BOOKINGS_EMAIL', 'bookings@topgradelondonfc.co.uk'),
+        'reply_to_email' => env('BREVO_REPLY_TO_EMAIL', 'info@topgradelondonfc.co.uk'),
     ],
 
     'ses' => [

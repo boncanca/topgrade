@@ -1,15 +1,14 @@
 <?php
 
-use App\Mail\BookingConfirmed;
 use App\Mail\ContactReceivedAdminNotification;
 use App\Mail\ContactReceivedCustomerNotification;
-use App\Mail\NewBookingAdminNotification;
 use App\Models\BookableItem;
 use App\Models\Booking;
 use App\Models\Content;
 use App\Models\ContentType;
 use App\Models\Inquiry;
 use App\Models\Schedule;
+use App\Services\Mail\TransactionalMailService;
 use App\Services\PaymentService;
 use App\Services\StripePaymentService;
 use Illuminate\Support\Facades\Mail;
@@ -271,7 +270,10 @@ test('stripe payment service foundation is registered in container', function ()
 });
 
 test('booking flow dispatches both customer and admin notifications and rejects duplicates', function () {
-    Mail::fake();
+    $mailService = Mockery::mock(TransactionalMailService::class);
+    $mailService->shouldReceive('sendBookingConfirmation')->once()->andReturn(true);
+    $mailService->shouldReceive('sendBookingNotification')->once()->andReturn(true);
+    app()->instance(TransactionalMailService::class, $mailService);
 
     $activity = BookableItem::factory()->create(['capacity' => 10, 'is_active' => true]);
     $schedule = Schedule::factory()->for($activity)->create([
@@ -295,18 +297,6 @@ test('booking flow dispatches both customer and admin notifications and rejects 
 
     $booking = Booking::where('participant_email', 'alex.morgan@example.com')->first();
     expect($booking)->not->toBeNull();
-
-    // Verify customer notification sent
-    Mail::assertQueued(BookingConfirmed::class, function ($mail) use ($booking) {
-        return $mail->hasTo('alex.morgan@example.com') &&
-            $mail->booking->id === $booking->id;
-    });
-
-    // Verify admin notification sent to bookings inbox
-    Mail::assertQueued(NewBookingAdminNotification::class, function ($mail) use ($booking) {
-        return $mail->hasTo(config('topgrade.emails.bookings', 'bookings@topgradelondonfc.co.uk')) &&
-            $mail->booking->id === $booking->id;
-    });
 
     // Submitting duplicate booking on same schedule should fail validation
     $duplicateResponse = $this->post('/bookings', $payload);

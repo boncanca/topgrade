@@ -2,16 +2,13 @@
 
 use App\Enums\BookingStatus;
 use App\Enums\PaymentStatus;
-use App\Mail\BookingConfirmed;
-use App\Mail\NewBookingAdminNotification;
-use App\Mail\PaymentReceived;
 use App\Models\BookableItem;
 use App\Models\Booking;
 use App\Models\Payment;
 use App\Models\Schedule;
+use App\Services\Mail\TransactionalMailService;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Mail;
 
 beforeEach(function () {
     Config::set('services.stripe.key', 'pk_test_sample_key');
@@ -19,17 +16,22 @@ beforeEach(function () {
     Config::set('services.stripe.webhook_secret', 'whsec_sample_webhook_secret');
 });
 
-function generateStripeSignatureHeader(string $payload, string $secret, ?int $timestamp = null): string
-{
-    $t = $timestamp ?? time();
-    $signedPayload = "{$t}.{$payload}";
-    $v1 = hash_hmac('sha256', $signedPayload, $secret);
+if (! function_exists('generateStripeSignatureHeader')) {
+    function generateStripeSignatureHeader(string $payload, string $secret, ?int $timestamp = null): string
+    {
+        $t = $timestamp ?? time();
+        $signedPayload = "{$t}.{$payload}";
+        $v1 = hash_hmac('sha256', $signedPayload, $secret);
 
-    return "t={$t},v1={$v1}";
+        return "t={$t},v1={$v1}";
+    }
 }
 
 test('free booking confirms immediately with payment_status not_required and dispatches emails', function () {
-    Mail::fake();
+    $mailService = Mockery::mock(TransactionalMailService::class);
+    $mailService->shouldReceive('sendBookingConfirmation')->once()->andReturn(true);
+    $mailService->shouldReceive('sendBookingNotification')->once()->andReturn(true);
+    app()->instance(TransactionalMailService::class, $mailService);
 
     $activity = BookableItem::factory()->create([
         'price' => 0.00,
@@ -53,13 +55,12 @@ test('free booking confirms immediately with payment_status not_required and dis
     expect($booking->status)->toBe(BookingStatus::Confirmed);
     expect($booking->payment_status)->toBe(PaymentStatus::NotRequired);
     expect($booking->payment_expires_at)->toBeNull();
-
-    Mail::assertQueued(BookingConfirmed::class, fn ($mail) => $mail->hasTo('freetrial@example.com'));
-    Mail::assertQueued(NewBookingAdminNotification::class, fn ($mail) => $mail->hasTo(config('topgrade.emails.bookings')));
 });
 
 test('paid booking creates pending booking with payment_expires_at and initiates stripe checkout with idempotency key', function () {
-    Mail::fake();
+    $mailService = Mockery::mock(TransactionalMailService::class);
+    $mailService->shouldNotReceive('sendBookingConfirmation', 'sendPaymentReceived', 'sendBookingNotification');
+    app()->instance(TransactionalMailService::class, $mailService);
 
     Http::fake([
         'https://api.stripe.com/v1/checkout/sessions' => Http::response([
@@ -97,9 +98,6 @@ test('paid booking creates pending booking with payment_expires_at and initiates
     expect($payment->status)->toBe('pending');
     expect($payment->gateway_session_id)->toBe('cs_test_session_abc123');
     expect($payment->reference)->toStartWith('PAY');
-
-    // Invariant: No confirmation emails sent until payment verified by webhook
-    Mail::assertNothingQueued();
 
     // Verify Stripe HTTP call received Idempotency-Key and minor units (2500 pence)
     Http::assertSent(function ($request) use ($payment) {
@@ -246,7 +244,10 @@ test('stripe webhook rejects requests with expired timestamp', function () {
 });
 
 test('stripe webhook is strictly idempotent and atomically deduplicates repeated events', function () {
-    Mail::fake();
+    $mailService = Mockery::mock(TransactionalMailService::class);
+    $mailService->shouldReceive('sendPaymentReceived')->once()->andReturn(true);
+    $mailService->shouldReceive('sendBookingNotification')->once()->andReturn(true);
+    app()->instance(TransactionalMailService::class, $mailService);
 
     $activity = BookableItem::factory()->create();
     $schedule = Schedule::factory()->for($activity)->create();
@@ -294,7 +295,6 @@ test('stripe webhook is strictly idempotent and atomically deduplicates repeated
     $booking->refresh();
     expect($booking->status)->toBe(BookingStatus::Confirmed);
     expect($booking->payment_status)->toBe(PaymentStatus::Paid);
-    Mail::assertQueued(PaymentReceived::class, 1);
 
     // Second webhook delivery (same event_id)
     $res2 = $this->call('POST', '/webhooks/stripe', [], [], [], [
@@ -302,13 +302,13 @@ test('stripe webhook is strictly idempotent and atomically deduplicates repeated
     ], $rawPayload);
     $res2->assertStatus(200);
     $res2->assertJson(['status' => 'already_processed']);
-
-    // Mails still queued only 1 time total
-    Mail::assertQueued(PaymentReceived::class, 1);
 });
 
 test('stripe webhook checkout.session.completed confirms booking only when payment_status is paid', function () {
-    Mail::fake();
+    $mailService = Mockery::mock(TransactionalMailService::class);
+    $mailService->shouldReceive('sendPaymentReceived')->once()->andReturn(true);
+    $mailService->shouldReceive('sendBookingNotification')->once()->andReturn(true);
+    app()->instance(TransactionalMailService::class, $mailService);
 
     $activity = BookableItem::factory()->create();
     $schedule = Schedule::factory()->for($activity)->create();
@@ -358,13 +358,12 @@ test('stripe webhook checkout.session.completed confirms booking only when payme
     expect($booking->payment_status)->toBe(PaymentStatus::Paid);
     expect($payment->status)->toBe('succeeded');
     expect($payment->gateway_payment_intent_id)->toBe('pi_test_paid_intent');
-
-    Mail::assertQueued(PaymentReceived::class, fn ($mail) => $mail->hasTo($booking->participant_email));
-    Mail::assertQueued(NewBookingAdminNotification::class, fn ($mail) => $mail->hasTo(config('topgrade.emails.bookings')));
 });
 
 test('stripe webhook checkout.session.completed does not confirm booking if payment_status is unpaid', function () {
-    Mail::fake();
+    $mailService = Mockery::mock(TransactionalMailService::class);
+    $mailService->shouldNotReceive('sendPaymentReceived', 'sendBookingNotification');
+    app()->instance(TransactionalMailService::class, $mailService);
 
     $activity = BookableItem::factory()->create();
     $schedule = Schedule::factory()->for($activity)->create();
@@ -412,7 +411,6 @@ test('stripe webhook checkout.session.completed does not confirm booking if paym
     expect($booking->status)->toBe(BookingStatus::Pending);
     expect($booking->payment_status)->toBe(PaymentStatus::Unpaid);
     expect($payment->status)->toBe('pending');
-    Mail::assertNothingQueued();
 });
 
 test('stripe webhook checkout.session.expired marks payment cancelled and booking cancelled', function () {
@@ -629,7 +627,10 @@ test('expiry race convergence: stripe checkout.session.expired arrives first, th
 });
 
 test('replayed or duplicate webhook produces exactly one customer receipt and one admin notification', function () {
-    Mail::fake();
+    $mailService = Mockery::mock(TransactionalMailService::class);
+    $mailService->shouldReceive('sendPaymentReceived')->once()->andReturn(true);
+    $mailService->shouldReceive('sendBookingNotification')->once()->andReturn(true);
+    app()->instance(TransactionalMailService::class, $mailService);
 
     $activity = BookableItem::factory()->create();
     $schedule = Schedule::factory()->for($activity)->create();
@@ -681,10 +682,6 @@ test('replayed or duplicate webhook produces exactly one customer receipt and on
     $this->call('POST', '/webhooks/stripe', [], [], [], [
         'HTTP_STRIPE_SIGNATURE' => $sigHeader2,
     ], $rawPayload2)->assertStatus(200);
-
-    // Invariant: exactly 1 customer receipt and 1 admin notice dispatched in total
-    Mail::assertQueued(PaymentReceived::class, 1);
-    Mail::assertQueued(NewBookingAdminNotification::class, 1);
 });
 
 test('stripe checkout.session.expired does not cancel an already confirmed booking', function () {
