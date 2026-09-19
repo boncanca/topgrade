@@ -9,6 +9,7 @@ use App\Http\Controllers\InquiryController;
 use App\Http\Controllers\MediaController;
 use App\Http\Controllers\MenuController;
 use App\Http\Controllers\PublicBookingController;
+use App\Http\Controllers\PublicPageController;
 use App\Http\Controllers\ScheduleController;
 use App\Models\BookableItem;
 use App\Models\Content;
@@ -16,13 +17,18 @@ use Illuminate\Support\Facades\Route;
 use Spatie\Sitemap\Sitemap;
 use Spatie\Sitemap\Tags\Url;
 
-// Public routes
+// Public homepage & editorial
 Route::get('/', [PublicBookingController::class, 'home'])->name('home');
-Route::get('/about', [PublicBookingController::class, 'about'])->name('about');
-Route::get('/contact', [PublicBookingController::class, 'contact'])->name('contact');
-Route::post('/contact', [PublicBookingController::class, 'submitContact'])->name('contact.store');
-Route::get('/privacy', [PublicBookingController::class, 'privacy'])->name('privacy');
-Route::get('/terms', [PublicBookingController::class, 'terms'])->name('terms');
+
+// Public club information & governance pages
+Route::get('/about', [PublicPageController::class, 'about'])->name('about');
+Route::get('/contact', [PublicPageController::class, 'contact'])->name('contact');
+Route::post('/contact', [PublicPageController::class, 'submitContact'])->name('contact.store');
+Route::get('/safeguarding', [PublicPageController::class, 'safeguarding'])->name('safeguarding');
+Route::get('/accessibility', [PublicPageController::class, 'accessibility'])->name('accessibility');
+Route::get('/cookies', [PublicPageController::class, 'cookies'])->name('cookies');
+Route::get('/privacy', [PublicPageController::class, 'privacy'])->name('privacy');
+Route::get('/terms', [PublicPageController::class, 'terms'])->name('terms');
 
 // Editorial: Articles
 Route::get('/articles', [PublicBookingController::class, 'articles'])->name('articles.index');
@@ -45,8 +51,11 @@ Route::get('/sitemap.xml', function () {
         ->add(Url::create('/about')->setPriority(0.8)->setChangeFrequency('monthly'))
         ->add(Url::create('/articles')->setPriority(0.8)->setChangeFrequency('daily'))
         ->add(Url::create('/contact')->setPriority(0.7)->setChangeFrequency('monthly'))
-        ->add(Url::create('/privacy')->setPriority(0.3)->setChangeFrequency('yearly'))
-        ->add(Url::create('/terms')->setPriority(0.3)->setChangeFrequency('yearly'));
+        ->add(Url::create('/safeguarding')->setPriority(0.5)->setChangeFrequency('monthly'))
+        ->add(Url::create('/accessibility')->setPriority(0.4)->setChangeFrequency('yearly'))
+        ->add(Url::create('/cookies')->setPriority(0.4)->setChangeFrequency('yearly'))
+        ->add(Url::create('/privacy')->setPriority(0.4)->setChangeFrequency('yearly'))
+        ->add(Url::create('/terms')->setPriority(0.4)->setChangeFrequency('yearly'));
 
     // Dynamic published articles
     Content::published()
