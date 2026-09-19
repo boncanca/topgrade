@@ -123,7 +123,7 @@ const sportsClubSchema = {
     'logo': 'https://topgradelondonfc.co.uk/logo.png',
     'image': 'https://topgradelondonfc.co.uk/images/og/topgrade-london-fc.jpg',
     'description': 'TopGrade London FC is a youth football club based in Tottenham, London, providing structured coaching, teams, and matchday football for young players aged U7 to U16.',
-    'email': 'topgradelondonfc@hotmail.com',
+    'email': 'info@topgradelondonfc.co.uk',
     'sport': 'Football',
     'address': {
         '@type': 'PostalAddress',
@@ -331,7 +331,7 @@ onMounted(async () => {
     if (reduceMotion || !ball) {
         if (ball) {
             ball.style.transform = 'translate3d(-50%, calc(-50% + 30vh), 0) scale(0.95)';
-            ball.style.opacity = '0.9';
+            ball.style.opacity = '0.95';
         }
         root.style.setProperty('--zoom', '1');
         return;
@@ -343,7 +343,7 @@ onMounted(async () => {
      * routing gracefully through negative space.
      */
     const STOPS = [
-        { sec: 'hero', at: 0.00, x: 0, y: 32, s: 0.95, r: 0, o: 0.70, p: 0.12, m: { y: 28, s: 0.65, o: 0.65 } },
+        { sec: 'hero', at: 0.00, x: 0, y: 30, s: 0.95, r: 0, o: 0.95, p: 0.16, m: { y: 28, s: 0.75, o: 0.88 } },
         { sec: 'hero', at: 0.85, x: -38, y: 28, s: 0.45, r: 160, o: 0.65, p: 0.10, m: { x: -30, y: 28, s: 0.32, o: 0.60 } },
         { sec: 'develop', at: 0.50, x: -42, y: 8, s: 0.42, r: 250, o: 0.65, p: 0.07, m: { x: -36, y: 12, s: 0.28, o: 0.60 } },
         { sec: 'creed', at: 0.50, x: 0, y: 0, s: 2.90, r: 430, o: 0.95, p: 0.16, m: { s: 2.35, o: 0.90 } },
@@ -544,9 +544,9 @@ onUnmounted(() => {
         <section
             id="hero"
             class="relative min-h-[92vh] sm:min-h-[105vh] flex flex-col items-center justify-start text-center pt-16 sm:pt-28 pb-16 sm:pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden"
-            style="z-index: 10; background: var(--surface-hero);"
+            style="z-index: 10; background: transparent;"
         >
-            <div class="max-w-5xl mx-auto flex flex-col items-center relative z-10">
+            <div class="max-w-5xl mx-auto flex flex-col items-center relative z-20">
                 <!-- Drop Animated Crest -->
                 <div class="mb-3 sm:mb-4 animate-hero-drop">
                     <div class="bg-white rounded p-1.5 shadow-sm inline-block">
@@ -635,8 +635,8 @@ onUnmounted(() => {
             <img
                 src="/hero_player_cutout.webp"
                 alt="TopGrade player action"
-                class="absolute right-[-10%] sm:right-[0%] top-[40%] sm:top-[28%] w-[60vw] sm:w-[35vw] max-w-[480px] pointer-events-none opacity-30 sm:opacity-85 select-none transition-transform duration-300"
-                style="z-index: 1;"
+                class="absolute right-[-10%] sm:right-[0%] top-[40%] sm:top-[28%] w-[60vw] sm:w-[35vw] max-w-[480px] pointer-events-none opacity-35 sm:opacity-90 select-none transition-transform duration-300"
+                style="z-index: 10;"
                 data-par="0.05"
             />
 
