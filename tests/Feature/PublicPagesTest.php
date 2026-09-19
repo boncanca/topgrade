@@ -96,7 +96,7 @@ test('contact form prevents duplicate rapid submissions', function () {
     expect(Inquiry::where('email', 'duplicate@example.com')->count())->toBe(1);
 });
 
-test('cms privacy page renders published content', function () {
+test('cms privacy page renders published content via canonical and alias routes', function () {
     $pageType = ContentType::firstOrCreate(['slug' => 'page'], [
         'name' => 'Page',
         'kind' => 'collection',
@@ -117,6 +117,16 @@ test('cms privacy page renders published content', function () {
         ]
     );
 
+    // Canonical route
+    $this->get('/privacy-policy')
+        ->assertOk()
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('Public/Privacy')
+            ->has('page')
+            ->where('page.slug', 'privacy')
+        );
+
+    // Alias route
     $this->get('/privacy')
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
@@ -126,7 +136,7 @@ test('cms privacy page renders published content', function () {
         );
 });
 
-test('cms terms page renders published content', function () {
+test('cms terms page renders published content via canonical and alias routes', function () {
     $pageType = ContentType::firstOrCreate(['slug' => 'page'], [
         'name' => 'Page',
         'kind' => 'collection',
@@ -147,6 +157,16 @@ test('cms terms page renders published content', function () {
         ]
     );
 
+    // Canonical route
+    $this->get('/terms-and-conditions')
+        ->assertOk()
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('Public/Terms')
+            ->has('page')
+            ->where('page.slug', 'terms')
+        );
+
+    // Alias route
     $this->get('/terms')
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
@@ -156,7 +176,43 @@ test('cms terms page renders published content', function () {
         );
 });
 
-test('unpublished cms pages return 404 on public route', function () {
+test('cms pages resolve when cms slug uses hyphenated canonical name', function () {
+    $pageType = ContentType::firstOrCreate(['slug' => 'page'], [
+        'name' => 'Page',
+        'kind' => 'collection',
+        'template' => 'default',
+        'is_system' => true,
+        'is_active' => true,
+    ]);
+
+    Content::updateOrCreate(
+        ['slug' => 'privacy-policy'],
+        [
+            'content_type_id' => $pageType->id,
+            'title' => 'Privacy Policy Canonical Slug',
+            'excerpt' => 'Privacy notice',
+            'content' => '<p>Canonical slug content</p>',
+            'status' => 'published',
+            'published_at' => now(),
+        ]
+    );
+
+    $this->get('/privacy-policy')
+        ->assertOk()
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('Public/Privacy')
+            ->where('page.slug', 'privacy-policy')
+        );
+
+    $this->get('/privacy')
+        ->assertOk()
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('Public/Privacy')
+            ->where('page.slug', 'privacy-policy')
+        );
+});
+
+test('unpublished cms pages return 404 on public routes', function () {
     $pageType = ContentType::firstOrCreate(['slug' => 'page'], [
         'name' => 'Page',
         'kind' => 'collection',
@@ -177,6 +233,7 @@ test('unpublished cms pages return 404 on public route', function () {
         ]
     );
 
+    $this->get('/privacy-policy')->assertNotFound();
     $this->get('/privacy')->assertNotFound();
 });
 
@@ -197,8 +254,8 @@ test('sitemap xml endpoint returns valid xml with public routes', function () {
 
     expect($content)->toContain('/training');
     expect($content)->toContain('/about');
-    expect($content)->toContain('/privacy');
-    expect($content)->toContain('/terms');
+    expect($content)->toContain('/privacy-policy');
+    expect($content)->toContain('/terms-and-conditions');
 });
 
 test('central topgrade email configuration resolves correct defaults', function () {

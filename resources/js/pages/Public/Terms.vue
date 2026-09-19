@@ -33,7 +33,7 @@ defineOptions({
     <SeoHead
         title="Terms &amp; Conditions | TopGrade London FC"
         description="TopGrade London FC club terms and conditions, trial session policies, health guidelines, and player codes of conduct."
-        path="/terms"
+        path="/terms-and-conditions"
     />
 
     <div class="min-h-screen bg-tg-bg text-tg-text py-20 px-4 sm:px-6 lg:px-8">
@@ -69,7 +69,7 @@ defineOptions({
                 <Link href="/" class="tg-link inline-flex items-center gap-1.5 text-xs">
                     ← Return to Home
                 </Link>
-                <Link href="/privacy" class="tg-link inline-flex items-center gap-1.5 text-xs">
+                <Link href="/privacy-policy" class="tg-link inline-flex items-center gap-1.5 text-xs">
                     Privacy Policy →
                 </Link>
             </div>

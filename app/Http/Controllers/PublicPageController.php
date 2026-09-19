@@ -91,7 +91,7 @@ class PublicPageController
     public function privacy(): Response
     {
         $page = Content::published()
-            ->where('slug', 'privacy')
+            ->whereIn('slug', ['privacy-policy', 'privacy'])
             ->with('blocks')
             ->firstOrFail();
 
@@ -103,7 +103,7 @@ class PublicPageController
     public function terms(): Response
     {
         $page = Content::published()
-            ->where('slug', 'terms')
+            ->whereIn('slug', ['terms-and-conditions', 'terms'])
             ->with('blocks')
             ->firstOrFail();
 

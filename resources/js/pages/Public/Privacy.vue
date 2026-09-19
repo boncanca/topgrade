@@ -33,7 +33,7 @@ defineOptions({
     <SeoHead
         title="Privacy Policy | TopGrade London FC"
         description="TopGrade London FC privacy policy detailing how we collect, protect, and process parent, guardian, and youth player information under UK GDPR."
-        path="/privacy"
+        path="/privacy-policy"
     />
 
     <div class="min-h-screen bg-tg-bg text-tg-text py-20 px-4 sm:px-6 lg:px-8">
@@ -69,7 +69,7 @@ defineOptions({
                 <Link href="/" class="tg-link inline-flex items-center gap-1.5 text-xs">
                     ← Return to Home
                 </Link>
-                <Link href="/terms" class="tg-link inline-flex items-center gap-1.5 text-xs">
+                <Link href="/terms-and-conditions" class="tg-link inline-flex items-center gap-1.5 text-xs">
                     Terms &amp; Conditions →
                 </Link>
             </div>

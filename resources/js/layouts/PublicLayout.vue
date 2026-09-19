@@ -31,8 +31,8 @@ const infoLinks = [
 ];
 
 const supportLinks = [
-    { label: 'Privacy Policy', href: '/privacy' },
-    { label: 'Terms & Conditions', href: '/terms' },
+    { label: 'Privacy Policy', href: '/privacy-policy' },
+    { label: 'Terms & Conditions', href: '/terms-and-conditions' },
     { label: 'Contact Club', href: '/contact' },
 ];
 
@@ -248,8 +248,8 @@ watch(() => page.url, () => {
                 >
                     <p>© 2026 TopGrade London FC CIC. All rights reserved.</p>
                     <div class="flex flex-wrap items-center gap-6">
-                        <Link href="/privacy" class="tg-link text-xs">Privacy Policy</Link>
-                        <Link href="/terms" class="tg-link text-xs">Terms &amp; Conditions</Link>
+                        <Link href="/privacy-policy" class="tg-link text-xs">Privacy Policy</Link>
+                        <Link href="/terms-and-conditions" class="tg-link text-xs">Terms &amp; Conditions</Link>
                     </div>
                 </div>
             </div>

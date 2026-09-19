@@ -28,8 +28,14 @@ Route::post('/webhooks/stripe', [StripeWebhookController::class, 'handle'])->nam
 Route::get('/about', [PublicPageController::class, 'about'])->name('about');
 Route::get('/contact', [PublicPageController::class, 'contact'])->name('contact');
 Route::post('/contact', [PublicPageController::class, 'submitContact'])->name('contact.store');
-Route::get('/privacy', [PublicPageController::class, 'privacy'])->name('privacy');
-Route::get('/terms', [PublicPageController::class, 'terms'])->name('terms');
+
+// Privacy Policy (canonical /privacy-policy with /privacy alias)
+Route::get('/privacy-policy', [PublicPageController::class, 'privacy'])->name('privacy');
+Route::get('/privacy', [PublicPageController::class, 'privacy']);
+
+// Terms & Conditions (canonical /terms-and-conditions with /terms alias)
+Route::get('/terms-and-conditions', [PublicPageController::class, 'terms'])->name('terms');
+Route::get('/terms', [PublicPageController::class, 'terms']);
 
 // Editorial: Articles
 Route::get('/articles', [PublicBookingController::class, 'articles'])->name('articles.index');
@@ -52,8 +58,8 @@ Route::get('/sitemap.xml', function () {
         ->add(Url::create('/about')->setPriority(0.8)->setChangeFrequency('monthly'))
         ->add(Url::create('/articles')->setPriority(0.8)->setChangeFrequency('daily'))
         ->add(Url::create('/contact')->setPriority(0.7)->setChangeFrequency('monthly'))
-        ->add(Url::create('/privacy')->setPriority(0.5)->setChangeFrequency('yearly'))
-        ->add(Url::create('/terms')->setPriority(0.5)->setChangeFrequency('yearly'));
+        ->add(Url::create('/privacy-policy')->setPriority(0.5)->setChangeFrequency('yearly'))
+        ->add(Url::create('/terms-and-conditions')->setPriority(0.5)->setChangeFrequency('yearly'));
 
     // Dynamic published articles
     Content::published()
