@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Mail\BookingReceived;
+use App\Mail\NewBookingAdminNotification;
 use App\Models\BookableItem;
 use App\Models\Booking;
 use App\Models\Contact;
@@ -242,6 +243,18 @@ class PublicBookingController
                 ]);
             }
 
+            // Prevent duplicate booking submission for the same participant email on this schedule
+            $alreadyBooked = Booking::where('schedule_id', $schedule->id)
+                ->where('participant_email', $validated['participant_email'])
+                ->whereIn('status', ['confirmed', 'pending'])
+                ->exists();
+
+            if ($alreadyBooked) {
+                throw ValidationException::withMessages([
+                    'participant_email' => 'A booking has already been submitted for this email address on this session.',
+                ]);
+            }
+
             [$firstName, $lastName] = $this->parseParticipantName($validated['participant_name']);
 
             $phone = data_get($validated, 'participant_phone');
@@ -278,6 +291,9 @@ class PublicBookingController
         });
 
         Mail::to($booking->participant_email)->send(new BookingReceived($booking));
+
+        $adminEmail = config('topgrade.emails.bookings', 'bookings@topgradelondonfc.co.uk');
+        Mail::to($adminEmail)->send(new NewBookingAdminNotification($booking));
 
         return redirect()->route('sessions.confirmation', $booking->reference);
     }

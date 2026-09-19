@@ -47,7 +47,7 @@ class BookingController extends Controller
                     ->lockForUpdate()
                     ->first();
 
-                if ($schedule && $schedule->isFull()) {
+                if ($schedule && $schedule->isFull($booking->id)) {
                     throw ValidationException::withMessages([
                         'status' => 'Cannot confirm booking: schedule is already at full capacity.',
                     ]);

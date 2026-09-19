@@ -40,16 +40,17 @@ class Schedule extends Model
         return (int) ($this->capacity ?? $this->bookableItem?->capacity ?? 0);
     }
 
-    public function bookedCount(): int
+    public function bookedCount(?int $excludeBookingId = null): int
     {
         return $this->bookings()
-            ->whereIn('status', ['confirmed', 'completed'])
+            ->when($excludeBookingId, fn ($query) => $query->where('id', '!=', $excludeBookingId))
+            ->whereIn('status', ['confirmed', 'completed', 'pending'])
             ->count();
     }
 
-    public function isFull(): bool
+    public function isFull(?int $excludeBookingId = null): bool
     {
-        return $this->bookedCount() >= $this->effectiveCapacity();
+        return $this->bookedCount($excludeBookingId) >= $this->effectiveCapacity();
     }
 
     public function isAvailable(): bool
