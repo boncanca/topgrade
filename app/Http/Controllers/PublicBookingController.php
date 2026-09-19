@@ -2,14 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Mail\BookingReceived;
+use App\Enums\BookingStatus;
+use App\Enums\PaymentStatus;
+use App\Mail\BookingConfirmed;
 use App\Mail\NewBookingAdminNotification;
 use App\Models\BookableItem;
 use App\Models\Booking;
 use App\Models\Contact;
 use App\Models\Content;
 use App\Models\Inquiry;
+use App\Models\Payment;
 use App\Models\Schedule;
+use App\Services\PaymentService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -17,6 +21,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
+use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
 class PublicBookingController
 {
@@ -28,7 +33,7 @@ class PublicBookingController
 
         $pageContent = Content::published()
             ->where('slug', 'home')
-            ->with(['blocks', 'seo'])
+            ->with(['blocks' => fn ($q) => $q->orderBy('sort_order')])
             ->first();
 
         return Inertia::render('Public/Home', [
@@ -49,46 +54,29 @@ class PublicBookingController
         ]);
     }
 
-    public function about(): Response
-    {
-        return Inertia::render('Public/About');
-    }
-
-    public function privacy(): Response
-    {
-        $page = Content::published()->where('slug', 'privacy')->first();
-
-        return Inertia::render('Public/Privacy', [
-            'page' => $page,
-        ]);
-    }
-
-    public function terms(): Response
-    {
-        $page = Content::published()->where('slug', 'terms')->first();
-
-        return Inertia::render('Public/Terms', [
-            'page' => $page,
-        ]);
-    }
-
     public function articles(): Response
     {
-        $articles = Content::published()
+        $paginated = Content::published()
             ->whereHas('contentType', fn ($q) => $q->where('slug', 'article'))
-            ->latest('published_at')
-            ->paginate(12);
+            ->orderByDesc('published_at')
+            ->paginate(9);
 
         return Inertia::render('Public/Articles/Index', [
-            'articles' => $articles,
+            'articles' => $paginated->items(),
+            'meta' => [
+                'current_page' => $paginated->currentPage(),
+                'last_page' => $paginated->lastPage(),
+                'per_page' => $paginated->perPage(),
+                'total' => $paginated->total(),
+            ],
         ]);
     }
 
     public function articleShow(string $slug): Response
     {
         $article = Content::published()
-            ->whereHas('contentType', fn ($q) => $q->where('slug', 'article'))
             ->where('slug', $slug)
+            ->whereHas('contentType', fn ($q) => $q->where('slug', 'article'))
             ->firstOrFail();
 
         return Inertia::render('Public/Articles/Show', [
@@ -197,7 +185,7 @@ class PublicBookingController
         ]);
     }
 
-    public function book(Request $request): RedirectResponse
+    public function book(Request $request, PaymentService $paymentService): SymfonyResponse
     {
         $validated = $request->validate([
             'bookable_item_id' => 'required|exists:bookable_items,id',
@@ -209,7 +197,13 @@ class PublicBookingController
             'notes' => 'nullable|string|max:1000',
         ]);
 
-        $booking = DB::transaction(function () use ($validated) {
+        /** @var BookableItem $bookableItem */
+        $bookableItem = BookableItem::findOrFail($validated['bookable_item_id']);
+        $requiresPayment = (bool) $bookableItem->requires_payment && (float) ($bookableItem->price ?? 0) > 0;
+
+        /** @var Booking $booking */
+        /** @var Payment|null $payment */
+        [$booking, $payment] = DB::transaction(function () use ($validated, $bookableItem, $requiresPayment) {
             /** @var Schedule $schedule */
             $schedule = Schedule::where('id', $validated['schedule_id'])
                 ->lockForUpdate()
@@ -236,7 +230,7 @@ class PublicBookingController
                 ]);
             }
 
-            // Check capacity
+            // Check capacity (counting confirmed + active pending reservations)
             if ($schedule->isFull()) {
                 throw ValidationException::withMessages([
                     'schedule_id' => 'This session is now full.',
@@ -246,7 +240,7 @@ class PublicBookingController
             // Prevent duplicate booking submission for the same participant email on this schedule
             $alreadyBooked = Booking::where('schedule_id', $schedule->id)
                 ->where('participant_email', $validated['participant_email'])
-                ->whereIn('status', ['confirmed', 'pending'])
+                ->activeReservation()
                 ->exists();
 
             if ($alreadyBooked) {
@@ -256,7 +250,6 @@ class PublicBookingController
             }
 
             [$firstName, $lastName] = $this->parseParticipantName($validated['participant_name']);
-
             $phone = data_get($validated, 'participant_phone');
             $notes = data_get($validated, 'notes');
 
@@ -274,28 +267,92 @@ class PublicBookingController
                 $contact->update(['phone' => $phone]);
             }
 
-            return Booking::create([
+            $bookingReference = Booking::generateReference();
+
+            if ($requiresPayment) {
+                $expiresAt = now()->addMinutes(30);
+
+                $createdBooking = Booking::create([
+                    'bookable_item_id' => $schedule->bookable_item_id,
+                    'schedule_id' => $schedule->id,
+                    'contact_id' => $contact->id,
+                    'reference' => $bookingReference,
+                    'participant_name' => $validated['participant_name'],
+                    'participant_email' => $validated['participant_email'],
+                    'participant_phone' => $phone,
+                    'scheduled_at' => $schedule->starts_at,
+                    'timezone' => $validated['timezone'],
+                    'notes' => $notes,
+                    'amount' => $bookableItem->price,
+                    'currency' => $bookableItem->currency ?? 'GBP',
+                    'status' => BookingStatus::Pending->value,
+                    'payment_status' => PaymentStatus::Unpaid->value,
+                    'payment_expires_at' => $expiresAt,
+                ]);
+
+                $createdPayment = Payment::create([
+                    'booking_id' => $createdBooking->id,
+                    'reference' => Payment::generateReference(),
+                    'gateway' => 'stripe',
+                    'status' => 'pending',
+                    'amount' => $createdBooking->amount,
+                    'currency' => $createdBooking->currency,
+                    'customer_email' => $createdBooking->participant_email,
+                    'expires_at' => $expiresAt,
+                ]);
+
+                return [$createdBooking, $createdPayment];
+            }
+
+            // Free session (e.g. trial): confirms immediately, no payment required
+            $createdBooking = Booking::create([
                 'bookable_item_id' => $schedule->bookable_item_id,
                 'schedule_id' => $schedule->id,
                 'contact_id' => $contact->id,
-                'reference' => Booking::generateReference(),
+                'reference' => $bookingReference,
                 'participant_name' => $validated['participant_name'],
                 'participant_email' => $validated['participant_email'],
                 'participant_phone' => $phone,
                 'scheduled_at' => $schedule->starts_at,
                 'timezone' => $validated['timezone'],
                 'notes' => $notes,
-                'status' => 'pending',
-                'payment_status' => 'unpaid',
+                'amount' => 0.00,
+                'currency' => 'GBP',
+                'status' => BookingStatus::Confirmed->value,
+                'payment_status' => PaymentStatus::NotRequired->value,
+                'payment_expires_at' => null,
             ]);
+
+            return [$createdBooking, null];
         });
 
-        Mail::to($booking->participant_email)->send(new BookingReceived($booking));
+        // 1. FREE SESSION: confirm immediately & dispatch notifications
+        if (! $requiresPayment) {
+            Mail::to($booking->participant_email)->send(new BookingConfirmed($booking));
 
-        $adminEmail = config('topgrade.emails.bookings', 'bookings@topgradelondonfc.co.uk');
-        Mail::to($adminEmail)->send(new NewBookingAdminNotification($booking));
+            $adminEmail = config('topgrade.emails.bookings', 'bookings@topgradelondonfc.co.uk');
+            Mail::to($adminEmail)->send(new NewBookingAdminNotification($booking));
 
-        return redirect()->route('sessions.confirmation', $booking->reference);
+            return redirect()->route('sessions.confirmation', $booking->reference);
+        }
+
+        // 2. PAID SESSION: initiate checkout session with outbound idempotency
+        // NOTE: No confirmation emails sent here. Verified Stripe webhook is authoritative.
+        if (! $paymentService->isConfigured()) {
+            throw ValidationException::withMessages([
+                'schedule_id' => 'Payment gateway is currently being configured. Please contact info@topgradelondonfc.co.uk to reserve this session.',
+            ]);
+        }
+
+        $session = $paymentService->createCheckoutSession($booking, ['payment' => $payment]);
+
+        if (empty($session['url'])) {
+            throw ValidationException::withMessages([
+                'schedule_id' => 'Unable to redirect to checkout gateway. Please try again or contact the club.',
+            ]);
+        }
+
+        return Inertia::location($session['url']);
     }
 
     private function parseParticipantName(string $fullName): array
@@ -311,7 +368,7 @@ class PublicBookingController
     public function confirmation(Booking $booking): Response
     {
         return Inertia::render('Public/BookingConfirmation', [
-            'booking' => $booking->load('bookableItem'),
+            'booking' => $booking->load(['bookableItem', 'latestPayment']),
         ]);
     }
 }

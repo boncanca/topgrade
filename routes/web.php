@@ -11,6 +11,7 @@ use App\Http\Controllers\MenuController;
 use App\Http\Controllers\PublicBookingController;
 use App\Http\Controllers\PublicPageController;
 use App\Http\Controllers\ScheduleController;
+use App\Http\Controllers\StripeWebhookController;
 use App\Models\BookableItem;
 use App\Models\Content;
 use Illuminate\Support\Facades\Route;
@@ -19,6 +20,9 @@ use Spatie\Sitemap\Tags\Url;
 
 // Public homepage & editorial
 Route::get('/', [PublicBookingController::class, 'home'])->name('home');
+
+// Stripe webhook endpoint (verified via HMAC signature and CSRF-exempt)
+Route::post('/webhooks/stripe', [StripeWebhookController::class, 'handle'])->name('webhooks.stripe');
 
 // Public club information & governance pages
 Route::get('/about', [PublicPageController::class, 'about'])->name('about');
