@@ -44,7 +44,7 @@ class Schedule extends Model
     {
         return $this->bookings()
             ->when($excludeBookingId, fn ($query) => $query->where('id', '!=', $excludeBookingId))
-            ->whereIn('status', ['confirmed', 'completed', 'pending'])
+            ->activeReservation()
             ->count();
     }
 

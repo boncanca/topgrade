@@ -140,7 +140,7 @@ class TGLFCSeeder extends Seeder
                 'slug' => 'privacy',
                 'title' => 'Privacy Policy',
                 'excerpt' => 'Privacy policy and data protection guidelines for TopGrade London FC under UK GDPR.',
-                'content' => <<<HTML
+                'content' => <<<'HTML'
 <section class="space-y-3">
     <h2 class="text-xl font-normal uppercase tracking-wide text-tg-text-strong" style="font-family: var(--tg-display);">1. Who We Are</h2>
     <p class="text-tg-text">TopGrade London FC operates as <strong class="text-tg-text-strong">TOPGRADE LONDON FC CIC</strong> (Company No. 14087076), a Community Interest Company registered in England and Wales. Our registered office is 30 Broadwater Road, London, England, N17 6ES.</p>
@@ -243,7 +243,7 @@ HTML,
                 'slug' => 'terms',
                 'title' => 'Terms & Conditions',
                 'excerpt' => 'Terms and conditions for participation, trials, and sessions at TopGrade London FC.',
-                'content' => <<<HTML
+                'content' => <<<'HTML'
 <section class="space-y-3">
     <h2 class="text-xl font-normal uppercase tracking-wide text-tg-text-strong" style="font-family: var(--tg-display);">1. Agreement &amp; Organization</h2>
     <p class="text-tg-text">These Terms and Conditions govern the use of the TopGrade London FC website and participation in youth football training, introductory trials, and match activities organised by <strong class="text-tg-text-strong">TOPGRADE LONDON FC CIC</strong> (Company No. 14087076). By using our website or submitting a booking, parents and guardians agree to these terms on behalf of themselves and participating youth players.</p>

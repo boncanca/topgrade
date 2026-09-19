@@ -23,6 +23,7 @@ class StoreBookableItemRequest extends FormRequest
             'currency' => 'required|string|size:3',
             'capacity' => 'nullable|integer|min:1',
             'booking_label' => 'nullable|string|max:255',
+            'requires_payment' => 'boolean',
             'is_active' => 'boolean',
         ];
     }
