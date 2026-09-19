@@ -31,16 +31,6 @@ defineProps<{
 defineOptions({
     layout: PublicLayout,
 });
-
-function formatPrice(priceStr: string, currencyStr: string): string {
-    if (priceStr === '0' || priceStr === '0.00') {
-        return 'FREE TRIAL';
-    }
-    return new Intl.NumberFormat('en-GB', {
-        style: 'currency',
-        currency: currencyStr || 'GBP',
-    }).format(parseFloat(priceStr));
-}
 </script>
 
 <template>
@@ -81,13 +71,22 @@ function formatPrice(priceStr: string, currencyStr: string): string {
                     class="rounded-sm bg-tg-bg-deep/80 border border-tg-border p-6 flex flex-col justify-between space-y-6 transition-all hover:border-tg-border-strong"
                 >
                     <div class="space-y-4">
-                        <div class="flex justify-between items-start">
+                        <div class="flex justify-between items-center">
                             <span class="px-2.5 py-1 rounded-xs bg-tg-bg text-tg-text-muted border border-tg-border text-xs font-medium flex items-center gap-1.5">
                                 <Clock class="w-3.5 h-3.5 text-tg-accent" />
                                 <span>{{ activity.duration_minutes }} mins</span>
                             </span>
-                            <span class="text-base font-bold text-tg-text-strong">
-                                {{ formatPrice(activity.price, activity.currency) }}
+                            <span
+                                v-if="activity.slug.includes('trial')"
+                                class="px-2.5 py-1 rounded-xs bg-tg-accent text-tg-text-strong text-[11px] font-bold uppercase tracking-wider"
+                            >
+                                Free Trial
+                            </span>
+                            <span
+                                v-else
+                                class="px-2.5 py-1 rounded-xs bg-tg-bg border border-tg-border text-tg-text-muted text-[11px] font-semibold uppercase tracking-wider"
+                            >
+                                Club Training
                             </span>
                         </div>
 

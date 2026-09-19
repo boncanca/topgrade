@@ -269,19 +269,19 @@ onMounted(async () => {
 
     /*
      * Ball Waypoints (Atmospheric Visual Thread):
-     * Ball floats in the background space and stays perceptible through subtle translucent surfaces,
+     * Ball floats in the background space and stays perceptible through controlled translucent surfaces (rgba(8, 4, 15, 0.88)),
      * routing gracefully through negative space.
      */
     const STOPS = [
-        { sec: 'hero', at: 0.00, x: 0, y: 32, s: 0.95, r: 0, o: 0.92, p: 0.22, m: { y: 28, s: 0.65, o: 0.80 } },
-        { sec: 'hero', at: 0.85, x: -38, y: 28, s: 0.42, r: 160, o: 0.60, p: 0.14, m: { x: -30, y: 28, s: 0.30, o: 0.45 } },
-        { sec: 'develop', at: 0.50, x: -42, y: 8, s: 0.38, r: 250, o: 0.38, p: 0.06, m: { x: -36, y: 12, s: 0.26, o: 0.25 } },
+        { sec: 'hero', at: 0.00, x: 0, y: 32, s: 0.95, r: 0, o: 0.95, p: 0.22, m: { y: 28, s: 0.65, o: 0.85 } },
+        { sec: 'hero', at: 0.85, x: -38, y: 28, s: 0.45, r: 160, o: 0.85, p: 0.14, m: { x: -30, y: 28, s: 0.32, o: 0.75 } },
+        { sec: 'develop', at: 0.50, x: -42, y: 8, s: 0.42, r: 250, o: 0.80, p: 0.08, m: { x: -36, y: 12, s: 0.28, o: 0.65 } },
         { sec: 'creed', at: 0.50, x: 0, y: 0, s: 2.90, r: 430, o: 1.00, p: 0.22, m: { s: 2.35 } },
-        { sec: 'train', at: 0.35, x: 40, y: -8, s: 0.36, r: 580, o: 0.35, p: 0.06, m: { x: 34, y: -12, s: 0.24, o: 0.20 } },
-        { sec: 'teams', at: 0.50, x: -38, y: 0, s: 0.38, r: 690, o: 0.36, p: 0.06, m: { x: -32, y: -6, s: 0.24, o: 0.20 } },
-        { sec: 'gallery', at: 0.45, x: 36, y: 4, s: 0.40, r: 780, o: 0.38, p: 0.06, m: { x: 30, y: 6, s: 0.25, o: 0.22 } },
-        { sec: 'matchday', at: 0.50, x: -36, y: 16, s: 0.38, r: 870, o: 0.35, p: 0.06, m: { x: -30, y: 18, s: 0.24, o: 0.20 } },
-        { sec: 'cta', at: 0.50, x: 0, y: 35, s: 0.75, r: 960, o: 0.85, p: 0.18, m: { y: 32, s: 0.55, o: 0.65 } }
+        { sec: 'train', at: 0.35, x: 40, y: -8, s: 0.40, r: 580, o: 0.80, p: 0.08, m: { x: 34, y: -12, s: 0.26, o: 0.65 } },
+        { sec: 'teams', at: 0.50, x: -38, y: 0, s: 0.42, r: 690, o: 0.80, p: 0.08, m: { x: -32, y: -6, s: 0.26, o: 0.65 } },
+        { sec: 'gallery', at: 0.45, x: 36, y: 4, s: 0.44, r: 780, o: 0.82, p: 0.08, m: { x: 30, y: 6, s: 0.28, o: 0.70 } },
+        { sec: 'matchday', at: 0.50, x: -36, y: 16, s: 0.42, r: 870, o: 0.80, p: 0.08, m: { x: -30, y: 18, s: 0.26, o: 0.65 } },
+        { sec: 'cta', at: 0.50, x: 0, y: 35, s: 0.78, r: 960, o: 0.90, p: 0.18, m: { y: 32, s: 0.55, o: 0.75 } }
     ];
 
     interface Point {
@@ -611,7 +611,8 @@ onUnmounted(() => {
         <!-- 03 — DEVELOP YOUR GAME: 01-04 Pillars + Action Photo -->
         <section
             id="develop"
-            class="py-20 sm:py-32 px-4 sm:px-6 lg:px-8 relative z-10 bg-tg-bg/92 border-b border-tg-border"
+            class="py-20 sm:py-32 px-4 sm:px-6 lg:px-8 relative z-10 border-b border-tg-border"
+            style="background: rgba(8, 4, 15, 0.88);"
         >
             <div class="max-w-7xl mx-auto">
                 <div class="grid lg:grid-cols-12 gap-10 lg:gap-16 items-center">
@@ -705,7 +706,8 @@ onUnmounted(() => {
         <!-- 05 — TRAIN WITH US: Editorial Club Timetable + Available Sessions -->
         <section
             id="train"
-            class="py-20 sm:py-32 px-4 sm:px-6 lg:px-8 relative z-10 bg-tg-bg/90 border-y border-tg-border"
+            class="py-20 sm:py-32 px-4 sm:px-6 lg:px-8 relative z-10 border-y border-tg-border"
+            style="background: rgba(8, 4, 15, 0.88);"
         >
             <div class="max-w-7xl mx-auto">
                 <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6 pb-6 border-b border-tg-border">
@@ -864,7 +866,8 @@ onUnmounted(() => {
         <!-- 06 — OUR TEAMS: Asymmetric Editorial Squad Photography (Informational Club Entities) -->
         <section
             id="teams"
-            class="py-20 sm:py-32 px-4 sm:px-6 lg:px-8 relative z-10 bg-tg-bg/90 border-b border-tg-border"
+            class="py-20 sm:py-32 px-4 sm:px-6 lg:px-8 relative z-10 border-b border-tg-border"
+            style="background: rgba(8, 4, 15, 0.88);"
         >
             <div class="max-w-7xl mx-auto">
                 <!-- Section Header -->
@@ -946,7 +949,8 @@ onUnmounted(() => {
         <!-- 07 — MOMENTS: Endless Photographic Ribbon -->
         <section
             id="gallery"
-            class="py-20 sm:py-32 px-4 sm:px-6 lg:px-8 relative z-10 bg-tg-bg/88 border-b border-tg-border"
+            class="py-20 sm:py-32 px-4 sm:px-6 lg:px-8 relative z-10 border-b border-tg-border"
+            style="background: rgba(8, 4, 15, 0.88);"
         >
             <div class="max-w-7xl mx-auto">
                 <div class="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6 pb-6 border-b border-tg-border">
@@ -1003,26 +1007,27 @@ onUnmounted(() => {
             </div>
         </section>
 
-        <!-- 08 — MATCHDAY: Where The Football Happens -->
+        <!-- 08 — MATCHDAY: Home Venues -->
         <section
             id="matchday"
-            class="py-20 sm:py-32 px-4 sm:px-6 lg:px-8 relative z-10 bg-tg-bg/90 border-b border-tg-border"
+            class="py-20 sm:py-32 px-4 sm:px-6 lg:px-8 relative z-10 border-b border-tg-border"
+            style="background: rgba(8, 4, 15, 0.88);"
         >
             <div class="max-w-7xl mx-auto">
                 <div class="grid lg:grid-cols-12 gap-12 lg:gap-16 items-center">
                     <!-- Left Column: Editorial Venue List -->
                     <div class="lg:col-span-6 space-y-8">
                         <div>
-                            <p class="tg-eyebrow" data-reveal>Competition</p>
+                            <p class="tg-eyebrow" data-reveal>Matchday</p>
                             <h2
                                 data-reveal
                                 style="--d: 60ms; font-family: var(--tg-display); font-size: clamp(2.4rem, 6vw, 4.5rem);"
                                 class="text-tg-text-strong mb-4"
                             >
-                                Matchday
+                                Home Venues
                             </h2>
                             <p data-reveal style="--d: 100ms;" class="text-sm max-w-md text-tg-text-muted">
-                                Where TopGrade plays home football across North and East London.
+                                Official home grounds and matchday facilities across North and East London.
                             </p>
                         </div>
 

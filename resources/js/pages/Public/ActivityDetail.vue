@@ -69,14 +69,8 @@ function selectSchedule(id: number | string) {
 const processing = ref(false);
 const submitted = ref(false);
 
-const priceFormatted = computed(() => {
-    if (props.activity.price === '0' || props.activity.price === '0.00') {
-        return 'FREE';
-    }
-    return new Intl.NumberFormat('en-GB', {
-        style: 'currency',
-        currency: props.activity.currency || 'GBP',
-    }).format(parseFloat(props.activity.price));
+const isTrial = computed(() => {
+    return props.activity.slug.includes('trial') || props.activity.price === '0' || props.activity.price === '0.00';
 });
 
 const formErrors = ref<Record<string, string>>({});
@@ -156,8 +150,17 @@ function getSelectedSchedule(): Schedule | undefined {
                         <Users class="w-3.5 h-3.5 text-tg-accent" />
                         <span>Max {{ activity.capacity }} Players</span>
                     </span>
-                    <span class="px-3 py-1 rounded-xs bg-tg-accent text-tg-text-strong text-xs font-bold uppercase tracking-wider">
-                        {{ priceFormatted }}
+                    <span
+                        v-if="isTrial"
+                        class="px-3 py-1 rounded-xs bg-tg-accent text-tg-text-strong text-xs font-bold uppercase tracking-wider"
+                    >
+                        Free Trial
+                    </span>
+                    <span
+                        v-else
+                        class="px-3 py-1 rounded-xs bg-tg-bg-deep border border-tg-border text-tg-text-muted text-xs font-semibold uppercase tracking-wider"
+                    >
+                        Club Training
                     </span>
                 </div>
 
@@ -266,10 +269,12 @@ function getSelectedSchedule(): Schedule | undefined {
                 <div class="sticky top-24 rounded-sm bg-tg-bg-deep border border-tg-border p-6 sm:p-8 space-y-6 shadow-xl">
                     <div class="flex items-baseline justify-between border-b border-tg-border pb-5">
                         <div>
-                            <span class="text-xs font-semibold uppercase tracking-wider text-tg-text-muted">Session Fee</span>
-                            <div class="text-3xl font-bold text-tg-text-strong mt-0.5">{{ priceFormatted }}</div>
+                            <span class="text-xs font-semibold uppercase tracking-wider text-tg-text-muted">Registration</span>
+                            <div class="text-2xl font-bold text-tg-text-strong mt-0.5">
+                                {{ isTrial ? 'Free Trial' : 'Club Training' }}
+                            </div>
                         </div>
-                        <span class="text-xs text-tg-text-muted">per participant</span>
+                        <span class="text-xs text-tg-text-muted">{{ isTrial ? 'No fee required' : 'Session booking' }}</span>
                     </div>
 
                     <!-- Success State -->
