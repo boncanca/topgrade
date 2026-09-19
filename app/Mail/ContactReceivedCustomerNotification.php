@@ -21,7 +21,7 @@ class ContactReceivedCustomerNotification extends Mailable implements ShouldQueu
     {
         return new Envelope(
             from: new Address(
-                config('topgrade.emails.info', 'info@topgradelondonfc.co.uk'),
+                config('topgrade.emails.no_reply', 'no-reply@topgradelondonfc.co.uk'),
                 config('mail.from.name', 'TopGrade London FC')
             ),
             replyTo: [
