@@ -330,8 +330,8 @@ onMounted(async () => {
 
     if (reduceMotion || !ball) {
         if (ball) {
-            ball.style.transform = 'translate3d(-50%, calc(-50% + 30vh), 0) scale(0.95)';
-            ball.style.opacity = '0.95';
+            ball.style.transform = 'translate3d(-50%, calc(-50% + 4vh), 0) scale(1.05)';
+            ball.style.opacity = '0.96';
         }
         root.style.setProperty('--zoom', '1');
         return;
@@ -340,18 +340,19 @@ onMounted(async () => {
     /*
      * Ball Waypoints (Atmospheric Visual Thread):
      * Ball floats in the background space and stays perceptible through controlled translucent surfaces (rgba(8, 4, 15, 0.88)),
-     * routing gracefully through negative space.
+     * routing gracefully through negative space, coming to an intentional resting state at the footer.
      */
     const STOPS = [
-        { sec: 'hero', at: 0.00, x: 0, y: 30, s: 0.95, r: 0, o: 0.95, p: 0.16, m: { y: 28, s: 0.75, o: 0.88 } },
-        { sec: 'hero', at: 0.85, x: -38, y: 28, s: 0.45, r: 160, o: 0.65, p: 0.10, m: { x: -30, y: 28, s: 0.32, o: 0.60 } },
-        { sec: 'develop', at: 0.50, x: -42, y: 8, s: 0.42, r: 250, o: 0.65, p: 0.07, m: { x: -36, y: 12, s: 0.28, o: 0.60 } },
-        { sec: 'creed', at: 0.50, x: 0, y: 0, s: 2.90, r: 430, o: 0.95, p: 0.16, m: { s: 2.35, o: 0.90 } },
-        { sec: 'train', at: 0.35, x: 40, y: -8, s: 0.40, r: 580, o: 0.80, p: 0.04, m: { x: 34, y: -12, s: 0.26, o: 0.75 } },
-        { sec: 'teams', at: 0.50, x: -38, y: 0, s: 0.42, r: 690, o: 0.68, p: 0.07, m: { x: -32, y: -6, s: 0.26, o: 0.65 } },
-        { sec: 'gallery', at: 0.45, x: 36, y: 4, s: 0.44, r: 780, o: 0.65, p: 0.07, m: { x: 30, y: 6, s: 0.28, o: 0.60 } },
-        { sec: 'matchday', at: 0.50, x: -36, y: 16, s: 0.42, r: 870, o: 0.80, p: 0.04, m: { x: -30, y: 18, s: 0.26, o: 0.75 } },
-        { sec: 'cta', at: 0.50, x: 0, y: 35, s: 0.78, r: 960, o: 0.75, p: 0.10, m: { y: 32, s: 0.55, o: 0.70 } }
+        { sec: 'hero', at: 0.00, x: 0, y: 4, s: 1.05, r: 0, o: 0.96, p: 0.16, m: { x: 0, y: 4, s: 0.82, o: 0.92 } },
+        { sec: 'hero', at: 0.85, x: -36, y: 18, s: 0.48, r: 160, o: 0.75, p: 0.10, m: { x: -28, y: 20, s: 0.35, o: 0.70 } },
+        { sec: 'develop', at: 0.50, x: -40, y: 8, s: 0.45, r: 250, o: 0.70, p: 0.07, m: { x: -32, y: 12, s: 0.30, o: 0.65 } },
+        { sec: 'creed', at: 0.50, x: 0, y: 0, s: 2.90, r: 430, o: 0.98, p: 0.16, m: { s: 2.35, o: 0.92 } },
+        { sec: 'train', at: 0.35, x: 38, y: -8, s: 0.44, r: 580, o: 0.80, p: 0.05, m: { x: 30, y: -12, s: 0.28, o: 0.75 } },
+        { sec: 'teams', at: 0.50, x: -36, y: 0, s: 0.44, r: 690, o: 0.72, p: 0.07, m: { x: -28, y: -6, s: 0.28, o: 0.68 } },
+        { sec: 'gallery', at: 0.45, x: 34, y: 4, s: 0.46, r: 780, o: 0.70, p: 0.07, m: { x: 26, y: 6, s: 0.30, o: 0.65 } },
+        { sec: 'matchday', at: 0.50, x: -34, y: 14, s: 0.46, r: 870, o: 0.80, p: 0.05, m: { x: -26, y: 16, s: 0.28, o: 0.75 } },
+        { sec: 'cta', at: 0.50, x: 0, y: 20, s: 0.78, r: 960, o: 0.80, p: 0.10, m: { y: 18, s: 0.55, o: 0.75 } },
+        { sec: 'footer', at: 0.50, x: 24, y: 10, s: 1.30, r: 1080, o: 0.92, p: 0.12, m: { x: 0, y: 16, s: 0.95, o: 0.88 } },
     ];
 
     interface Point {
