@@ -3,6 +3,7 @@ import { Link, usePage } from '@inertiajs/vue3';
 import { ref, watch } from 'vue';
 import { Menu, X, ArrowRight } from '@lucide/vue';
 import PitchGrid from '@/components/Public/PitchGrid.vue';
+import BackToTop from '@/components/Public/BackToTop.vue';
 
 const mobileOpen = ref(false);
 const page = usePage();
@@ -153,7 +154,8 @@ watch(() => page.url, () => {
 
         <!-- Structured 4-Column Footer -->
         <footer
-            class="relative z-10 px-4 py-16 sm:px-6 lg:px-8 bg-tg-bg-deep border-t border-tg-border"
+            id="footer"
+            class="relative z-10 px-4 py-16 sm:px-6 lg:px-8 bg-tg-bg-deep/80 border-t border-tg-border"
         >
             <div class="mx-auto max-w-7xl space-y-12">
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-12">
@@ -252,5 +254,8 @@ watch(() => page.url, () => {
                 </div>
             </div>
         </footer>
+
+        <!-- Back to Top Control -->
+        <BackToTop />
     </div>
 </template>
