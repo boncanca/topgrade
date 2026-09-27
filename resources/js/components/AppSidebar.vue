@@ -3,6 +3,7 @@ import { Link } from '@inertiajs/vue3';
 import {
     BookOpen,
     CalendarCheck,
+    Camera,
     ClipboardList,
     FileText,
     LayoutGrid,
@@ -70,6 +71,11 @@ const navGroups: NavGroup[] = [
                 title: 'Articles',
                 href: contentIndex({ query: { type: 'article' } }),
                 icon: BookOpen,
+            },
+            {
+                title: 'Moments',
+                href: '/dashboard/moments',
+                icon: Camera,
             },
             {
                 title: 'Settings',

@@ -12,7 +12,7 @@ const headerNav = [
     { label: 'About', href: '/#develop' },
     { label: 'Training', href: '/#train' },
     { label: 'Teams', href: '/#teams' },
-    { label: 'Moments', href: '/#gallery' },
+    { label: 'Moments', href: '/moments' },
     { label: 'Matchday', href: '/#matchday' },
     { label: 'Bookings', href: '/bookings' },
 ];
@@ -22,6 +22,7 @@ const clubLinks = [
     { label: 'Weekly Training', href: '/training' },
     { label: 'Our Teams', href: '/#teams' },
     { label: 'Matchday Grounds', href: '/#matchday' },
+    { label: 'Moments & Stories', href: '/moments' },
 ];
 
 const infoLinks = [

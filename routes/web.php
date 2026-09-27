@@ -8,12 +8,15 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\InquiryController;
 use App\Http\Controllers\MediaController;
 use App\Http\Controllers\MenuController;
+use App\Http\Controllers\MomentController;
 use App\Http\Controllers\PublicBookingController;
+use App\Http\Controllers\PublicMomentController;
 use App\Http\Controllers\PublicPageController;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\StripeWebhookController;
 use App\Models\BookableItem;
 use App\Models\Content;
+use App\Models\Moment;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Spatie\Sitemap\Sitemap;
@@ -41,6 +44,10 @@ Route::get('/terms', [PublicPageController::class, 'terms']);
 Route::get('/articles', [PublicBookingController::class, 'articles'])->name('articles.index');
 Route::get('/articles/{slug}', [PublicBookingController::class, 'articleShow'])->name('articles.show');
 
+// Editorial: Moments / Galleries
+Route::get('/moments', [PublicMomentController::class, 'index'])->name('moments.index');
+Route::get('/moments/{slug}', [PublicMomentController::class, 'show'])->name('moments.show');
+
 // Public club activities & booking sessions
 Route::get('/activities', [PublicBookingController::class, 'activities'])->name('activities.index');
 Route::get('/bookings', [PublicBookingController::class, 'activities'])->name('sessions.index');
@@ -53,6 +60,7 @@ Route::get('/training', [PublicBookingController::class, 'training'])->name('tra
 Route::get('/sitemap.xml', function () {
     $sitemap = Sitemap::create()
         ->add(Url::create('/')->setPriority(1.0)->setChangeFrequency('daily'))
+        ->add(Url::create('/moments')->setPriority(0.9)->setChangeFrequency('weekly'))
         ->add(Url::create('/training')->setPriority(0.9)->setChangeFrequency('weekly'))
         ->add(Url::create('/bookings')->setPriority(0.9)->setChangeFrequency('weekly'))
         ->add(Url::create('/about')->setPriority(0.8)->setChangeFrequency('monthly'))
@@ -60,6 +68,16 @@ Route::get('/sitemap.xml', function () {
         ->add(Url::create('/contact')->setPriority(0.7)->setChangeFrequency('monthly'))
         ->add(Url::create('/privacy-policy')->setPriority(0.5)->setChangeFrequency('yearly'))
         ->add(Url::create('/terms-and-conditions')->setPriority(0.5)->setChangeFrequency('yearly'));
+
+    // Dynamic published moments
+    Moment::published()->each(function ($moment) use ($sitemap) {
+        $sitemap->add(
+            Url::create("/moments/{$moment->slug}")
+                ->setLastModificationDate($moment->updated_at ?? now())
+                ->setPriority(0.8)
+                ->setChangeFrequency('weekly')
+        );
+    });
 
     // Dynamic published articles
     Content::published()
@@ -125,6 +143,12 @@ Route::middleware(['auth', 'verified', 'admin'])->group(function () {
         // Inquiries
         Route::resource('inquiries', InquiryController::class)->only(['index', 'show', 'edit', 'update', 'destroy']);
 
+        // Moments / Editorial Gallery Management
+        Route::name('dashboard.')->group(function () {
+            Route::resource('moments', MomentController::class);
+            Route::post('moments/{moment}/media/reorder', [MomentController::class, 'reorderMedia'])->name('moments.media.reorder');
+            Route::delete('moments/{moment}/media/{media}', [MomentController::class, 'destroyMedia'])->name('moments.media.destroy');
+        });
     });
 });
 

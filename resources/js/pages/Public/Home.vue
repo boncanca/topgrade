@@ -1100,9 +1100,18 @@ onUnmounted(() => {
                             Moments
                         </h2>
                     </div>
-                    <p data-reveal style="--d: 100ms;" class="text-sm max-w-md text-tg-text-muted">
-                        Training. Matchday. The moments in between.
-                    </p>
+                    <div class="flex flex-col sm:flex-row sm:items-center gap-4">
+                        <p data-reveal style="--d: 100ms;" class="text-sm max-w-md text-tg-text-muted">
+                            Training. Matchday. The moments in between.
+                        </p>
+                        <Link
+                            href="/moments"
+                            class="tg-btn ghost text-xs py-1.5 px-3.5 shadow-sm inline-flex items-center gap-1.5 shrink-0 self-start sm:self-auto"
+                        >
+                            <span>Explore Stories</span>
+                            <ArrowRight class="w-3.5 h-3.5" />
+                        </Link>
+                    </div>
                 </div>
 
                 <!-- Endless Photographic Ribbon (Offset stream, minimal typography) -->
