@@ -73,8 +73,8 @@ const navGroups: NavGroup[] = [
                 icon: BookOpen,
             },
             {
-                title: 'Moments',
-                href: '/dashboard/moments',
+                title: 'Galleries',
+                href: '/dashboard/galleries',
                 icon: Camera,
             },
             {

@@ -329,6 +329,29 @@ onUnmounted(() => {
             </div>
         </section>
 
+        <!-- Empty State if no photos yet -->
+        <section
+            v-else
+            class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16"
+        >
+            <div class="rounded-xl border border-dashed border-tg-border p-10 sm:p-14 text-center bg-tg-bg-deep/40">
+                <Camera class="w-10 h-10 mx-auto text-tg-text-muted/60 mb-3" />
+                <h3
+                    class="text-lg uppercase text-tg-text-strong font-normal mb-2"
+                    style="font-family: var(--tg-display);"
+                >
+                    No Photos in this Gallery Yet
+                </h3>
+                <p class="text-sm text-tg-text-muted max-w-sm mx-auto mb-6">
+                    Visual matchday and training photos are being curated for this story. Check back soon.
+                </p>
+                <Link href="/moments" class="tg-btn ghost text-xs py-2 px-4 shadow-sm inline-flex items-center gap-1.5">
+                    <ArrowLeft class="w-3.5 h-3.5" />
+                    <span>Back to all Stories</span>
+                </Link>
+            </div>
+        </section>
+
         <!-- 03 — LIGHTBOX MODAL (When Expanded - Zero Gradients, Zero Glow) -->
         <Teleport to="body">
             <div

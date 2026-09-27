@@ -13,7 +13,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class MomentController extends Controller
 {
-    public function index(): Response
+    public function index(Request $request): Response
     {
         $moments = Moment::with(['media', 'coverMedia'])
             ->latest('published_at')
@@ -35,14 +35,19 @@ class MomentController extends Controller
                 ];
             });
 
-        return Inertia::render('Moments/Index', [
+        $component = $request->routeIs('dashboard.moments.*') ? 'Moments/Index' : 'Galleries/Index';
+
+        return Inertia::render($component, [
             'moments' => $moments,
+            'galleries' => $moments,
         ]);
     }
 
-    public function create(): Response
+    public function create(Request $request): Response
     {
-        return Inertia::render('Moments/Create');
+        $component = $request->routeIs('dashboard.moments.*') ? 'Moments/Create' : 'Galleries/Create';
+
+        return Inertia::render($component);
     }
 
     public function store(StoreMomentRequest $request): RedirectResponse
@@ -66,11 +71,13 @@ class MomentController extends Controller
             $moment->update(['cover_media_id' => $firstMedia->id]);
         }
 
-        return redirect()->route('dashboard.moments.edit', $moment)
-            ->with('success', 'Moment created successfully.');
+        $redirectRoute = $request->routeIs('dashboard.moments.*') ? 'dashboard.moments.edit' : 'dashboard.galleries.edit';
+
+        return redirect()->route($redirectRoute, $moment)
+            ->with('success', 'Gallery created successfully.');
     }
 
-    public function edit(Moment $moment): Response
+    public function edit(Request $request, Moment $moment): Response
     {
         $moment->load(['seo', 'media' => fn ($q) => $q->orderBy('order_column')]);
 
@@ -88,7 +95,9 @@ class MomentController extends Controller
             ];
         })->values();
 
-        return Inertia::render('Moments/Edit', [
+        $component = $request->routeIs('dashboard.moments.*') ? 'Moments/Edit' : 'Galleries/Edit';
+
+        return Inertia::render($component, [
             'moment' => [
                 'id' => $moment->id,
                 'title' => $moment->title,
@@ -140,8 +149,10 @@ class MomentController extends Controller
             $moment->update(['cover_media_id' => $firstMedia->id]);
         }
 
-        return redirect()->route('dashboard.moments.edit', $moment)
-            ->with('success', 'Moment updated successfully.');
+        $redirectRoute = $request->routeIs('dashboard.moments.*') ? 'dashboard.moments.edit' : 'dashboard.galleries.edit';
+
+        return redirect()->route($redirectRoute, $moment)
+            ->with('success', 'Gallery updated successfully.');
     }
 
     public function reorderMedia(Request $request, Moment $moment): RedirectResponse
@@ -157,7 +168,7 @@ class MomentController extends Controller
         abort_unless(
             collect($submittedIds)->every(fn ($id) => $ownedIds->contains($id)),
             422,
-            'One or more media items do not belong to this moment.'
+            'One or more media items do not belong to this gallery.'
         );
 
         Media::setNewOrder($submittedIds);
@@ -172,7 +183,7 @@ class MomentController extends Controller
             $media->model_type === Moment::class &&
             $media->collection_name === 'gallery',
             403,
-            'This media does not belong to this moment.'
+            'This media does not belong to this gallery.'
         );
 
         $wasCover = (int) $moment->cover_media_id === (int) $media->id;
@@ -186,11 +197,13 @@ class MomentController extends Controller
         return back()->with('success', 'Image removed from gallery.');
     }
 
-    public function destroy(Moment $moment): RedirectResponse
+    public function destroy(Request $request, Moment $moment): RedirectResponse
     {
         $moment->delete();
 
-        return redirect()->route('dashboard.moments.index')
-            ->with('success', 'Moment deleted successfully.');
+        $redirectRoute = $request->routeIs('dashboard.moments.*') ? 'dashboard.moments.index' : 'dashboard.galleries.index';
+
+        return redirect()->route($redirectRoute)
+            ->with('success', 'Gallery deleted successfully.');
     }
 }

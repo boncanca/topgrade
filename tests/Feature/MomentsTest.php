@@ -286,3 +286,79 @@ test('draft moment returns 404 for public visitors', function () {
 test('nonexistent moment returns 404 for public visitors', function () {
     $this->get('/moments/does-not-exist')->assertNotFound();
 });
+
+test('admin can view galleries index at /dashboard/galleries', function () {
+    $admin = User::factory()->create(['is_admin' => true]);
+    Moment::factory()->count(2)->create();
+
+    $this->actingAs($admin)
+        ->get('/dashboard/galleries')
+        ->assertOk()
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('Galleries/Index')
+            ->has('galleries.data', 2)
+        );
+});
+
+test('admin can create and manage galleries using /dashboard/galleries endpoints', function () {
+    $admin = User::factory()->create(['is_admin' => true]);
+
+    $image = UploadedFile::fake()->image('test.jpg', 600, 400);
+
+    $createResponse = $this->actingAs($admin)->post('/dashboard/galleries', [
+        'title' => 'Academy Training Showcase',
+        'slug' => 'academy-training-showcase',
+        'status' => 'published',
+        'published_at' => now()->format('Y-m-d\TH:i'),
+        'images' => [$image],
+    ]);
+
+    $gallery = Moment::where('slug', 'academy-training-showcase')->first();
+    expect($gallery)->not->toBeNull();
+    $createResponse->assertRedirect("/dashboard/galleries/{$gallery->id}/edit");
+
+    $this->actingAs($admin)
+        ->get("/dashboard/galleries/{$gallery->id}/edit")
+        ->assertOk()
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('Galleries/Edit')
+            ->where('moment.title', 'Academy Training Showcase')
+        );
+
+    $updateResponse = $this->actingAs($admin)->put("/dashboard/galleries/{$gallery->id}", [
+        'title' => 'Updated Academy Showcase',
+        'slug' => 'updated-academy-showcase',
+        'status' => 'published',
+    ]);
+    $updateResponse->assertRedirect("/dashboard/galleries/{$gallery->id}/edit");
+
+    $deleteResponse = $this->actingAs($admin)->delete("/dashboard/galleries/{$gallery->id}");
+    $deleteResponse->assertRedirect('/dashboard/galleries');
+    $this->assertDatabaseMissing('moments', ['id' => $gallery->id]);
+});
+
+test('public moments index renders safely when no moments exist', function () {
+    $this->get('/moments')
+        ->assertOk()
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('Public/Moments/Index')
+            ->has('moments', 0)
+            ->where('featured', null)
+        );
+});
+
+test('public moments index renders safely when featured moment has no images', function () {
+    Moment::factory()->featured()->create([
+        'title' => 'No Photo Featured Event',
+        'status' => 'published',
+        'published_at' => now(),
+    ]);
+
+    $this->get('/moments')
+        ->assertOk()
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('Public/Moments/Index')
+            ->where('featured', null)
+            ->has('moments', 1)
+        );
+});

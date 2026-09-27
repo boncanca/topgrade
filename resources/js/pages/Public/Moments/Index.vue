@@ -221,7 +221,7 @@ onUnmounted(() => {
                     >
                         <img
                             :src="img.url"
-                            :alt="img.name || featured.title"
+                            :alt="img.name || featured?.title || 'Moments'"
                             class="w-full h-full object-cover object-center scale-[1.02] transition-transform duration-1000 ease-out"
                             :loading="idx === 0 ? 'eager' : 'lazy'"
                         />
@@ -261,6 +261,7 @@ onUnmounted(() => {
 
                             <!-- Primary CTA Button -->
                             <Link
+                                v-if="featured"
                                 :href="`/moments/${featured.slug}`"
                                 class="inline-flex items-center gap-2.5 rounded-full border border-tg-accent/80 bg-black/60 hover:bg-tg-accent hover:text-black px-6 py-2.5 text-xs sm:text-sm font-semibold tracking-wide text-white transition-all duration-200 shadow-md group"
                             >
@@ -281,7 +282,7 @@ onUnmounted(() => {
                                 <div class="w-24 sm:w-36 h-1 rounded-full bg-white/20 overflow-hidden relative">
                                     <div
                                         class="h-full bg-tg-accent transition-all duration-500 ease-out"
-                                        :style="{ width: `${((currentSlide + 1) / carouselImages.length) * 100}%` }"
+                                        :style="{ width: carouselImages.length ? `${((currentSlide + 1) / carouselImages.length) * 100}%` : '0%' }"
                                     />
                                 </div>
 
@@ -298,10 +299,10 @@ onUnmounted(() => {
                             <div class="flex items-center gap-4">
                                 <div class="hidden md:block text-right">
                                     <div class="text-[11px] font-bold uppercase tracking-wider text-tg-accent">
-                                        {{ featured.published_at || 'Match Day' }}
+                                        {{ featured?.published_at || 'Match Day' }}
                                     </div>
                                     <div class="text-xs text-white/90 font-medium truncate max-w-xs">
-                                        {{ featured.title }}
+                                        {{ featured?.title || '' }}
                                     </div>
                                 </div>
 
@@ -327,6 +328,33 @@ onUnmounted(() => {
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Fallback Editorial Header when no hero carousel is active -->
+        <section
+            v-else
+            class="relative border-b border-tg-border/80 bg-black overflow-hidden pt-12 pb-14 sm:pt-16 sm:pb-20"
+        >
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="max-w-2xl">
+                    <span class="text-[11px] sm:text-xs font-bold uppercase tracking-widest text-tg-accent font-mono mb-3 block">
+                        OUR STORY. THEIR JOURNEY.
+                    </span>
+                    <h1
+                        class="font-normal uppercase tracking-tight text-white mb-4"
+                        style="
+                            font-family: var(--tg-display);
+                            font-size: clamp(2.8rem, 8vw, 6.5rem);
+                            line-height: 0.9;
+                        "
+                    >
+                        Moments
+                    </h1>
+                    <p class="text-sm sm:text-base md:text-lg text-gray-200 font-normal leading-relaxed max-w-xl">
+                        Players. Pathways. Progress. A look into the people, places and moments that make TopGrade London FC.
+                    </p>
                 </div>
             </div>
         </section>

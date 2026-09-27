@@ -143,8 +143,15 @@ Route::middleware(['auth', 'verified', 'admin'])->group(function () {
         // Inquiries
         Route::resource('inquiries', InquiryController::class)->only(['index', 'show', 'edit', 'update', 'destroy']);
 
-        // Moments / Editorial Gallery Management
+        // Editorial Gallery Management
         Route::name('dashboard.')->group(function () {
+            Route::resource('galleries', MomentController::class)
+                ->parameters(['galleries' => 'moment'])
+                ->names('galleries');
+            Route::post('galleries/{moment}/media/reorder', [MomentController::class, 'reorderMedia'])->name('galleries.media.reorder');
+            Route::delete('galleries/{moment}/media/{media}', [MomentController::class, 'destroyMedia'])->name('galleries.media.destroy');
+
+            // Backward compatibility aliases for moments
             Route::resource('moments', MomentController::class);
             Route::post('moments/{moment}/media/reorder', [MomentController::class, 'reorderMedia'])->name('moments.media.reorder');
             Route::delete('moments/{moment}/media/{media}', [MomentController::class, 'destroyMedia'])->name('moments.media.destroy');
