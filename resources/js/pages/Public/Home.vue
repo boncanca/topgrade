@@ -4,7 +4,7 @@ import PublicLayout from '@/layouts/PublicLayout.vue';
 import BlockRenderer from '@/components/CMS/BlockRenderer.vue';
 import SeoHead from '@/components/SEO/SeoHead.vue';
 import JsonLd from '@/components/SEO/JsonLd.vue';
-import { ref, onMounted, onUnmounted, nextTick } from 'vue';
+import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue';
 import {
     ArrowRight,
     Clock,
@@ -46,11 +46,25 @@ const props = defineProps<{
     featuredActivities?: Activity[];
     page?: PageContent | null;
     blocks?: Block[];
+    hero?: {
+        video_url?: string | null;
+        poster_url?: string | null;
+    };
 }>();
 
 defineOptions({
     layout: PublicLayout,
 });
+
+const videoFailed = ref(false);
+const prefersReducedMotion = ref(false);
+
+const heroVideoUrl = computed(() => props.hero?.video_url ?? null);
+const heroPosterUrl = computed(() => props.hero?.poster_url ?? null);
+
+const onVideoError = () => {
+    videoFailed.value = true;
+};
 
 const quickStats = [
     { label: 'Age Groups', value: 'U7 – U16', detail: 'Youth football squads' },
@@ -304,11 +318,20 @@ const homeVenues = [
 /* ─── Match Ball Choreography (Subordinate to Content & Integrated with Translucent Surfaces) ─── */
 let animFrameId: number | null = null;
 let io: IntersectionObserver | null = null;
+let motionMedia: MediaQueryList | null = null;
+
+const onMotionChange = (e: MediaQueryListEvent) => {
+    prefersReducedMotion.value = e.matches;
+};
 
 onMounted(async () => {
     await nextTick();
 
-    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    motionMedia = window.matchMedia('(prefers-reduced-motion: reduce)');
+    prefersReducedMotion.value = motionMedia.matches;
+    motionMedia.addEventListener('change', onMotionChange);
+
+    const reduceMotion = prefersReducedMotion.value;
     const root = document.documentElement;
     const ball = document.getElementById('ball');
     const backdrop = document.getElementById('creed-backdrop');
@@ -480,6 +503,9 @@ onUnmounted(() => {
         cancelAnimationFrame(animFrameId);
     }
     io?.disconnect();
+    if (motionMedia) {
+        motionMedia.removeEventListener('change', onMotionChange);
+    }
 });
 </script>
 
@@ -545,8 +571,41 @@ onUnmounted(() => {
         <section
             id="hero"
             class="relative min-h-[92vh] sm:min-h-[105vh] flex flex-col items-center justify-start text-center pt-16 sm:pt-28 pb-16 sm:pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden"
-            style="z-index: 10; background: transparent;"
+            style="background: transparent;"
         >
+            <!-- Atmospheric Hero Media Layer (Cloudinary Looping Video with Real Video Poster Fallback) -->
+            <div
+                v-if="(heroVideoUrl && !videoFailed && !prefersReducedMotion) || heroPosterUrl"
+                class="absolute inset-0 w-full h-full pointer-events-none overflow-hidden select-none"
+                style="z-index: 1;"
+                aria-hidden="true"
+            >
+                <video
+                    v-if="heroVideoUrl && !videoFailed && !prefersReducedMotion"
+                    class="w-full h-full object-cover object-center scale-[1.02] transition-opacity duration-700"
+                    autoplay
+                    muted
+                    loop
+                    playsinline
+                    preload="metadata"
+                    :poster="heroPosterUrl || undefined"
+                    @error="onVideoError"
+                >
+                    <source :src="heroVideoUrl" type="video/mp4" />
+                </video>
+                <img
+                    v-else-if="heroPosterUrl"
+                    :src="heroPosterUrl"
+                    alt=""
+                    class="w-full h-full object-cover object-center transition-opacity duration-700"
+                />
+                <!-- Cinematic Brand Vignette Overlay to ensure contrast and cohesion with TopGrade theme -->
+                <div
+                    class="absolute inset-0"
+                    style="background: radial-gradient(circle at 50% 38%, rgba(8, 4, 15, 0.42) 0%, rgba(8, 4, 15, 0.82) 100%), linear-gradient(to bottom, rgba(8, 4, 15, 0.3) 0%, rgba(8, 4, 15, 0.6) 60%, rgba(8, 4, 15, 0.95) 100%);"
+                />
+            </div>
+
             <div class="max-w-5xl mx-auto flex flex-col items-center relative z-20">
                 <!-- Drop Animated Crest -->
                 <div class="mb-3 sm:mb-4 animate-hero-drop">

@@ -20,7 +20,7 @@ use Spatie\Sitemap\Sitemap;
 use Spatie\Sitemap\Tags\Url;
 
 // Public homepage & editorial
-Route::get('/', [PublicBookingController::class, 'home'])->name('home');
+Route::get('/', [PublicPageController::class, 'home'])->name('home');
 
 // Stripe webhook endpoint (verified via HMAC signature and CSRF-exempt)
 Route::post('/webhooks/stripe', [StripeWebhookController::class, 'handle'])->name('webhooks.stripe');
@@ -124,6 +124,7 @@ Route::middleware(['auth', 'verified', 'admin'])->group(function () {
 
         // Inquiries
         Route::resource('inquiries', InquiryController::class)->only(['index', 'show', 'edit', 'update', 'destroy']);
+
     });
 });
 

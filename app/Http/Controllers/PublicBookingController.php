@@ -23,24 +23,6 @@ use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
 class PublicBookingController
 {
-    public function home(): Response
-    {
-        $featuredActivities = BookableItem::where('is_active', true)
-            ->limit(3)
-            ->get();
-
-        $pageContent = Content::published()
-            ->where('slug', 'home')
-            ->with(['blocks' => fn ($q) => $q->orderBy('sort_order')])
-            ->first();
-
-        return Inertia::render('Public/Home', [
-            'featuredActivities' => $featuredActivities,
-            'page' => $pageContent,
-            'blocks' => $pageContent?->blocks ?? [],
-        ]);
-    }
-
     public function training(): Response
     {
         $activities = BookableItem::where('is_active', true)

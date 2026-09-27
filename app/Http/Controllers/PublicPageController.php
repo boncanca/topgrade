@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Mail\ContactReceivedAdminNotification;
 use App\Mail\ContactReceivedCustomerNotification;
+use App\Models\BookableItem;
 use App\Models\Contact;
 use App\Models\Content;
 use App\Models\Inquiry;
@@ -15,6 +16,35 @@ use Inertia\Response;
 
 class PublicPageController
 {
+    public function home(): Response
+    {
+        $featuredActivities = BookableItem::where('is_active', true)
+            ->limit(3)
+            ->get();
+
+        $pageContent = Content::published()
+            ->where('slug', 'home')
+            ->with([
+                'blocks' => fn ($q) => $q->orderBy('sort_order'),
+                'media',
+            ])
+            ->first();
+
+        $heroVideo = $pageContent?->getMedia('videos')->first();
+        $heroPoster = $pageContent?->getMedia('images')->where('name', 'hero-poster')->first()
+            ?? $pageContent?->getMedia('images')->first();
+
+        return Inertia::render('Public/Home', [
+            'featuredActivities' => $featuredActivities,
+            'page' => $pageContent,
+            'blocks' => $pageContent?->blocks ?? [],
+            'hero' => [
+                'video_url' => $heroVideo?->getUrl(),
+                'poster_url' => $heroPoster?->getUrl(),
+            ],
+        ]);
+    }
+
     public function about(): Response
     {
         return Inertia::render('Public/About');
