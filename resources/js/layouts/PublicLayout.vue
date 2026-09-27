@@ -23,6 +23,7 @@ const clubLinks = [
     { label: 'Our Teams', href: '/#teams' },
     { label: 'Matchday Grounds', href: '/#matchday' },
     { label: 'Moments & Stories', href: '/moments' },
+    { label: '@topgradelondonfc', href: 'https://www.instagram.com/topgradelondonfc/', external: true },
 ];
 
 const infoLinks = [
@@ -169,7 +170,12 @@ watch(() => page.url, () => {
                         </h4>
                         <ul class="space-y-2.5 text-sm">
                             <li v-for="item in clubLinks" :key="item.label">
-                                <a :href="item.href" class="tg-link text-tg-text-muted hover:text-tg-text-strong">
+                                <a
+                                    :href="item.href"
+                                    :target="item.external ? '_blank' : undefined"
+                                    :rel="item.external ? 'noopener noreferrer' : undefined"
+                                    class="tg-link text-tg-text-muted hover:text-tg-text-strong"
+                                >
                                     {{ item.label }}
                                 </a>
                             </li>
@@ -239,6 +245,25 @@ watch(() => page.url, () => {
                                      info@topgradelondonfc.co.uk
                                  </a>
                             </p>
+                        </div>
+
+                        <!-- Social -->
+                        <div class="pt-2 flex items-center gap-3">
+                            <a
+                                href="https://www.instagram.com/topgradelondonfc/"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                aria-label="TopGrade London FC on Instagram"
+                                class="inline-flex items-center gap-1.5 text-xs text-tg-text-muted hover:text-tg-accent transition-colors"
+                            >
+                                <!-- Instagram SVG -->
+                                <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                                    <circle cx="12" cy="12" r="4" />
+                                    <circle cx="17.5" cy="6.5" r="0.8" fill="currentColor" stroke="none" />
+                                </svg>
+                                <span>@topgradelondonfc</span>
+                            </a>
                         </div>
                     </div>
                 </div>

@@ -67,7 +67,7 @@ const onVideoError = () => {
 };
 
 const quickStats = [
-    { label: 'Age Groups', value: 'U7 – U16', detail: 'Youth football squads' },
+    { label: 'Age Groups', value: 'Ages 4–18', detail: 'Junior & youth squads' },
     { label: 'Weekly Training', value: '3 Days', detail: 'Tuesdays, Wednesdays & Thursdays' },
     { label: 'Home Grounds', value: '3 Venues', detail: 'Tottenham & Hackney' },
     { label: 'Matchday', value: 'League', detail: 'Sanctioned youth fixtures' },

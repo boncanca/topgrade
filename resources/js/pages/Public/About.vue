@@ -16,7 +16,7 @@ const values = [
     },
     {
         title: 'Disciplined Coaching Standards',
-        description: 'Dedicated coaches committed to age-appropriate training, disciplined player habits, positive reinforcement, and tactical understanding.',
+        description: 'Led by Head Coach Richard Matey Opoku, our dedicated coaching staff focus on age-appropriate training, disciplined player habits, positive reinforcement, and tactical understanding.',
         icon: Award,
     },
     {
@@ -113,7 +113,7 @@ const facilities = [
                         At TopGrade London FC, youth football is focused on discipline, work ethic, spatial intelligence, and teamwork.
                     </p>
                     <p class="text-tg-text-muted text-sm leading-relaxed">
-                        Our squads train weekly under dedicated coaches who emphasize ball control, quick thinking, and competitive bravery. Training takes place at the Frederick Knight Sports Centre and Tottenham Community Sports Centre, with home match play at Frederick Knight, Mabley Green Park, and Hackney Marshes.
+                        Our squads train weekly under Head Coach Richard Matey Opoku and dedicated coaching staff who emphasize ball control, quick thinking, and competitive bravery. Training takes place at the Frederick Knight Sports Centre and Tottenham Community Sports Centre (TCSC), with home match play at Frederick Knight, Mabley Green Park, and Hackney Marshes.
                     </p>
 
                     <div class="pt-2 flex flex-wrap items-center gap-3">

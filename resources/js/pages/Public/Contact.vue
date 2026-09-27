@@ -101,6 +101,26 @@ function submit() {
                                 </p>
                             </div>
                         </div>
+
+                        <!-- Instagram -->
+                        <div class="flex items-start gap-4 p-5 rounded-sm bg-tg-bg-deep/80 border border-tg-border">
+                            <svg class="w-5 h-5 text-tg-accent shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                                <circle cx="12" cy="12" r="4" />
+                                <circle cx="17.5" cy="6.5" r="0.8" fill="currentColor" stroke="none" />
+                            </svg>
+                            <div>
+                                <h3 class="font-bold text-tg-text-strong text-xs uppercase tracking-wider">Instagram</h3>
+                                <a
+                                    href="https://www.instagram.com/topgradelondonfc/"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    class="text-tg-accent hover:underline text-sm transition-colors mt-0.5 block"
+                                >
+                                    @topgradelondonfc
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
