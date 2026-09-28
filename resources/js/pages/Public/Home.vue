@@ -56,11 +56,12 @@ defineOptions({
     layout: PublicLayout,
 });
 
+const heroVideoRef = ref<HTMLVideoElement | null>(null);
 const videoFailed = ref(false);
 const prefersReducedMotion = ref(false);
 
-const heroVideoUrl = computed(() => props.hero?.video_url ?? null);
-const heroPosterUrl = computed(() => props.hero?.poster_url ?? null);
+const heroVideoUrl = computed(() => props.hero?.video_url || '/topgrade-video.mp4');
+const heroPosterUrl = computed(() => props.hero?.poster_url || '/images/club/hero-football.jpg');
 
 const onVideoError = () => {
     videoFailed.value = true;
@@ -351,6 +352,13 @@ onMounted(async () => {
 
     document.querySelectorAll('[data-reveal]').forEach((el) => io?.observe(el));
 
+    if (heroVideoRef.value && !prefersReducedMotion.value) {
+        heroVideoRef.value.muted = true;
+        heroVideoRef.value.play().catch(() => {
+            videoFailed.value = true;
+        });
+    }
+
     if (reduceMotion || !ball) {
         if (ball) {
             ball.style.transform = 'translate3d(-50%, calc(-50% + 4vh), 0) scale(1.05)';
@@ -573,7 +581,7 @@ onUnmounted(() => {
             class="relative min-h-[92vh] sm:min-h-[105vh] flex flex-col items-center justify-start text-center pt-16 sm:pt-28 pb-16 sm:pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden"
             style="background: transparent;"
         >
-            <!-- Atmospheric Hero Media Layer (Cloudinary Looping Video with Real Video Poster Fallback) -->
+            <!-- Atmospheric Hero Media Layer (Looping Football Video with Fallback Poster) -->
             <div
                 v-if="(heroVideoUrl && !videoFailed && !prefersReducedMotion) || heroPosterUrl"
                 class="absolute inset-0 w-full h-full pointer-events-none overflow-hidden select-none"
@@ -582,7 +590,8 @@ onUnmounted(() => {
             >
                 <video
                     v-if="heroVideoUrl && !videoFailed && !prefersReducedMotion"
-                    class="w-full h-full object-cover object-center scale-[1.02] transition-opacity duration-700"
+                    ref="heroVideoRef"
+                    class="w-full h-full object-cover object-center transition-opacity duration-700"
                     autoplay
                     muted
                     loop
@@ -599,10 +608,9 @@ onUnmounted(() => {
                     alt=""
                     class="w-full h-full object-cover object-center transition-opacity duration-700"
                 />
-                <!-- Cinematic Brand Vignette Overlay to ensure contrast and cohesion with TopGrade theme -->
+                <!-- Readable but subtle solid overlay (no heavy dark wash, no gradients, no glows) -->
                 <div
-                    class="absolute inset-0"
-                    style="background: radial-gradient(circle at 50% 38%, rgba(8, 4, 15, 0.42) 0%, rgba(8, 4, 15, 0.82) 100%), linear-gradient(to bottom, rgba(8, 4, 15, 0.3) 0%, rgba(8, 4, 15, 0.6) 60%, rgba(8, 4, 15, 0.95) 100%);"
+                    class="absolute inset-0 bg-[#08040f]/45"
                 />
             </div>
 
@@ -650,7 +658,7 @@ onUnmounted(() => {
                 <!-- CTA Buttons -->
                 <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto justify-center mb-10 sm:mb-12 relative z-20 animate-hero-fade" style="animation-delay: 0.5s;">
                     <Link
-                        href="/bookings/free-trial-session"
+                        href="/bookings"
                         class="tg-btn tg-focus shadow-sm justify-center"
                     >
                         <span>Book a Trial</span>
