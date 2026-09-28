@@ -9,7 +9,7 @@ const props = withDefaults(defineProps<SeoOptions>(), {
     noindex: false,
 });
 
-const { title, description, canonicalUrl, ogImageUrl, robotsContent, type } = useSeo(props);
+const { title, description, canonicalUrl, ogImageUrl, robotsContent, type, siteName } = useSeo(props);
 </script>
 
 <template>
@@ -20,7 +20,7 @@ const { title, description, canonicalUrl, ogImageUrl, robotsContent, type } = us
 
         <!-- Open Graph / Facebook -->
         <meta property="og:type" :content="type" />
-        <meta property="og:site_name" content="TopGrade London FC" />
+        <meta property="og:site_name" :content="siteName" />
         <meta property="og:title" :content="title" />
         <meta property="og:description" :content="description" />
         <meta property="og:url" :content="canonicalUrl" />

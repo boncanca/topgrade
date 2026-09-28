@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed } from 'vue';
 import { Link } from '@inertiajs/vue3';
 import PublicLayout from '@/layouts/PublicLayout.vue';
 import SeoHead from '@/components/SEO/SeoHead.vue';
@@ -15,15 +16,25 @@ interface Activity {
     currency: string;
 }
 
-defineProps<{
+interface WeeklyScheduleItem {
+    days: string;
+    badge: string;
+    sessions: Array<{ age: string; time: string }>;
+    venue: string;
+    address: string;
+    surface: string;
+}
+
+const props = defineProps<{
     activities: Activity[];
+    weeklySchedule?: WeeklyScheduleItem[];
 }>();
 
 defineOptions({
     layout: PublicLayout,
 });
 
-const weeklySchedule = [
+const defaultWeeklySchedule: WeeklyScheduleItem[] = [
     {
         days: 'Tuesdays & Thursdays',
         badge: 'Midweek Squad Training',
@@ -46,6 +57,12 @@ const weeklySchedule = [
         surface: 'Sports Centre Training Facility',
     },
 ];
+
+const weeklySchedule = computed(() => {
+    return (props.weeklySchedule && props.weeklySchedule.length > 0)
+        ? props.weeklySchedule
+        : defaultWeeklySchedule;
+});
 </script>
 
 <template>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Link, usePage } from '@inertiajs/vue3';
-import { ref, watch } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { Menu, X, ArrowRight } from '@lucide/vue';
 import PitchGrid from '@/components/Public/PitchGrid.vue';
 import BackToTop from '@/components/Public/BackToTop.vue';
@@ -8,23 +8,43 @@ import BackToTop from '@/components/Public/BackToTop.vue';
 const mobileOpen = ref(false);
 const page = usePage();
 
-const headerNav = [
-    { label: 'About', href: '/#develop' },
-    { label: 'Training', href: '/#train' },
-    { label: 'Teams', href: '/#teams' },
-    { label: 'Moments', href: '/moments' },
-    { label: 'Matchday', href: '/#matchday' },
-    { label: 'Bookings', href: '/bookings' },
-];
+const clubSettings = computed(() => (page.props as any).clubSettings ?? {});
 
-const clubLinks = [
-    { label: 'About the Club', href: '/about' },
-    { label: 'Weekly Training', href: '/training' },
-    { label: 'Our Teams', href: '/#teams' },
-    { label: 'Matchday Grounds', href: '/#matchday' },
-    { label: 'Moments & Stories', href: '/moments' },
-    { label: '@topgradelondonfc', href: 'https://www.instagram.com/topgradelondonfc/', external: true },
-];
+const headerNav = computed(() => {
+    const props = page.props as any;
+    const dbItems = props.headerMenu?.all_items || props.headerMenu?.allItems;
+    if (dbItems && dbItems.length > 0) {
+        return dbItems.map((item: any) => ({
+            label: item.label,
+            href: item.url,
+            external: item.is_external || item.url.startsWith('http'),
+        }));
+    }
+    return [
+        { label: 'About', href: '/#develop' },
+        { label: 'Training', href: '/#train' },
+        { label: 'Teams', href: '/#teams' },
+        { label: 'Moments', href: '/moments' },
+        { label: 'Matchday', href: '/#matchday' },
+        { label: 'Bookings', href: '/bookings' },
+    ];
+});
+
+const clubLinks = computed(() => {
+    const settings = clubSettings.value;
+    return [
+        { label: 'About the Club', href: '/about' },
+        { label: 'Weekly Training', href: '/training' },
+        { label: 'Our Teams', href: '/#teams' },
+        { label: 'Matchday Grounds', href: '/#matchday' },
+        { label: 'Moments & Stories', href: '/moments' },
+        {
+            label: settings.instagram_handle || '@topgradelondonfc',
+            href: settings.instagram_url || 'https://www.instagram.com/topgradelondonfc/',
+            external: true,
+        },
+    ];
+});
 
 const infoLinks = [
     { label: 'Bookings & Trials', href: '/bookings' },
@@ -229,20 +249,20 @@ watch(() => page.url, () => {
                         </div>
 
                         <div class="text-xs text-tg-text-muted space-y-1.5 leading-relaxed">
-                            <p class="font-bold text-tg-text-strong">TOPGRADE LONDON FC CIC</p>
+                            <p class="font-bold text-tg-text-strong">{{ clubSettings.legal_name || 'TOPGRADE LONDON FC CIC' }}</p>
                             <p>Registered in England &amp; Wales</p>
-                            <p>Company No. <span class="text-tg-text-strong font-mono">14087076</span></p>
+                            <p>Company No. <span class="text-tg-text-strong font-mono">{{ clubSettings.company_number || '14087076' }}</span></p>
                             <p>Community Interest Company (CIC)</p>
                             <p class="pt-1">
                                 <span class="text-tg-text-strong">Registered Office:</span><br />
-                                30 Broadwater Road, London, England, N17 6ES
+                                {{ clubSettings.address || '30 Broadwater Road, London, England, N17 6ES' }}
                             </p>
                             <p class="pt-1">
                                 <a
-                                     href="mailto:info@topgradelondonfc.co.uk"
+                                     :href="`mailto:${clubSettings.email || 'info@topgradelondonfc.co.uk'}`"
                                      class="text-tg-accent hover:underline"
                                  >
-                                     info@topgradelondonfc.co.uk
+                                     {{ clubSettings.email || 'info@topgradelondonfc.co.uk' }}
                                  </a>
                             </p>
                         </div>
@@ -250,7 +270,7 @@ watch(() => page.url, () => {
                         <!-- Social -->
                         <div class="pt-2 flex items-center gap-3">
                             <a
-                                href="https://www.instagram.com/topgradelondonfc/"
+                                :href="clubSettings.instagram_url || 'https://www.instagram.com/topgradelondonfc/'"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 aria-label="TopGrade London FC on Instagram"
@@ -262,7 +282,7 @@ watch(() => page.url, () => {
                                     <circle cx="12" cy="12" r="4" />
                                     <circle cx="17.5" cy="6.5" r="0.8" fill="currentColor" stroke="none" />
                                 </svg>
-                                <span>@topgradelondonfc</span>
+                                <span>{{ clubSettings.instagram_handle || '@topgradelondonfc' }}</span>
                             </a>
                         </div>
                     </div>
@@ -272,7 +292,7 @@ watch(() => page.url, () => {
                 <div
                     class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-8 border-t border-tg-border text-xs text-tg-text-muted"
                 >
-                    <p>© 2026 TopGrade London FC CIC. All rights reserved.</p>
+                    <p>© {{ new Date().getFullYear() }} {{ clubSettings.legal_name || 'TopGrade London FC CIC' }}. All rights reserved.</p>
                     <div class="flex flex-wrap items-center gap-6">
                         <Link href="/privacy-policy" class="tg-link text-xs">Privacy Policy</Link>
                         <Link href="/terms-and-conditions" class="tg-link text-xs">Terms &amp; Conditions</Link>

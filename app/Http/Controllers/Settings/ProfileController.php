@@ -50,6 +50,10 @@ class ProfileController extends Controller
     {
         $user = $request->user();
 
+        if ($user->is_system_account) {
+            return back()->withErrors(['email' => 'Protected system administrator accounts cannot be deleted.']);
+        }
+
         Auth::logout();
 
         $user->delete();

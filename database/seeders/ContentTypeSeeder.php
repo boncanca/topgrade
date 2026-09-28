@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\ContentType;
-use App\Models\Menu;
 use Illuminate\Database\Seeder;
 
 class ContentTypeSeeder extends Seeder
@@ -27,10 +26,5 @@ class ContentTypeSeeder extends Seeder
                 ]
             );
         }
-
-        // Seed menus
-        Menu::firstOrCreate(['slug' => 'main'], ['name' => 'Main Navigation', 'location' => 'main']);
-        Menu::firstOrCreate(['slug' => 'footer'], ['name' => 'Footer Navigation', 'location' => 'footer']);
-        Menu::firstOrCreate(['slug' => 'mobile'], ['name' => 'Mobile Navigation', 'location' => 'mobile']);
     }
 }

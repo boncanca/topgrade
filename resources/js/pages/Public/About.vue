@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed } from 'vue';
 import { Link } from '@inertiajs/vue3';
 import PublicLayout from '@/layouts/PublicLayout.vue';
 import SeoHead from '@/components/SEO/SeoHead.vue';
@@ -8,30 +9,51 @@ defineOptions({
     layout: PublicLayout,
 });
 
-const values = [
+const props = defineProps<{
+    values?: Array<{ title: string; description: string; icon?: string }>;
+    facilities?: Array<{ name: string; subtext: string; venue: string; surface: string; details: string }>;
+    staff?: Array<{ name: string; role: string; bio: string; photo_url?: string | null }>;
+}>();
+
+const iconMap: Record<string, any> = {
+    Target,
+    Award,
+    Users,
+    Trophy,
+};
+
+const defaultValues = [
     {
         title: 'Player-First Development',
         description: 'Every drill, session plan, and coaching instruction focuses on technical proficiency and long-term player progression.',
-        icon: Target,
+        icon: 'Target',
     },
     {
         title: 'Disciplined Coaching Standards',
         description: 'Led by Head Coach Richard Matey Opoku, our dedicated coaching staff focus on age-appropriate training, disciplined player habits, positive reinforcement, and tactical understanding.',
-        icon: Award,
+        icon: 'Award',
     },
     {
         title: 'London Community Roots',
         description: 'Operating as a non-profit Community Interest Company (CIC) dedicated to structured youth football in North and East London.',
-        icon: Users,
+        icon: 'Users',
     },
     {
         title: 'Competitive League Matches',
         description: 'Sanctioned London youth league participation, tournament showcases, and competitive weekend fixtures.',
-        icon: Trophy,
+        icon: 'Trophy',
     },
 ];
 
-const facilities = [
+const values = computed(() => {
+    const list = props.values && props.values.length > 0 ? props.values : defaultValues;
+    return list.map((item) => ({
+        ...item,
+        iconComponent: (item.icon && iconMap[item.icon]) ? iconMap[item.icon] : Target,
+    }));
+});
+
+const defaultFacilities = [
     {
         name: 'Frederick Knight Sports Centre',
         subtext: 'Tottenham Powerleague',
@@ -61,6 +83,14 @@ const facilities = [
         details: 'Saturday youth league matches, tournament fixtures, and inter-club friendlies.',
     },
 ];
+
+const facilities = computed(() => {
+    return props.facilities && props.facilities.length > 0 ? props.facilities : defaultFacilities;
+});
+
+const headCoach = computed(() => {
+    return props.staff?.find((s) => s.role.toLowerCase().includes('head coach')) || props.staff?.[0];
+});
 </script>
 
 <template>
@@ -188,7 +218,7 @@ const facilities = [
                         class="p-6 rounded-sm border border-tg-border bg-tg-bg-deep/80 space-y-4"
                     >
                         <div class="w-10 h-10 rounded-xs bg-tg-bg border border-tg-border flex items-center justify-center text-tg-accent">
-                            <component :is="item.icon" class="w-5 h-5" />
+                            <component :is="item.iconComponent || Target" class="w-5 h-5" />
                         </div>
                         <h3
                             class="text-lg font-normal text-tg-text-strong uppercase tracking-tight"

@@ -2,7 +2,19 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
+use Database\Seeders\Booking\BookableItemsSeeder;
+use Database\Seeders\Booking\SchedulesSeeder;
+use Database\Seeders\Club\StaffSeeder;
+use Database\Seeders\Club\TeamsSeeder;
+use Database\Seeders\Club\TrainingTimetableSeeder;
+use Database\Seeders\Club\VenuesSeeder;
+use Database\Seeders\Content\ArticlesSeeder;
+use Database\Seeders\Content\MomentsSeeder;
+use Database\Seeders\Content\PagesSeeder;
+use Database\Seeders\Site\ClubSettingsSeeder;
+use Database\Seeders\Site\NavigationSeeder;
+use Database\Seeders\Site\SeoSeeder;
+use Database\Seeders\Site\SiteSettingsSeeder;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -11,36 +23,42 @@ class DatabaseSeeder extends Seeder
     use WithoutModelEvents;
 
     /**
-     * Seed the application's database.
+     * Seed the application's foundational production database.
+     * Idempotent bootstrap only: No fake transactional bookings or contacts.
      */
     public function run(): void
     {
-        User::firstOrCreate(
-            ['email' => 'admin@topgrade.test'],
-            [
-                'name' => 'Admin User',
-                'is_admin' => true,
-                'email_verified_at' => now(),
-                'password' => bcrypt('password'),
-            ]
-        );
+        // 1. Initial admin bootstrap accounts (Club Admin & Dev Super Admin)
+        $this->call(UserSeeder::class);
 
-        User::firstOrCreate(
-            ['email' => 'test@example.com'],
-            [
-                'name' => 'Test User',
-                'is_admin' => false,
-                'email_verified_at' => now(),
-                'password' => bcrypt('password'),
-            ]
-        );
+        // 2. Settings & Canonical Navigation
+        $this->call([
+            SiteSettingsSeeder::class,
+            ClubSettingsSeeder::class,
+            NavigationSeeder::class,
+        ]);
 
+        // 3. Independent Club Domain Entities
+        $this->call([
+            VenuesSeeder::class,
+            StaffSeeder::class,
+            TeamsSeeder::class,
+        ]);
+
+        // 4. Content Schemas, Core Pages, Moments & SEO
         $this->call([
             ContentTypeSeeder::class,
-            TGLFCSeeder::class,
-            BookingSeeder::class,
-            ContactSeeder::class,
-            InquirySeeder::class,
+            PagesSeeder::class,
+            MomentsSeeder::class,
+            ArticlesSeeder::class,
+            SeoSeeder::class,
+        ]);
+
+        // 5. Booking Activities & Recurring Timetable
+        $this->call([
+            BookableItemsSeeder::class,
+            TrainingTimetableSeeder::class,
+            SchedulesSeeder::class,
         ]);
     }
 }

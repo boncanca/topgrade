@@ -8,6 +8,12 @@ use App\Models\BookableItem;
 use App\Models\Contact;
 use App\Models\Content;
 use App\Models\Inquiry;
+use App\Models\Moment;
+use App\Models\Staff;
+use App\Models\Team;
+use App\Models\TrainingSession;
+use App\Models\Venue;
+use App\Settings\ClubSettings;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
@@ -18,41 +24,166 @@ class PublicPageController
 {
     public function home(): Response
     {
-        $featuredActivities = BookableItem::where('is_active', true)
-            ->limit(3)
-            ->get();
-
         $pageContent = Content::published()
             ->where('slug', 'home')
             ->with([
                 'blocks' => fn ($q) => $q->orderBy('sort_order'),
                 'media',
+                'seo',
             ])
             ->first();
+
+        // Extract ContentBlocks by type
+        $heroBlock = $pageContent?->blocks->firstWhere('type', 'hero')?->payload ?? [];
+        $pillarsBlock = $pageContent?->blocks->firstWhere('type', 'pillars')?->payload ?? [];
+        $quickStatsBlock = $pageContent?->blocks->firstWhere('type', 'quick_stats')?->payload ?? [];
 
         $heroVideo = $pageContent?->getMedia('videos')->first();
         $heroPoster = $pageContent?->getMedia('images')->where('name', 'hero-poster')->first()
             ?? $pageContent?->getMedia('images')->first();
 
+        // Dynamic club squads from Team domain model
+        $squads = Team::active()
+            ->orderBy('sort_order')
+            ->with('media')
+            ->get()
+            ->map(fn (Team $team) => [
+                'id' => $team->id,
+                'name' => $team->name,
+                'slug' => $team->slug,
+                'age_group' => $team->age_group,
+                'stage' => $team->stage,
+                'description' => $team->description,
+                'visual_variant' => $team->visual_variant,
+                'image_url' => $team->getFirstMediaUrl('image'),
+            ]);
+
+        // Dynamic Moments Ribbon from actual published/featured Moment records
+        $momentsRibbon = Moment::published()
+            ->featured()
+            ->orderBy('sort_order')
+            ->with('media')
+            ->get()
+            ->map(fn (Moment $moment, int $idx) => [
+                'id' => $moment->id,
+                'num' => str_pad((string) ($idx + 1), 2, '0', STR_PAD_LEFT),
+                'title' => strtoupper($moment->title),
+                'slug' => $moment->slug,
+                'description' => $moment->description,
+                'image_url' => $moment->getFirstMediaUrl('gallery'),
+            ]);
+
+        // Dynamic Recurring Training Schedule from TrainingSession domain model
+        $trainingSchedule = TrainingSession::active()
+            ->with('venue')
+            ->orderBy('sort_order')
+            ->get()
+            ->groupBy('days_label')
+            ->map(function ($sessions, $daysLabel) {
+                $first = $sessions->first();
+
+                return [
+                    'days' => $daysLabel,
+                    'badge' => $first?->badge ?? 'Midweek Training',
+                    'sessions' => $sessions->map(fn ($s) => [
+                        'age' => $s->age_group,
+                        'time' => $s->time_label,
+                    ])->values()->all(),
+                    'venue' => [
+                        'name' => $first?->venue?->name,
+                        'facility' => $first?->venue?->facility,
+                        'address' => $first?->venue?->address.', '.$first?->venue?->locality.' '.$first?->venue?->postal_code,
+                        'surface' => $first?->venue?->surface,
+                    ],
+                ];
+            })->values()->all();
+
+        $featuredActivities = BookableItem::where('is_active', true)
+            ->limit(3)
+            ->get();
+
         return Inertia::render('Public/Home', [
-            'featuredActivities' => $featuredActivities,
             'page' => $pageContent,
             'blocks' => $pageContent?->blocks ?? [],
+            'seo' => $pageContent?->seo,
             'hero' => [
+                'eyebrow' => $heroBlock['eyebrow'] ?? 'MORE THAN FOOTBALL',
+                'headline' => $heroBlock['headline'] ?? 'DEVELOP YOUR FOOTBALL FUTURE',
+                'description' => $heroBlock['description'] ?? 'A youth football club in London helping young players develop through training, teamwork and playing experience.',
+                'primary_cta' => $heroBlock['primary_cta'] ?? [
+                    'label' => 'Book a Trial',
+                    'url' => '/bookings/free-trial-session',
+                ],
                 'video_url' => $heroVideo?->getUrl(),
                 'poster_url' => $heroPoster?->getUrl(),
             ],
+            'pillars' => $pillarsBlock['items'] ?? [],
+            'quickStats' => $quickStatsBlock['items'] ?? [],
+            'squads' => $squads,
+            'momentsRibbon' => $momentsRibbon,
+            'trainingSchedule' => $trainingSchedule,
+            'featuredActivities' => $featuredActivities,
         ]);
     }
 
     public function about(): Response
     {
-        return Inertia::render('Public/About');
+        $pageContent = Content::published()
+            ->where('slug', 'about')
+            ->with([
+                'blocks' => fn ($q) => $q->orderBy('sort_order'),
+                'media',
+                'seo',
+            ])
+            ->first();
+
+        $valuesBlock = $pageContent?->blocks->firstWhere('type', 'values')?->payload ?? [];
+
+        $venues = Venue::active()
+            ->orderBy('sort_order')
+            ->get()
+            ->map(fn (Venue $v) => [
+                'id' => $v->id,
+                'name' => $v->name,
+                'facility' => $v->facility,
+                'address' => $v->address.', '.$v->locality.' '.$v->postal_code,
+                'surface' => $v->surface,
+                'details' => $v->details,
+            ]);
+
+        $staff = Staff::active()
+            ->orderBy('sort_order')
+            ->with('media')
+            ->get()
+            ->map(fn (Staff $s) => [
+                'id' => $s->id,
+                'name' => $s->name,
+                'role' => $s->role,
+                'bio' => $s->bio,
+                'qualifications' => $s->qualifications,
+                'photo_url' => $s->getFirstMediaUrl('photo'),
+            ]);
+
+        return Inertia::render('Public/About', [
+            'page' => $pageContent,
+            'seo' => $pageContent?->seo,
+            'values' => $valuesBlock['items'] ?? [],
+            'facilities' => $venues,
+            'staff' => $staff,
+        ]);
     }
 
     public function contact(): Response
     {
-        return Inertia::render('Public/Contact');
+        $pageContent = Content::published()
+            ->where('slug', 'contact')
+            ->with('seo')
+            ->first();
+
+        return Inertia::render('Public/Contact', [
+            'page' => $pageContent,
+            'seo' => $pageContent?->seo,
+        ]);
     }
 
     public function submitContact(Request $request): RedirectResponse
@@ -111,7 +242,7 @@ class PublicPageController
             'user_agent' => $request->userAgent(),
         ]);
 
-        $adminRecipient = config('topgrade.emails.info', 'info@topgradelondonfc.co.uk');
+        $adminRecipient = app(ClubSettings::class)->email ?? config('topgrade.emails.info', 'info@topgradelondonfc.co.uk');
         Mail::to($adminRecipient)->send(new ContactReceivedAdminNotification($inquiry));
         Mail::to($inquiry->email)->send(new ContactReceivedCustomerNotification($inquiry));
 
@@ -122,11 +253,12 @@ class PublicPageController
     {
         $page = Content::published()
             ->whereIn('slug', ['privacy-policy', 'privacy'])
-            ->with('blocks')
+            ->with(['blocks', 'seo'])
             ->firstOrFail();
 
         return Inertia::render('Public/Privacy', [
             'page' => $page,
+            'seo' => $page->seo,
         ]);
     }
 
@@ -134,11 +266,12 @@ class PublicPageController
     {
         $page = Content::published()
             ->whereIn('slug', ['terms-and-conditions', 'terms'])
-            ->with('blocks')
+            ->with(['blocks', 'seo'])
             ->firstOrFail();
 
         return Inertia::render('Public/Terms', [
             'page' => $page,
+            'seo' => $page->seo,
         ]);
     }
 

@@ -1,12 +1,32 @@
 <script setup lang="ts">
-import { useForm } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
+import { useForm, usePage } from '@inertiajs/vue3';
 import PublicLayout from '@/layouts/PublicLayout.vue';
 import SeoHead from '@/components/SEO/SeoHead.vue';
 import { Mail, Phone, MapPin, CheckCircle2 } from '@lucide/vue';
 
 defineOptions({
     layout: PublicLayout,
+});
+
+const props = defineProps<{
+    clubSettings?: {
+        email?: string;
+        phone?: string;
+        address?: string;
+        instagram?: string;
+    };
+}>();
+
+const page = usePage();
+const club = computed(() => {
+    const globalSettings = (page.props as any).clubSettings;
+    return {
+        email: props.clubSettings?.email || globalSettings?.email || 'info@topgradelondonfc.co.uk',
+        phone: props.clubSettings?.phone || globalSettings?.phone || '',
+        address: props.clubSettings?.address || globalSettings?.address || 'Tottenham (N17) & Hackney (E9), London',
+        instagram: props.clubSettings?.instagram || globalSettings?.social_links?.instagram || 'https://www.instagram.com/topgradelondonfc/',
+    };
 });
 
 const form = useForm({
@@ -85,8 +105,8 @@ function submit() {
                             <Mail class="w-5 h-5 text-tg-accent shrink-0 mt-0.5" />
                             <div>
                                 <h3 class="font-bold text-tg-text-strong text-xs uppercase tracking-wider">Email</h3>
-                                <a href="mailto:info@topgradelondonfc.co.uk" class="text-tg-accent hover:underline text-sm transition-colors mt-0.5 block">
-                                    info@topgradelondonfc.co.uk
+                                <a :href="`mailto:${club.email}`" class="text-tg-accent hover:underline text-sm transition-colors mt-0.5 block">
+                                    {{ club.email }}
                                 </a>
                             </div>
                         </div>
@@ -97,7 +117,7 @@ function submit() {
                             <div>
                                 <h3 class="font-bold text-tg-text-strong text-xs uppercase tracking-wider">Club Bases</h3>
                                 <p class="text-tg-text text-sm mt-0.5">
-                                    Tottenham (N17) &amp; Hackney (E9), London
+                                    {{ club.address }}
                                 </p>
                             </div>
                         </div>
@@ -112,7 +132,7 @@ function submit() {
                             <div>
                                 <h3 class="font-bold text-tg-text-strong text-xs uppercase tracking-wider">Instagram</h3>
                                 <a
-                                    href="https://www.instagram.com/topgradelondonfc/"
+                                    :href="club.instagram"
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     class="text-tg-accent hover:underline text-sm transition-colors mt-0.5 block"

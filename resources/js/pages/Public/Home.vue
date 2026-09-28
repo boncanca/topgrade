@@ -42,14 +42,60 @@ interface PageContent {
     content?: string;
 }
 
+interface HeroProps {
+    eyebrow?: string;
+    headline?: string;
+    description?: string;
+    primary_cta?: {
+        label: string;
+        url: string;
+    };
+    video_url?: string | null;
+    poster_url?: string | null;
+}
+
+interface TeamSquad {
+    id: number;
+    name: string;
+    slug: string;
+    age_group: string;
+    stage: string;
+    description: string;
+    visual_variant: string;
+    image_url?: string;
+}
+
+interface MomentItem {
+    id: number;
+    num: string;
+    title: string;
+    slug: string;
+    description: string;
+    image_url?: string;
+}
+
+interface TrainingScheduleItem {
+    days: string;
+    badge: string;
+    sessions: Array<{ age: string; time: string }>;
+    venue: {
+        name: string;
+        facility: string;
+        address: string;
+        surface: string;
+    };
+}
+
 const props = defineProps<{
     featuredActivities?: Activity[];
     page?: PageContent | null;
     blocks?: Block[];
-    hero?: {
-        video_url?: string | null;
-        poster_url?: string | null;
-    };
+    hero?: HeroProps;
+    pillars?: Array<{ num: string; title: string; description: string }>;
+    quickStats?: Array<{ label: string; value: string; detail: string }>;
+    squads?: TeamSquad[];
+    momentsRibbon?: MomentItem[];
+    trainingSchedule?: TrainingScheduleItem[];
 }>();
 
 defineOptions({
@@ -62,71 +108,101 @@ const prefersReducedMotion = ref(false);
 
 const heroVideoUrl = computed(() => props.hero?.video_url || '/topgrade-video.mp4');
 const heroPosterUrl = computed(() => props.hero?.poster_url || '/images/club/hero-football.jpg');
+const heroEyebrow = computed(() => props.hero?.eyebrow || 'More Than Football');
+const heroHeadline = computed(() => props.hero?.headline || 'Develop Your Football Future');
+const heroDescription = computed(() => props.hero?.description || 'Youth football in North and East London, built through technical coaching, teamwork, and real competitive league match play for players aged U7 to U16.');
+const heroPrimaryCta = computed(() => props.hero?.primary_cta || { label: 'Book a Trial', url: '/bookings/free-trial-session' });
+
+const heroHeadlineParts = computed(() => {
+    const text = heroHeadline.value;
+    const words = text.split(/\s+/);
+    if (words.length >= 4) {
+        return [words.slice(0, 2).join(' '), words[2], words.slice(3).join(' ')];
+    } else if (words.length === 3) {
+        return [words[0], words[1], words[2]];
+    }
+    return [text];
+});
 
 const onVideoError = () => {
     videoFailed.value = true;
 };
 
-const quickStats = [
-    { label: 'Age Groups', value: 'Ages 4–18', detail: 'Junior & youth squads' },
-    { label: 'Weekly Training', value: '3 Days', detail: 'Tuesdays, Wednesdays & Thursdays' },
-    { label: 'Home Grounds', value: '3 Venues', detail: 'Tottenham & Hackney' },
-    { label: 'Matchday', value: 'League', detail: 'Sanctioned youth fixtures' },
-];
+const quickStats = computed(() => {
+    if (props.quickStats && props.quickStats.length > 0) {
+        return props.quickStats;
+    }
+    return [
+        { label: 'Age Groups', value: 'Ages 4–18', detail: 'Junior & youth squads' },
+        { label: 'Weekly Training', value: '3 Days', detail: 'Tuesdays, Wednesdays & Thursdays' },
+        { label: 'Home Grounds', value: '3 Venues', detail: 'Tottenham & Hackney' },
+        { label: 'Matchday', value: 'League', detail: 'Sanctioned youth fixtures' },
+    ];
+});
 
-const pillars = [
-    {
-        num: '01',
-        title: 'Technical Skill',
-        description: 'First touch, passing range, striking execution, and 1v1 attacking confidence.',
-    },
-    {
-        num: '02',
-        title: 'Game Understanding',
-        description: 'Reading game situations, tactical positioning, and rapid decision-making under pressure.',
-    },
-    {
-        num: '03',
-        title: 'Teamwork & Discipline',
-        description: 'Punctuality, structured preparation, pitch communication, and playing for the team.',
-    },
-    {
-        num: '04',
-        title: 'Playing Experience',
-        description: 'Competitive minutes in sanctioned London youth leagues, not a season on the bench.',
-    },
-];
+const pillars = computed(() => {
+    if (props.pillars && props.pillars.length > 0) {
+        return props.pillars;
+    }
+    return [
+        {
+            num: '01',
+            title: 'Technical Skill',
+            description: 'First touch, passing range, striking execution, and 1v1 attacking confidence.',
+        },
+        {
+            num: '02',
+            title: 'Game Understanding',
+            description: 'Reading game situations, tactical positioning, and rapid decision-making under pressure.',
+        },
+        {
+            num: '03',
+            title: 'Teamwork & Discipline',
+            description: 'Punctuality, structured preparation, pitch communication, and playing for the team.',
+        },
+        {
+            num: '04',
+            title: 'Playing Experience',
+            description: 'Competitive minutes in sanctioned London youth leagues, not a season on the bench.',
+        },
+    ];
+});
 
 // Club Informational Training Schedule
-const trainingSchedule = [
-    {
-        days: 'Tuesdays & Thursdays',
-        badge: 'Midweek Training',
-        sessions: [
-            { age: 'U7 – U12', time: '5:00 – 7:00 PM' },
-            { age: 'U13 – U16', time: '6:30 – 8:00 PM' },
-        ],
-        venue: {
-            name: 'Frederick Knight Sports Centre',
-            facility: 'Tottenham Powerleague',
-            address: 'Willoughby Lane, Tottenham, London N17 0RT',
-            surface: 'All-Weather 3G Floodlit Pitches',
+const trainingSchedule = computed(() => {
+    if (props.trainingSchedule && props.trainingSchedule.length > 0) {
+        return props.trainingSchedule;
+    }
+    return [
+        {
+            days: 'Tuesdays & Thursdays',
+            badge: 'Midweek Training',
+            sessions: [
+                { age: 'U7 – U12', time: '5:00 – 7:00 PM' },
+                { age: 'U13 – U16', time: '6:30 – 8:00 PM' },
+            ],
+            venue: {
+                name: 'Frederick Knight Sports Centre',
+                facility: 'Tottenham Powerleague',
+                address: 'Willoughby Lane, Tottenham, London N17 0RT',
+                surface: 'All-Weather 3G Floodlit Pitches',
+            },
         },
-    },
-    {
-        days: 'Wednesdays',
-        badge: 'Technical Base',
-        sessions: [
-            { age: 'U7 – U12', time: '5:30 – 7:00 PM' },
-        ],
-        venue: {
-            name: 'Tottenham Community Sports Centre',
-            facility: 'Community Sports Facility',
-            address: '701–703 High Road, London N17 8AD',
-            surface: 'Indoor Sports Hall & Technical Base',
+        {
+            days: 'Wednesdays',
+            badge: 'Technical Base',
+            sessions: [
+                { age: 'U7 – U12', time: '5:30 – 7:00 PM' },
+            ],
+            venue: {
+                name: 'Tottenham Community Sports Centre',
+                facility: 'Community Sports Facility',
+                address: '701–703 High Road, London N17 8AD',
+                surface: 'Indoor Sports Hall & Technical Base',
+            },
         },
-    },
-];
+    ];
+});
 
 // Verified Schema.org SportsClub / Organization entity
 const sportsClubSchema = {
@@ -174,122 +250,167 @@ const sportsClubSchema = {
     ],
 };
 
+const squadVariantStyles: Record<string, { layoutClass: string; aspectClass: string; cropPosition: string; floatY: string; rotate: string }> = {
+    foundation: { layoutClass: 'md:col-span-5', aspectClass: 'aspect-[4/3] md:aspect-[3/4]', cropPosition: 'object-center', floatY: '-4px', rotate: '-0.3deg' },
+    acquisition: { layoutClass: 'md:col-span-7 md:pt-12', aspectClass: 'aspect-[16/10]', cropPosition: 'object-top', floatY: '-6px', rotate: '0.25deg' },
+    development: { layoutClass: 'md:col-span-8', aspectClass: 'aspect-[16/9] md:aspect-[21/10]', cropPosition: 'object-center', floatY: '-5px', rotate: '-0.2deg' },
+    progression: { layoutClass: 'md:col-span-4 md:-mt-8', aspectClass: 'aspect-[3/4]', cropPosition: 'object-center', floatY: '-6px', rotate: '0.35deg' },
+    competition: { layoutClass: 'md:col-span-12', aspectClass: 'aspect-[16/9] md:aspect-[2.4/1]', cropPosition: 'object-center', floatY: '-4px', rotate: '-0.15deg' },
+};
+
 // Squads are informational club entities with varied editorial visual rhythm
-const squads = [
-    {
-        name: 'U7 – U8',
-        stage: 'Foundation Phase',
-        description: 'First touch, ball mastery, agility, balance, and introducing team play in a positive environment.',
-        image: '/images/club/youth_match_action.jpg',
-        layoutClass: 'md:col-span-5',
-        aspectClass: 'aspect-[4/3] md:aspect-[3/4]',
-        cropPosition: 'object-center',
-        floatY: '-4px',
-        rotate: '-0.3deg',
-    },
-    {
-        name: 'U9 – U10',
-        stage: 'Skill Acquisition',
-        description: '1v1 attacking and defending, spatial awareness, passing range, and instinctive game decisions.',
-        image: '/484192970_1108922961247045_3935375872642678849_n.jpg',
-        layoutClass: 'md:col-span-7 md:pt-12',
-        aspectClass: 'aspect-[16/10]',
-        cropPosition: 'object-top',
-        floatY: '-6px',
-        rotate: '0.25deg',
-    },
-    {
-        name: 'U11 – U12',
-        stage: 'Game Development',
-        description: 'Tactical positioning, transition play, set-pieces, spatial compactness, and match tempo management.',
-        image: '/485087659_1108923127913695_5031817050217357486_n.jpg',
-        layoutClass: 'md:col-span-8',
-        aspectClass: 'aspect-[16/9] md:aspect-[21/10]',
-        cropPosition: 'object-center',
-        floatY: '-5px',
-        rotate: '-0.2deg',
-    },
-    {
-        name: 'U13 – U14',
-        stage: 'Youth Progression',
-        description: 'Tactical discipline, physical conditioning, competitive league fixtures, and structured pitch mentoring.',
-        image: '/images/club/tactical_coaching.jpg',
-        layoutClass: 'md:col-span-4 md:-mt-8',
-        aspectClass: 'aspect-[3/4]',
-        cropPosition: 'object-center',
-        floatY: '-6px',
-        rotate: '0.35deg',
-    },
-    {
-        name: 'U15 – U16',
-        stage: 'Youth Competition',
-        description: 'Competitive match play, high-intensity game management, leadership, and senior club pathway preparation.',
-        image: '/images/club/squad_celebration.jpg',
-        layoutClass: 'md:col-span-12',
-        aspectClass: 'aspect-[16/9] md:aspect-[2.4/1]',
-        cropPosition: 'object-center',
-        floatY: '-4px',
-        rotate: '-0.15deg',
-    },
+const squads = computed(() => {
+    if (props.squads && props.squads.length > 0) {
+        return props.squads.map((team, idx) => {
+            const variantKey = team.visual_variant || (['foundation', 'acquisition', 'development', 'progression', 'competition'][idx % 5]);
+            const style = squadVariantStyles[variantKey] || squadVariantStyles.foundation;
+            return {
+                name: team.name,
+                stage: team.stage,
+                description: team.description,
+                image: team.image_url || '/images/club/youth_match_action.jpg',
+                ...style,
+            };
+        });
+    }
+    return [
+        {
+            name: 'U7 – U8',
+            stage: 'Foundation Phase',
+            description: 'First touch, ball mastery, agility, balance, and introducing team play in a positive environment.',
+            image: '/images/club/youth_match_action.jpg',
+            layoutClass: 'md:col-span-5',
+            aspectClass: 'aspect-[4/3] md:aspect-[3/4]',
+            cropPosition: 'object-center',
+            floatY: '-4px',
+            rotate: '-0.3deg',
+        },
+        {
+            name: 'U9 – U10',
+            stage: 'Skill Acquisition',
+            description: '1v1 attacking and defending, spatial awareness, passing range, and instinctive game decisions.',
+            image: '/484192970_1108922961247045_3935375872642678849_n.jpg',
+            layoutClass: 'md:col-span-7 md:pt-12',
+            aspectClass: 'aspect-[16/10]',
+            cropPosition: 'object-top',
+            floatY: '-6px',
+            rotate: '0.25deg',
+        },
+        {
+            name: 'U11 – U12',
+            stage: 'Game Development',
+            description: 'Tactical positioning, transition play, set-pieces, spatial compactness, and match tempo management.',
+            image: '/485087659_1108923127913695_5031817050217357486_n.jpg',
+            layoutClass: 'md:col-span-8',
+            aspectClass: 'aspect-[16/9] md:aspect-[21/10]',
+            cropPosition: 'object-center',
+            floatY: '-5px',
+            rotate: '-0.2deg',
+        },
+        {
+            name: 'U13 – U14',
+            stage: 'Youth Progression',
+            description: 'Tactical discipline, physical conditioning, competitive league fixtures, and structured pitch mentoring.',
+            image: '/images/club/tactical_coaching.jpg',
+            layoutClass: 'md:col-span-4 md:-mt-8',
+            aspectClass: 'aspect-[3/4]',
+            cropPosition: 'object-center',
+            floatY: '-6px',
+            rotate: '0.35deg',
+        },
+        {
+            name: 'U15 – U16',
+            stage: 'Youth Competition',
+            description: 'Competitive match play, high-intensity game management, leadership, and senior club pathway preparation.',
+            image: '/images/club/squad_celebration.jpg',
+            layoutClass: 'md:col-span-12',
+            aspectClass: 'aspect-[16/9] md:aspect-[2.4/1]',
+            cropPosition: 'object-center',
+            floatY: '-4px',
+            rotate: '-0.15deg',
+        },
+    ];
+});
+
+const momentsRibbonStyles = [
+    { aspect: 'aspect-[3/4]', offsetClass: 'lg:translate-y-0', floatY: '-4px', rotate: '-0.35deg' },
+    { aspect: 'aspect-[4/5]', offsetClass: 'lg:translate-y-16', floatY: '-6px', rotate: '0.3deg' },
+    { aspect: 'aspect-[3/4]', offsetClass: 'lg:translate-y-6', floatY: '-5px', rotate: '-0.25deg' },
+    { aspect: 'aspect-[4/5]', offsetClass: 'lg:translate-y-24', floatY: '-6px', rotate: '0.4deg' },
+    { aspect: 'aspect-[3/4]', offsetClass: 'lg:translate-y-8', floatY: '-4px', rotate: '-0.3deg' },
+    { aspect: 'aspect-[4/5]', offsetClass: 'lg:translate-y-20', floatY: '-5px', rotate: '0.25deg' },
 ];
 
 // Editorial Moments Ribbon — Pure photography, restrained typography
-const momentsRibbon = [
-    {
-        num: '01',
-        title: 'TRAINING',
-        image: '/images/club/club-training-london.jpg',
-        aspect: 'aspect-[3/4]',
-        offsetClass: 'lg:translate-y-0',
-        floatY: '-4px',
-        rotate: '-0.35deg',
-    },
-    {
-        num: '02',
-        title: 'MATCHDAY',
-        image: '/484977737_1109608517845156_6730033439051003629_n.jpg',
-        aspect: 'aspect-[4/5]',
-        offsetClass: 'lg:translate-y-16',
-        floatY: '-6px',
-        rotate: '0.3deg',
-    },
-    {
-        num: '03',
-        title: 'TEAMWORK',
-        image: '/images/club/squad_celebration.jpg',
-        aspect: 'aspect-[3/4]',
-        offsetClass: 'lg:translate-y-6',
-        floatY: '-5px',
-        rotate: '-0.25deg',
-    },
-    {
-        num: '04',
-        title: 'DEVELOPMENT',
-        image: '/484192970_1108922961247045_3935375872642678849_n.jpg',
-        aspect: 'aspect-[4/5]',
-        offsetClass: 'lg:translate-y-24',
-        floatY: '-6px',
-        rotate: '0.4deg',
-    },
-    {
-        num: '05',
-        title: 'COACHING',
-        image: '/images/club/tactical_coaching.jpg',
-        aspect: 'aspect-[3/4]',
-        offsetClass: 'lg:translate-y-8',
-        floatY: '-4px',
-        rotate: '-0.3deg',
-    },
-    {
-        num: '06',
-        title: 'FOOTBALL',
-        image: '/images/club/floodlit-match.png',
-        aspect: 'aspect-[4/5]',
-        offsetClass: 'lg:translate-y-20',
-        floatY: '-5px',
-        rotate: '0.25deg',
-    },
-];
+const momentsRibbon = computed(() => {
+    if (props.momentsRibbon && props.momentsRibbon.length > 0) {
+        return props.momentsRibbon.map((m, idx) => {
+            const style = momentsRibbonStyles[idx % momentsRibbonStyles.length];
+            return {
+                num: m.num,
+                title: m.title,
+                image: m.image_url || '/images/club/club-training-london.jpg',
+                ...style,
+            };
+        });
+    }
+    return [
+        {
+            num: '01',
+            title: 'TRAINING',
+            image: '/images/club/club-training-london.jpg',
+            aspect: 'aspect-[3/4]',
+            offsetClass: 'lg:translate-y-0',
+            floatY: '-4px',
+            rotate: '-0.35deg',
+        },
+        {
+            num: '02',
+            title: 'MATCHDAY',
+            image: '/484977737_1109608517845156_6730033439051003629_n.jpg',
+            aspect: 'aspect-[4/5]',
+            offsetClass: 'lg:translate-y-16',
+            floatY: '-6px',
+            rotate: '0.3deg',
+        },
+        {
+            num: '03',
+            title: 'TEAMWORK',
+            image: '/images/club/squad_celebration.jpg',
+            aspect: 'aspect-[3/4]',
+            offsetClass: 'lg:translate-y-6',
+            floatY: '-5px',
+            rotate: '-0.25deg',
+        },
+        {
+            num: '04',
+            title: 'DEVELOPMENT',
+            image: '/484192970_1108922961247045_3935375872642678849_n.jpg',
+            aspect: 'aspect-[4/5]',
+            offsetClass: 'lg:translate-y-24',
+            floatY: '-6px',
+            rotate: '0.4deg',
+        },
+        {
+            num: '05',
+            title: 'COACHING',
+            image: '/images/club/tactical_coaching.jpg',
+            aspect: 'aspect-[3/4]',
+            offsetClass: 'lg:translate-y-8',
+            floatY: '-4px',
+            rotate: '-0.3deg',
+        },
+        {
+            num: '06',
+            title: 'FOOTBALL',
+            image: '/images/club/floodlit-match.png',
+            aspect: 'aspect-[4/5]',
+            offsetClass: 'lg:translate-y-20',
+            floatY: '-5px',
+            rotate: '0.25deg',
+        },
+    ];
+});
 
 // Home Matchday Grounds
 const homeVenues = [
@@ -650,7 +771,7 @@ onUnmounted(() => {
                     <div class="inline-flex items-center gap-2 mb-4 sm:mb-6 animate-hero-drop">
                         <span class="w-2 h-2 rounded-full" style="background: var(--tg-accent);" />
                         <span class="text-xs sm:text-sm font-black tracking-widest uppercase text-tg-accent">
-                            More Than Football
+                            {{ heroEyebrow }}
                         </span>
                         <span class="text-tg-border text-xs">•</span>
                         <span class="text-[10px] sm:text-xs text-tg-text-muted tracking-wider uppercase font-semibold">
@@ -668,9 +789,14 @@ onUnmounted(() => {
                             text-shadow: 0 4px 24px rgba(0, 0, 0, 0.45);
                         "
                     >
-                        <span class="inline-block animate-hero-rise">Develop Your</span><br />
-                        <span class="inline-block animate-hero-rise text-tg-accent" style="animation-delay: 0.12s;">Football</span><br />
-                        <span class="inline-block animate-hero-rise" style="animation-delay: 0.24s;">Future</span>
+                        <template v-if="heroHeadlineParts.length >= 3">
+                            <span class="inline-block animate-hero-rise">{{ heroHeadlineParts[0] }}</span><br />
+                            <span class="inline-block animate-hero-rise text-tg-accent" style="animation-delay: 0.12s;">{{ heroHeadlineParts[1] }}</span><br />
+                            <span class="inline-block animate-hero-rise" style="animation-delay: 0.24s;">{{ heroHeadlineParts.slice(2).join(' ') }}</span>
+                        </template>
+                        <template v-else>
+                            <span class="inline-block animate-hero-rise">{{ heroHeadline }}</span>
+                        </template>
                     </h1>
 
                     <!-- Subheadline (Left-Aligned) -->
@@ -678,16 +804,16 @@ onUnmounted(() => {
                         class="text-sm sm:text-base md:text-lg max-w-xl mb-8 sm:mb-10 leading-relaxed font-normal text-tg-text animate-hero-fade"
                         style="text-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);"
                     >
-                        Youth football in North and East London, built through technical coaching, teamwork, and real competitive league match play for players aged U7 to U16.
+                        {{ heroDescription }}
                     </p>
 
                     <!-- CTA Buttons (Left-Aligned) -->
                     <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto justify-start mb-8 sm:mb-10 relative z-20 animate-hero-fade" style="animation-delay: 0.4s;">
                         <Link
-                            href="/bookings"
+                            :href="heroPrimaryCta.url"
                             class="tg-btn tg-focus shadow-sm justify-center"
                         >
-                            <span>Book a Trial</span>
+                            <span>{{ heroPrimaryCta.label }}</span>
                             <ArrowRight class="w-4 h-4" />
                         </Link>
                         <a

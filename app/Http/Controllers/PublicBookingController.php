@@ -9,11 +9,10 @@ use App\Models\BookableItem;
 use App\Models\Booking;
 use App\Models\Contact;
 use App\Models\Content;
-use App\Models\Inquiry;
 use App\Models\Payment;
 use App\Models\Schedule;
+use App\Models\TrainingSession;
 use App\Services\PaymentService;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -29,8 +28,30 @@ class PublicBookingController
             ->orderBy('name')
             ->get();
 
+        $trainingSchedule = TrainingSession::active()
+            ->with('venue')
+            ->orderBy('sort_order')
+            ->get()
+            ->groupBy('days_label')
+            ->map(function ($sessions, $daysLabel) {
+                $first = $sessions->first();
+
+                return [
+                    'days' => $daysLabel,
+                    'badge' => $first?->badge ?? 'Midweek Training',
+                    'sessions' => $sessions->map(fn ($s) => [
+                        'age' => $s->age_group,
+                        'time' => $s->time_label,
+                    ])->values()->all(),
+                    'venue' => $first?->venue?->name.($first?->venue?->facility ? ' ('.$first->venue->facility.')' : ''),
+                    'address' => $first?->venue?->address.', '.$first?->venue?->locality.' '.$first?->venue?->postal_code,
+                    'surface' => $first?->venue?->surface,
+                ];
+            })->values()->all();
+
         return Inertia::render('Public/Training', [
             'activities' => $activities,
+            'weeklySchedule' => $trainingSchedule,
         ]);
     }
 
@@ -62,60 +83,6 @@ class PublicBookingController
         return Inertia::render('Public/Articles/Show', [
             'article' => $article,
         ]);
-    }
-
-    public function contact(): Response
-    {
-        return Inertia::render('Public/Contact');
-    }
-
-    public function submitContact(Request $request): RedirectResponse
-    {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
-            'phone' => 'nullable|string|max:30',
-            'company' => 'nullable|string|max:255',
-            'position' => 'nullable|string|max:255',
-            'subject' => 'required|string|max:255',
-            'message' => 'required|string|max:5000',
-        ]);
-
-        [$firstName, $lastName] = $this->parseParticipantName($validated['name']);
-
-        $contact = Contact::firstOrCreate(
-            ['email' => $validated['email']],
-            [
-                'first_name' => $firstName,
-                'last_name' => $lastName,
-                'phone' => $validated['phone'] ?? null,
-                'company' => $validated['company'] ?? null,
-                'position' => $validated['position'] ?? null,
-                'status' => 'active',
-            ]
-        );
-
-        if (($validated['company'] ?? null) || ($validated['position'] ?? null) || ($validated['phone'] ?? null)) {
-            $contact->update(array_filter([
-                'phone' => $validated['phone'] ?? $contact->phone,
-                'company' => $validated['company'] ?? $contact->company,
-                'position' => $validated['position'] ?? $contact->position,
-            ]));
-        }
-
-        Inquiry::create([
-            'contact_id' => $contact->id,
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'phone' => $validated['phone'] ?? null,
-            'subject' => $validated['subject'],
-            'message' => $validated['message'],
-            'status' => 'new',
-            'ip_address' => $request->ip(),
-            'user_agent' => $request->userAgent(),
-        ]);
-
-        return back()->with('success', 'Your message has been sent successfully!');
     }
 
     public function activities(): Response
