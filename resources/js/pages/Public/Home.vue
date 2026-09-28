@@ -369,22 +369,23 @@ onMounted(async () => {
 
     /*
      * Ball Waypoints (Atmospheric Visual Thread):
-     * Ball starts dormant (opacity: 0) while the 3D Crest is showcased on initial hero load.
+     * Ball starts dormant (opacity: 0, visibility: hidden) while the 3D Crest is showcased on initial hero load.
      * On downward scroll, crest transitions out and ball materializes (at: 0.50), rotating
      * and routing through negative space across subsequent sections.
+     * Mobile waypoints (m) keep the ball considerably smaller and unobtrusive.
      */
     const STOPS = [
-        { sec: 'hero', at: 0.00, x: 28, y: 0, s: 0.50, r: 0, o: 0.0, p: 0.16, m: { x: 0, y: 15, s: 0.40, o: 0.0 } },
-        { sec: 'hero', at: 0.50, x: 24, y: 8, s: 0.75, r: 90, o: 0.85, p: 0.16, m: { x: 0, y: 18, s: 0.60, o: 0.85 } },
-        { sec: 'hero', at: 0.90, x: -30, y: 18, s: 0.48, r: 180, o: 0.75, p: 0.10, m: { x: -24, y: 20, s: 0.35, o: 0.70 } },
-        { sec: 'develop', at: 0.50, x: -40, y: 8, s: 0.45, r: 250, o: 0.70, p: 0.07, m: { x: -32, y: 12, s: 0.30, o: 0.65 } },
-        { sec: 'creed', at: 0.50, x: 0, y: 0, s: 2.90, r: 430, o: 0.98, p: 0.16, m: { s: 2.35, o: 0.92 } },
-        { sec: 'train', at: 0.35, x: 38, y: -8, s: 0.44, r: 580, o: 0.80, p: 0.05, m: { x: 30, y: -12, s: 0.28, o: 0.75 } },
-        { sec: 'teams', at: 0.50, x: -36, y: 0, s: 0.44, r: 690, o: 0.72, p: 0.07, m: { x: -28, y: -6, s: 0.28, o: 0.68 } },
-        { sec: 'gallery', at: 0.45, x: 34, y: 4, s: 0.46, r: 780, o: 0.70, p: 0.07, m: { x: 26, y: 6, s: 0.30, o: 0.65 } },
-        { sec: 'matchday', at: 0.50, x: -34, y: 14, s: 0.46, r: 870, o: 0.80, p: 0.05, m: { x: -26, y: 16, s: 0.28, o: 0.75 } },
-        { sec: 'cta', at: 0.50, x: 0, y: 20, s: 0.78, r: 960, o: 0.80, p: 0.10, m: { y: 18, s: 0.55, o: 0.75 } },
-        { sec: 'footer', at: 0.50, x: 24, y: 10, s: 1.30, r: 1080, o: 0.92, p: 0.12, m: { x: 0, y: 16, s: 0.95, o: 0.88 } },
+        { sec: 'hero', at: 0.00, x: 28, y: 0, s: 0.50, r: 0, o: 0.0, p: 0.16, m: { x: 0, y: 20, s: 0.32, o: 0.0 } },
+        { sec: 'hero', at: 0.50, x: 26, y: 4, s: 0.65, r: 90, o: 0.85, p: 0.16, m: { x: 0, y: 20, s: 0.38, o: 0.85 } },
+        { sec: 'hero', at: 0.90, x: -28, y: 16, s: 0.45, r: 180, o: 0.70, p: 0.10, m: { x: -18, y: 18, s: 0.26, o: 0.65 } },
+        { sec: 'develop', at: 0.50, x: -38, y: 8, s: 0.42, r: 250, o: 0.65, p: 0.07, m: { x: -24, y: 12, s: 0.24, o: 0.60 } },
+        { sec: 'creed', at: 0.50, x: 0, y: 0, s: 2.60, r: 430, o: 0.96, p: 0.16, m: { s: 1.85, o: 0.90 } },
+        { sec: 'train', at: 0.35, x: 36, y: -8, s: 0.40, r: 580, o: 0.65, p: 0.05, m: { x: 24, y: -10, s: 0.22, o: 0.60 } },
+        { sec: 'teams', at: 0.50, x: -34, y: 0, s: 0.36, r: 690, o: 0.50, p: 0.07, m: { x: -22, y: -6, s: 0.20, o: 0.45 } },
+        { sec: 'gallery', at: 0.45, x: 32, y: 4, s: 0.36, r: 780, o: 0.50, p: 0.07, m: { x: 22, y: 6, s: 0.22, o: 0.45 } },
+        { sec: 'matchday', at: 0.50, x: -32, y: 14, s: 0.38, r: 870, o: 0.60, p: 0.05, m: { x: -20, y: 14, s: 0.22, o: 0.55 } },
+        { sec: 'cta', at: 0.50, x: 0, y: 18, s: 0.55, r: 960, o: 0.55, p: 0.10, m: { y: 16, s: 0.32, o: 0.50 } },
+        { sec: 'footer', at: 0.50, x: 22, y: 8, s: 0.90, r: 1080, o: 0.70, p: 0.12, m: { x: 0, y: 12, s: 0.55, o: 0.65 } },
     ];
 
     interface Point {
@@ -441,26 +442,26 @@ onMounted(async () => {
     buildPoints();
 
     const pars = Array.from(document.querySelectorAll<HTMLElement>('[data-par]'));
-    const heroCrest = document.getElementById('hero-3d-crest');
 
     const animate = (time: number) => {
         // Damped interpolation loop without scroll hijacking
         currentScrollY += (targetScrollY - currentScrollY) * 0.075;
         const sy = currentScrollY + window.innerHeight * 0.5;
 
-        // Hero 3D Crest transition to football visual object on initial downward scroll
-        const heroScrollProgress = Math.min(1, Math.max(0, currentScrollY / 220));
+        // Hero 3D Crest transition to football visual object on initial downward scroll (0px -> 240px)
+        const heroScrollProgress = Math.min(1, Math.max(0, currentScrollY / 240));
         const crestElements = document.querySelectorAll<HTMLElement>('#hero-3d-crest, .hero-3d-crest-mobile');
 
         if (crestElements.length > 0 && !reduceMotion) {
             const crestOpacity = Math.max(0, 1 - heroScrollProgress);
-            const crestScale = Math.max(0.7, 1 - heroScrollProgress * 0.3);
-            const crestY = currentScrollY * 0.15;
+            const crestScale = Math.max(0.72, 1 - heroScrollProgress * 0.28);
+            const crestY = currentScrollY * 0.12;
 
             crestElements.forEach((el) => {
                 el.style.opacity = crestOpacity.toFixed(3);
                 el.style.transform = `translate3d(0, ${crestY.toFixed(1)}px, 0) scale(${crestScale.toFixed(3)})`;
                 el.style.pointerEvents = crestOpacity <= 0.05 ? 'none' : 'auto';
+                el.style.visibility = crestOpacity <= 0.001 ? 'hidden' : 'visible';
             });
         }
 
@@ -498,12 +499,17 @@ onMounted(async () => {
             const finalY = y + hoverY;
             const finalRot = r + hoverRot;
 
-            // Ball starts dormant (opacity: 0) while 3D Crest is showcased on initial hero load,
-            // and smoothly emerges as the crest fades on downward scroll
-            const finalBallOpacity = op * heroScrollProgress;
+            // Ball starts dormant (opacity: 0, hidden) at scroll 0, and smoothly emerges as the crest fades on downward scroll
+            if (currentScrollY <= 0.5) {
+                ball.style.opacity = '0';
+                ball.style.visibility = 'hidden';
+            } else {
+                ball.style.visibility = 'visible';
+                const finalBallOpacity = op * heroScrollProgress;
+                ball.style.opacity = finalBallOpacity.toFixed(3);
+            }
 
             ball.style.transform = `translate3d(calc(-50% + ${x.toFixed(2)}vw), calc(-50% + ${finalY.toFixed(2)}vh), 0) scale(${s.toFixed(3)}) rotate(${finalRot.toFixed(1)}deg)`;
-            ball.style.opacity = finalBallOpacity.toFixed(3);
 
             const zoomVal = Math.min(1, Math.max(0, (s - 1.5) / 1.1));
             root.style.setProperty('--tg-pitch-opacity', pi.toFixed(3));
@@ -597,7 +603,7 @@ onUnmounted(() => {
             </div>
         </div>
 
-        <!-- 01 — HERO SECTION: Left-Aligned Cinematic Architecture with 3D Decorative Crest -->
+        <!-- 01 — HERO SECTION: Left-Aligned Architecture with 3D Decorative Crest & Metamorphosis to Ball -->
         <section
             id="hero"
             class="relative min-h-[92vh] sm:min-h-[105vh] flex items-center justify-start pt-20 sm:pt-28 pb-16 sm:pb-24 px-4 sm:px-6 lg:px-8 overflow-hidden"
@@ -630,53 +636,26 @@ onUnmounted(() => {
                     alt=""
                     class="w-full h-full object-cover object-center transition-opacity duration-700"
                 />
-                <!-- Subtle flat translucent overlay (no gradients, no glows, no glassmorphism) -->
+                <!-- Subtle flat translucent overlay (restrained 35%, no gradients, no glows) -->
                 <div
-                    class="absolute inset-0 bg-[#08040f]/50"
+                    class="absolute inset-0 bg-[#08040f]/35"
                 />
             </div>
 
             <!-- Content Grid: Left-Aligned Copy & Primary CTAs, Right-Aligned 3D Decorative Crest -->
             <div class="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center relative z-20">
-                <!-- Left Column: Branding, Typography, CTAs, and Facts -->
+                <!-- Left Column: Branding, Typography, CTAs, Mobile 3D Crest, and Facts -->
                 <div class="lg:col-span-7 xl:col-span-7 flex flex-col items-start text-left">
-                    <!-- Top Bar in Hero: Official Crest + Mobile 3D Crest companion -->
-                    <div class="w-full flex items-start justify-between">
-                        <div>
-                            <!-- Official Crest (No white container) -->
-                            <div class="mb-3 sm:mb-4 animate-hero-drop">
-                                <img
-                                    src="/logo.png"
-                                    alt="TopGrade London FC Crest"
-                                    class="w-12 sm:w-16 md:w-20 h-auto drop-shadow-md"
-                                />
-                            </div>
-
-                            <!-- Tagline Badge -->
-                            <div class="mb-3 sm:mb-4">
-                                <span
-                                    class="inline-block px-3 py-1 text-[11px] sm:text-xs font-bold uppercase tracking-widest rounded bg-tg-bg-deep/80 border border-tg-border text-tg-accent"
-                                >
-                                    Youth Football Club · London
-                                </span>
-                            </div>
-                        </div>
-
-                        <!-- 3D Decorative Crest on Mobile (Top-Right, compact, transitions out on scroll) -->
-                        <div class="lg:hidden pl-2 pointer-events-none select-none">
-                            <div class="hero-3d-crest-mobile will-change-transform">
-                                <div class="animate-crest-float">
-                                    <picture>
-                                        <source srcset="/images/topgrade-crest-3d.webp" type="image/webp" />
-                                        <img
-                                            src="/images/topgrade-crest-3d.png"
-                                            alt="TopGrade 3D Crest"
-                                            class="w-[28vw] max-w-[130px] h-auto drop-shadow-xl"
-                                        />
-                                    </picture>
-                                </div>
-                            </div>
-                        </div>
+                    <!-- Clean Kicker (Single primary identity treatment: no redundant official logo above headline) -->
+                    <div class="inline-flex items-center gap-2 mb-4 sm:mb-6 animate-hero-drop">
+                        <span class="w-2 h-2 rounded-full" style="background: var(--tg-accent);" />
+                        <span class="text-xs sm:text-sm font-black tracking-widest uppercase text-tg-accent">
+                            More Than Football
+                        </span>
+                        <span class="text-tg-border text-xs">•</span>
+                        <span class="text-[10px] sm:text-xs text-tg-text-muted tracking-wider uppercase font-semibold">
+                            Est. 2022 · London
+                        </span>
                     </div>
 
                     <!-- Monumental Headline (Left-Aligned) -->
@@ -684,23 +663,26 @@ onUnmounted(() => {
                         class="font-normal uppercase tracking-tight mb-4 sm:mb-6 text-tg-text-strong"
                         style="
                             font-family: var(--tg-display);
-                            font-size: clamp(2.7rem, 7.8vw, 6.8rem);
+                            font-size: clamp(2.6rem, 7.2vw, 6.2rem);
                             line-height: 0.90;
+                            text-shadow: 0 4px 24px rgba(0, 0, 0, 0.45);
                         "
                     >
-                        <span class="inline-block animate-hero-rise">Top</span><span class="inline-block animate-hero-rise" style="animation-delay: 0.1s;">grade</span><br />
-                        <span class="inline-block animate-hero-rise" style="animation-delay: 0.2s;">London FC</span>
+                        <span class="inline-block animate-hero-rise">Develop Your</span><br />
+                        <span class="inline-block animate-hero-rise text-tg-accent" style="animation-delay: 0.12s;">Football</span><br />
+                        <span class="inline-block animate-hero-rise" style="animation-delay: 0.24s;">Future</span>
                     </h1>
 
                     <!-- Subheadline (Left-Aligned) -->
                     <p
                         class="text-sm sm:text-base md:text-lg max-w-xl mb-8 sm:mb-10 leading-relaxed font-normal text-tg-text animate-hero-fade"
+                        style="text-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);"
                     >
                         Youth football in North and East London, built through technical coaching, teamwork, and real competitive league match play for players aged U7 to U16.
                     </p>
 
                     <!-- CTA Buttons (Left-Aligned) -->
-                    <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto justify-start mb-10 sm:mb-12 relative z-20 animate-hero-fade" style="animation-delay: 0.5s;">
+                    <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto justify-start mb-8 sm:mb-10 relative z-20 animate-hero-fade" style="animation-delay: 0.4s;">
                         <Link
                             href="/bookings"
                             class="tg-btn tg-focus shadow-sm justify-center"
@@ -714,6 +696,22 @@ onUnmounted(() => {
                         >
                             <span>Training Schedule</span>
                         </a>
+                    </div>
+
+                    <!-- 3D Decorative Crest on Mobile (Placed cleanly below CTA, floats subtly, transitions out on scroll) -->
+                    <div class="lg:hidden w-full flex flex-col items-center justify-center my-4 mb-8 pointer-events-none select-none">
+                        <div class="hero-3d-crest-mobile will-change-transform">
+                            <div class="animate-crest-float">
+                                <picture>
+                                    <source srcset="/images/topgrade-crest-3d.webp" type="image/webp" />
+                                    <img
+                                        src="/images/topgrade-crest-3d.png"
+                                        alt="TopGrade 3D Crest"
+                                        class="w-[48vw] max-w-[200px] h-auto drop-shadow-2xl"
+                                    />
+                                </picture>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Facts Bar -->
@@ -1399,17 +1397,17 @@ onUnmounted(() => {
     animation-play-state: paused;
 }
 
-/* Subtle 3D Crest Floating Motion */
+/* Subtle 3D Crest Floating Motion (calm, elegant, no continuous spinning) */
 @keyframes crestFloat {
     0%, 100% {
         transform: translate3d(0, 0, 0) rotate(0deg);
     }
     50% {
-        transform: translate3d(0, -10px, 0) rotate(1deg);
+        transform: translate3d(0, -8px, 0) rotate(0.8deg);
     }
 }
 .animate-crest-float {
-    animation: crestFloat 6s ease-in-out infinite;
+    animation: crestFloat 7s ease-in-out infinite;
 }
 
 /* Reduced Motion Override */
