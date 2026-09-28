@@ -361,8 +361,7 @@ onMounted(async () => {
 
     if (reduceMotion || !ball) {
         if (ball) {
-            ball.style.transform = 'translate3d(-50%, calc(-50% + 4vh), 0) scale(1.05)';
-            ball.style.opacity = '0.96';
+            ball.style.opacity = '0';
         }
         root.style.setProperty('--zoom', '1');
         return;
@@ -370,12 +369,14 @@ onMounted(async () => {
 
     /*
      * Ball Waypoints (Atmospheric Visual Thread):
-     * Ball floats in the background space and stays perceptible through controlled translucent surfaces (rgba(8, 4, 15, 0.88)),
-     * routing gracefully through negative space, coming to an intentional resting state at the footer.
+     * Ball starts dormant (opacity: 0) while the 3D Crest is showcased on initial hero load.
+     * On downward scroll, crest transitions out and ball materializes (at: 0.50), rotating
+     * and routing through negative space across subsequent sections.
      */
     const STOPS = [
-        { sec: 'hero', at: 0.00, x: 0, y: 4, s: 1.05, r: 0, o: 0.96, p: 0.16, m: { x: 0, y: 4, s: 0.82, o: 0.92 } },
-        { sec: 'hero', at: 0.85, x: -36, y: 18, s: 0.48, r: 160, o: 0.75, p: 0.10, m: { x: -28, y: 20, s: 0.35, o: 0.70 } },
+        { sec: 'hero', at: 0.00, x: 28, y: 0, s: 0.50, r: 0, o: 0.0, p: 0.16, m: { x: 0, y: 15, s: 0.40, o: 0.0 } },
+        { sec: 'hero', at: 0.50, x: 24, y: 8, s: 0.75, r: 90, o: 0.85, p: 0.16, m: { x: 0, y: 18, s: 0.60, o: 0.85 } },
+        { sec: 'hero', at: 0.90, x: -30, y: 18, s: 0.48, r: 180, o: 0.75, p: 0.10, m: { x: -24, y: 20, s: 0.35, o: 0.70 } },
         { sec: 'develop', at: 0.50, x: -40, y: 8, s: 0.45, r: 250, o: 0.70, p: 0.07, m: { x: -32, y: 12, s: 0.30, o: 0.65 } },
         { sec: 'creed', at: 0.50, x: 0, y: 0, s: 2.90, r: 430, o: 0.98, p: 0.16, m: { s: 2.35, o: 0.92 } },
         { sec: 'train', at: 0.35, x: 38, y: -8, s: 0.44, r: 580, o: 0.80, p: 0.05, m: { x: 30, y: -12, s: 0.28, o: 0.75 } },
@@ -440,11 +441,28 @@ onMounted(async () => {
     buildPoints();
 
     const pars = Array.from(document.querySelectorAll<HTMLElement>('[data-par]'));
+    const heroCrest = document.getElementById('hero-3d-crest');
 
     const animate = (time: number) => {
         // Damped interpolation loop without scroll hijacking
         currentScrollY += (targetScrollY - currentScrollY) * 0.075;
         const sy = currentScrollY + window.innerHeight * 0.5;
+
+        // Hero 3D Crest transition to football visual object on initial downward scroll
+        const heroScrollProgress = Math.min(1, Math.max(0, currentScrollY / 220));
+        const crestElements = document.querySelectorAll<HTMLElement>('#hero-3d-crest, .hero-3d-crest-mobile');
+
+        if (crestElements.length > 0 && !reduceMotion) {
+            const crestOpacity = Math.max(0, 1 - heroScrollProgress);
+            const crestScale = Math.max(0.7, 1 - heroScrollProgress * 0.3);
+            const crestY = currentScrollY * 0.15;
+
+            crestElements.forEach((el) => {
+                el.style.opacity = crestOpacity.toFixed(3);
+                el.style.transform = `translate3d(0, ${crestY.toFixed(1)}px, 0) scale(${crestScale.toFixed(3)})`;
+                el.style.pointerEvents = crestOpacity <= 0.05 ? 'none' : 'auto';
+            });
+        }
 
         if (pts.length > 0) {
             let a = pts[0];
@@ -480,8 +498,12 @@ onMounted(async () => {
             const finalY = y + hoverY;
             const finalRot = r + hoverRot;
 
+            // Ball starts dormant (opacity: 0) while 3D Crest is showcased on initial hero load,
+            // and smoothly emerges as the crest fades on downward scroll
+            const finalBallOpacity = op * heroScrollProgress;
+
             ball.style.transform = `translate3d(calc(-50% + ${x.toFixed(2)}vw), calc(-50% + ${finalY.toFixed(2)}vh), 0) scale(${s.toFixed(3)}) rotate(${finalRot.toFixed(1)}deg)`;
-            ball.style.opacity = op.toFixed(3);
+            ball.style.opacity = finalBallOpacity.toFixed(3);
 
             const zoomVal = Math.min(1, Math.max(0, (s - 1.5) / 1.1));
             root.style.setProperty('--tg-pitch-opacity', pi.toFixed(3));
@@ -538,7 +560,7 @@ onUnmounted(() => {
         <div
             id="ball"
             class="ball-layer fixed left-1/2 top-1/2 pointer-events-none will-change-transform"
-            style="z-index: 5;"
+            style="z-index: 5; opacity: 0;"
             aria-hidden="true"
         >
             <img
@@ -575,10 +597,10 @@ onUnmounted(() => {
             </div>
         </div>
 
-        <!-- 01 — HERO SECTION: Monumental Centered Architecture -->
+        <!-- 01 — HERO SECTION: Left-Aligned Cinematic Architecture with 3D Decorative Crest -->
         <section
             id="hero"
-            class="relative min-h-[92vh] sm:min-h-[105vh] flex flex-col items-center justify-start text-center pt-16 sm:pt-28 pb-16 sm:pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden"
+            class="relative min-h-[92vh] sm:min-h-[105vh] flex items-center justify-start pt-20 sm:pt-28 pb-16 sm:pb-24 px-4 sm:px-6 lg:px-8 overflow-hidden"
             style="background: transparent;"
         >
             <!-- Atmospheric Hero Media Layer (Looping Football Video with Fallback Poster) -->
@@ -608,109 +630,144 @@ onUnmounted(() => {
                     alt=""
                     class="w-full h-full object-cover object-center transition-opacity duration-700"
                 />
-                <!-- Readable but subtle solid overlay (no heavy dark wash, no gradients, no glows) -->
+                <!-- Subtle flat translucent overlay (no gradients, no glows, no glassmorphism) -->
                 <div
-                    class="absolute inset-0 bg-[#08040f]/45"
+                    class="absolute inset-0 bg-[#08040f]/50"
                 />
             </div>
 
-            <div class="max-w-5xl mx-auto flex flex-col items-center relative z-20">
-                <!-- Drop Animated Crest -->
-                <div class="mb-3 sm:mb-4 animate-hero-drop">
-                    <div class="bg-white rounded p-1.5 shadow-sm inline-block">
-                        <img
-                            src="/logo.png"
-                            alt="TopGrade London FC Crest"
-                            class="w-14 sm:w-20 md:w-24 h-auto"
-                        />
+            <!-- Content Grid: Left-Aligned Copy & Primary CTAs, Right-Aligned 3D Decorative Crest -->
+            <div class="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center relative z-20">
+                <!-- Left Column: Branding, Typography, CTAs, and Facts -->
+                <div class="lg:col-span-7 xl:col-span-7 flex flex-col items-start text-left">
+                    <!-- Top Bar in Hero: Official Crest + Mobile 3D Crest companion -->
+                    <div class="w-full flex items-start justify-between">
+                        <div>
+                            <!-- Official Crest (No white container) -->
+                            <div class="mb-3 sm:mb-4 animate-hero-drop">
+                                <img
+                                    src="/logo.png"
+                                    alt="TopGrade London FC Crest"
+                                    class="w-12 sm:w-16 md:w-20 h-auto drop-shadow-md"
+                                />
+                            </div>
+
+                            <!-- Tagline Badge -->
+                            <div class="mb-3 sm:mb-4">
+                                <span
+                                    class="inline-block px-3 py-1 text-[11px] sm:text-xs font-bold uppercase tracking-widest rounded bg-tg-bg-deep/80 border border-tg-border text-tg-accent"
+                                >
+                                    Youth Football Club · London
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- 3D Decorative Crest on Mobile (Top-Right, compact, transitions out on scroll) -->
+                        <div class="lg:hidden pl-2 pointer-events-none select-none">
+                            <div class="hero-3d-crest-mobile will-change-transform">
+                                <div class="animate-crest-float">
+                                    <picture>
+                                        <source srcset="/images/topgrade-crest-3d.webp" type="image/webp" />
+                                        <img
+                                            src="/images/topgrade-crest-3d.png"
+                                            alt="TopGrade 3D Crest"
+                                            class="w-[28vw] max-w-[130px] h-auto drop-shadow-xl"
+                                        />
+                                    </picture>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Monumental Headline (Left-Aligned) -->
+                    <h1
+                        class="font-normal uppercase tracking-tight mb-4 sm:mb-6 text-tg-text-strong"
+                        style="
+                            font-family: var(--tg-display);
+                            font-size: clamp(2.7rem, 7.8vw, 6.8rem);
+                            line-height: 0.90;
+                        "
+                    >
+                        <span class="inline-block animate-hero-rise">Top</span><span class="inline-block animate-hero-rise" style="animation-delay: 0.1s;">grade</span><br />
+                        <span class="inline-block animate-hero-rise" style="animation-delay: 0.2s;">London FC</span>
+                    </h1>
+
+                    <!-- Subheadline (Left-Aligned) -->
+                    <p
+                        class="text-sm sm:text-base md:text-lg max-w-xl mb-8 sm:mb-10 leading-relaxed font-normal text-tg-text animate-hero-fade"
+                    >
+                        Youth football in North and East London, built through technical coaching, teamwork, and real competitive league match play for players aged U7 to U16.
+                    </p>
+
+                    <!-- CTA Buttons (Left-Aligned) -->
+                    <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto justify-start mb-10 sm:mb-12 relative z-20 animate-hero-fade" style="animation-delay: 0.5s;">
+                        <Link
+                            href="/bookings"
+                            class="tg-btn tg-focus shadow-sm justify-center"
+                        >
+                            <span>Book a Trial</span>
+                            <ArrowRight class="w-4 h-4" />
+                        </Link>
+                        <a
+                            href="#train"
+                            class="tg-btn ghost tg-focus justify-center"
+                        >
+                            <span>Training Schedule</span>
+                        </a>
+                    </div>
+
+                    <!-- Facts Bar -->
+                    <div
+                        class="w-full max-w-xl grid grid-cols-2 sm:grid-cols-4 gap-3 pt-6 sm:pt-8 border-t border-tg-border"
+                    >
+                        <div
+                            v-for="stat in quickStats"
+                            :key="stat.label"
+                            class="p-3 sm:p-3.5 rounded text-left bg-tg-bg-deep/80 border border-tg-border"
+                        >
+                            <div
+                                class="text-base sm:text-xl font-normal uppercase text-tg-text-strong"
+                                style="font-family: var(--tg-display);"
+                            >
+                                {{ stat.value }}
+                            </div>
+                            <div
+                                class="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider mt-0.5 text-tg-accent"
+                            >
+                                {{ stat.label }}
+                            </div>
+                            <div class="text-[9px] sm:text-[10px] mt-0.5 text-tg-text-muted">
+                                {{ stat.detail }}
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Tagline Badge -->
-                <div class="mb-3 sm:mb-4">
-                    <span
-                        class="inline-block px-3 py-1 text-[11px] sm:text-xs font-bold uppercase tracking-widest rounded bg-tg-bg-deep/80 border border-tg-border text-tg-accent"
-                    >
-                        Youth Football Club · London
-                    </span>
-                </div>
-
-                <!-- Monumental Headline -->
-                <h1
-                    class="font-normal uppercase tracking-tight mb-4 sm:mb-6 max-w-4xl text-tg-text-strong"
-                    style="
-                        font-family: var(--tg-display);
-                        font-size: clamp(2.8rem, 13vw, 8.5rem);
-                        line-height: 0.88;
-                    "
-                >
-                    <span class="inline-block animate-hero-rise">Top</span><span class="inline-block animate-hero-rise" style="animation-delay: 0.1s;">grade</span><br />
-                    <span class="inline-block animate-hero-rise" style="animation-delay: 0.2s;">London FC</span>
-                </h1>
-
-                <!-- Subheadline -->
-                <p
-                    class="text-sm sm:text-lg max-w-2xl mx-auto mb-8 sm:mb-10 leading-relaxed font-normal text-tg-text animate-hero-fade px-2"
-                >
-                    Youth football in North and East London, built through technical coaching, teamwork, and real competitive league match play for players aged U7 to U16.
-                </p>
-
-                <!-- CTA Buttons -->
-                <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto justify-center mb-10 sm:mb-12 relative z-20 animate-hero-fade" style="animation-delay: 0.5s;">
-                    <Link
-                        href="/bookings"
-                        class="tg-btn tg-focus shadow-sm justify-center"
-                    >
-                        <span>Book a Trial</span>
-                        <ArrowRight class="w-4 h-4" />
-                    </Link>
-                    <a
-                        href="#train"
-                        class="tg-btn ghost tg-focus justify-center"
-                    >
-                        <span>Training Schedule</span>
-                    </a>
-                </div>
-
-                <!-- Facts Bar -->
+                <!-- Right Column: 3D Decorative Crest on Desktop (Initial Hero Visual, transitions out on scroll) -->
                 <div
-                    class="w-full max-w-4xl grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 pt-6 sm:pt-8 border-t border-tg-border"
+                    class="hidden lg:flex lg:col-span-5 xl:col-span-5 items-center justify-end relative pointer-events-none select-none my-6 lg:my-0"
                 >
                     <div
-                        v-for="stat in quickStats"
-                        :key="stat.label"
-                        class="p-3.5 sm:p-4 rounded text-center bg-tg-bg-deep/80 border border-tg-border"
+                        id="hero-3d-crest"
+                        class="relative will-change-transform"
                     >
-                        <div
-                            class="text-lg sm:text-2xl font-normal uppercase text-tg-text-strong"
-                            style="font-family: var(--tg-display);"
-                        >
-                            {{ stat.value }}
-                        </div>
-                        <div
-                            class="text-[11px] sm:text-xs font-bold uppercase tracking-wider mt-1 text-tg-accent"
-                        >
-                            {{ stat.label }}
-                        </div>
-                        <div class="text-[10px] sm:text-[11px] mt-0.5 text-tg-text-muted">
-                            {{ stat.detail }}
+                        <div class="animate-crest-float">
+                            <picture>
+                                <source srcset="/images/topgrade-crest-3d.webp" type="image/webp" />
+                                <img
+                                    src="/images/topgrade-crest-3d.png"
+                                    alt="TopGrade 3D Crest"
+                                    class="w-[32vw] max-w-[420px] h-auto drop-shadow-2xl"
+                                />
+                            </picture>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Cutout Player with Parallax (Accents side on desktop, positioned cleanly behind content on mobile) -->
-            <img
-                src="/hero_player_cutout.webp"
-                alt="TopGrade player action"
-                class="absolute right-[-10%] sm:right-[0%] top-[40%] sm:top-[28%] w-[60vw] sm:w-[35vw] max-w-[480px] pointer-events-none opacity-35 sm:opacity-90 select-none transition-transform duration-300"
-                style="z-index: 10;"
-                data-par="0.05"
-            />
-
             <!-- Scroll Cue -->
             <div
-                class="absolute bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest select-none text-tg-text-muted"
+                class="absolute bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest select-none text-tg-text-muted z-20"
             >
                 <span class="w-[1.5px] h-5 sm:h-6 animate-pulse" style="background: var(--tg-accent);" />
                 <span>Scroll</span>
@@ -1342,12 +1399,26 @@ onUnmounted(() => {
     animation-play-state: paused;
 }
 
+/* Subtle 3D Crest Floating Motion */
+@keyframes crestFloat {
+    0%, 100% {
+        transform: translate3d(0, 0, 0) rotate(0deg);
+    }
+    50% {
+        transform: translate3d(0, -10px, 0) rotate(1deg);
+    }
+}
+.animate-crest-float {
+    animation: crestFloat 6s ease-in-out infinite;
+}
+
 /* Reduced Motion Override */
 @media (prefers-reduced-motion: reduce) {
     .animate-hero-drop,
     .animate-hero-rise,
     .animate-hero-fade,
-    .animate-marquee {
+    .animate-marquee,
+    .animate-crest-float {
         animation: none !important;
         transform: none !important;
         opacity: 1 !important;
