@@ -31,10 +31,14 @@ class PublicMomentController extends Controller
                 'published_at' => $featured->published_at?->format('d M Y'),
                 'images_count' => $featured->getMedia('gallery')->count(),
                 'cover_url' => $cover?->getUrl(),
+                'cover_mime' => $cover?->mime_type,
+                'is_video' => str_starts_with($cover?->mime_type ?? '', 'video/'),
                 'images' => $featured->getMedia('gallery')->map(fn (Media $m) => [
                     'id' => $m->id,
                     'url' => $m->getUrl(),
                     'name' => $m->name,
+                    'mime_type' => $m->mime_type,
+                    'is_video' => str_starts_with($m->mime_type ?? '', 'video/'),
                 ])->values()->all(),
             ];
         }
@@ -50,7 +54,15 @@ class PublicMomentController extends Controller
                 'published_at' => $m->published_at?->format('d M Y'),
                 'images_count' => $m->getMedia('gallery')->count(),
                 'cover_url' => $cover?->getUrl(),
+                'cover_mime' => $cover?->mime_type,
                 'featured' => $m->featured,
+                'media' => $m->getMedia('gallery')->map(fn (Media $med) => [
+                    'id' => $med->id,
+                    'url' => $med->getUrl(),
+                    'name' => $med->name,
+                    'mime_type' => $med->mime_type,
+                    'is_video' => str_starts_with($med->mime_type ?? '', 'video/'),
+                ])->values()->all(),
             ];
         })->values()->all();
 
