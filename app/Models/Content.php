@@ -6,6 +6,7 @@ use App\Concerns\HasBlocks;
 use App\Concerns\HasSeo;
 use App\Concerns\HasSlug;
 use App\Concerns\Publishable;
+use App\Concerns\ResolvesMediaUrl;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -15,7 +16,7 @@ use Spatie\MediaLibrary\InteractsWithMedia;
 
 class Content extends Model implements HasMedia
 {
-    use HasBlocks, HasFactory, HasSeo, HasSlug, InteractsWithMedia, Publishable;
+    use HasBlocks, HasFactory, HasSeo, HasSlug, InteractsWithMedia, Publishable, ResolvesMediaUrl;
 
     protected $table = 'content_entries';
 
@@ -75,5 +76,21 @@ class Content extends Model implements HasMedia
         }
 
         return '/'.implode('/', array_reverse($slugs));
+    }
+
+    /**
+     * Domain-owned canonical fallback media mapping for content pages.
+     */
+    public function getDefaultMediaUrl(string $collection = 'default'): ?string
+    {
+        if ($this->slug === 'home') {
+            return match ($collection) {
+                'videos' => '/topgrade-video.mp4',
+                'images' => '/images/club/hero-football.jpg',
+                default => null,
+            };
+        }
+
+        return null;
     }
 }

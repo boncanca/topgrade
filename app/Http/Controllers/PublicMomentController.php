@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Moment;
 use Inertia\Inertia;
 use Inertia\Response;
-use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class PublicMomentController extends Controller
 {
@@ -21,30 +20,31 @@ class PublicMomentController extends Controller
         $featured = $allPublished->firstWhere('featured', true) ?? $allPublished->first();
 
         $featuredData = null;
-        if ($featured && $featured->getMedia('gallery')->isNotEmpty()) {
-            $cover = $featured->getCoverMedia();
-            $featuredData = [
-                'id' => $featured->id,
-                'title' => $featured->title,
-                'slug' => $featured->slug,
-                'description' => $featured->description,
-                'published_at' => $featured->published_at?->format('d M Y'),
-                'images_count' => $featured->getMedia('gallery')->count(),
-                'cover_url' => $cover?->getUrl(),
-                'cover_mime' => $cover?->mime_type,
-                'is_video' => str_starts_with($cover?->mime_type ?? '', 'video/'),
-                'images' => $featured->getMedia('gallery')->map(fn (Media $m) => [
-                    'id' => $m->id,
-                    'url' => $m->getUrl(),
-                    'name' => $m->name,
-                    'mime_type' => $m->mime_type,
-                    'is_video' => str_starts_with($m->mime_type ?? '', 'video/'),
-                ])->values()->all(),
-            ];
+        if ($featured) {
+            $gallery = $featured->getResolvedGallery();
+            if (! empty($gallery)) {
+                $coverUrl = $featured->getResolvedCoverUrl();
+                $coverMedia = $featured->getCoverMedia();
+
+                $featuredData = [
+                    'id' => $featured->id,
+                    'title' => $featured->title,
+                    'slug' => $featured->slug,
+                    'description' => $featured->description,
+                    'published_at' => $featured->published_at?->format('d M Y'),
+                    'images_count' => count($gallery),
+                    'cover_url' => $coverUrl,
+                    'cover_mime' => $coverMedia?->mime_type,
+                    'is_video' => str_starts_with($coverMedia?->mime_type ?? '', 'video/'),
+                    'images' => $gallery,
+                ];
+            }
         }
 
         $momentsList = $allPublished->map(function (Moment $m) {
-            $cover = $m->getCoverMedia();
+            $gallery = $m->getResolvedGallery();
+            $coverUrl = $m->getResolvedCoverUrl();
+            $coverMedia = $m->getCoverMedia();
 
             return [
                 'id' => $m->id,
@@ -52,17 +52,11 @@ class PublicMomentController extends Controller
                 'slug' => $m->slug,
                 'description' => $m->description,
                 'published_at' => $m->published_at?->format('d M Y'),
-                'images_count' => $m->getMedia('gallery')->count(),
-                'cover_url' => $cover?->getUrl(),
-                'cover_mime' => $cover?->mime_type,
+                'images_count' => count($gallery),
+                'cover_url' => $coverUrl,
+                'cover_mime' => $coverMedia?->mime_type,
                 'featured' => $m->featured,
-                'media' => $m->getMedia('gallery')->map(fn (Media $med) => [
-                    'id' => $med->id,
-                    'url' => $med->getUrl(),
-                    'name' => $med->name,
-                    'mime_type' => $med->mime_type,
-                    'is_video' => str_starts_with($med->mime_type ?? '', 'video/'),
-                ])->values()->all(),
+                'media' => $gallery,
             ];
         })->values()->all();
 
@@ -79,14 +73,17 @@ class PublicMomentController extends Controller
             ->with(['media' => fn ($q) => $q->orderBy('order_column'), 'coverMedia', 'seo'])
             ->firstOrFail();
 
-        $cover = $moment->getCoverMedia();
+        $gallery = $moment->getResolvedGallery();
+        $coverUrl = $moment->getResolvedCoverUrl();
 
-        $gallery = $moment->getMedia('gallery')->map(fn (Media $m) => [
-            'id' => $m->id,
-            'url' => $m->getUrl(),
-            'name' => $m->name,
-            'is_cover' => $cover && $cover->id === $m->id,
-        ])->values()->all();
+        $formattedGallery = array_map(function (array $item) use ($coverUrl) {
+            return [
+                'id' => $item['id'],
+                'url' => $item['url'],
+                'name' => $item['name'],
+                'is_cover' => $coverUrl !== null && $item['url'] === $coverUrl,
+            ];
+        }, $gallery);
 
         // Other moments for discovery
         $related = Moment::published()
@@ -100,8 +97,8 @@ class PublicMomentController extends Controller
                 'id' => $m->id,
                 'title' => $m->title,
                 'slug' => $m->slug,
-                'cover_url' => $m->getCoverMedia()?->getUrl(),
-                'images_count' => $m->getMedia('gallery')->count(),
+                'cover_url' => $m->getResolvedCoverUrl(),
+                'images_count' => count($m->getResolvedGallery()),
             ])
             ->values()
             ->all();
@@ -113,8 +110,8 @@ class PublicMomentController extends Controller
                 'slug' => $moment->slug,
                 'description' => $moment->description,
                 'published_at' => $moment->published_at?->format('d M Y'),
-                'images_count' => count($gallery),
-                'cover_url' => $cover?->getUrl(),
+                'images_count' => count($formattedGallery),
+                'cover_url' => $coverUrl,
                 'external_link' => $moment->external_link,
                 'external_link_label' => $moment->external_link_label,
                 'people' => $moment->getPublicPeople(),
@@ -124,7 +121,7 @@ class PublicMomentController extends Controller
                     'canonical_url' => $moment->seo?->canonical_url,
                 ],
             ],
-            'gallery' => $gallery,
+            'gallery' => $formattedGallery,
             'related' => $related,
         ]);
     }

@@ -31,8 +31,9 @@ class MomentController extends Controller
                     'featured' => $moment->featured,
                     'sort_order' => $moment->sort_order,
                     'images_count' => $moment->getMedia('gallery')->count(),
-                    'cover_url' => $cover?->getUrl(),
+                    'cover_url' => $moment->getResolvedCoverUrl(),
                 ];
+
             });
 
         $component = $request->routeIs('dashboard.moments.*') ? 'Moments/Index' : 'Galleries/Index';

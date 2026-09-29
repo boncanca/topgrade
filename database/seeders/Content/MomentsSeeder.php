@@ -4,7 +4,6 @@ namespace Database\Seeders\Content;
 
 use App\Models\Moment;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\File;
 
 class MomentsSeeder extends Seeder
 {
@@ -54,33 +53,12 @@ class MomentsSeeder extends Seeder
         ];
 
         foreach ($momentsData as $data) {
-            $images = $data['images'];
             unset($data['images']);
 
-            $moment = Moment::firstOrCreate(
+            Moment::firstOrCreate(
                 ['slug' => $data['slug']],
                 $data
             );
-
-            foreach ($images as $imgRelPath) {
-                $fullPath = public_path($imgRelPath);
-                $fileName = basename($imgRelPath);
-                $media = $moment->media()
-                    ->where('collection_name', 'gallery')
-                    ->where('file_name', $fileName)
-                    ->first();
-
-                if (! $media) {
-                    if (file_exists($fullPath)) {
-                        $moment->addMedia($fullPath)
-                            ->preservingOriginal()
-                            ->toMediaCollection('gallery');
-                    }
-                } elseif (! file_exists($media->getPath()) && file_exists($fullPath)) {
-                    File::ensureDirectoryExists(dirname($media->getPath()));
-                    File::copy($fullPath, $media->getPath());
-                }
-            }
         }
     }
 }

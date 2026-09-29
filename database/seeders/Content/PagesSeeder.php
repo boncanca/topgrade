@@ -5,7 +5,6 @@ namespace Database\Seeders\Content;
 use App\Models\Content;
 use App\Models\ContentType;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 
 class PagesSeeder extends Seeder
@@ -87,31 +86,9 @@ class PagesSeeder extends Seeder
             ]);
         }
 
-        // Attach Home media assets if available
-        $videoPath = public_path('topgrade-video.mp4');
-        $videoMedia = $homePage->getMedia('videos')->first();
-        if (! $videoMedia) {
-            if (file_exists($videoPath)) {
-                $homePage->addMedia($videoPath)->preservingOriginal()->toMediaCollection('videos');
-            }
-        } elseif (! file_exists($videoMedia->getPath()) && file_exists($videoPath)) {
-            File::ensureDirectoryExists(dirname($videoMedia->getPath()));
-            File::copy($videoPath, $videoMedia->getPath());
-        }
-
-        $posterPath = public_path('images/club/hero-football.jpg');
-        $posterMedia = $homePage->getMedia('images')->first();
-        if (! $posterMedia) {
-            if (file_exists($posterPath)) {
-                $homePage->addMedia($posterPath)->preservingOriginal()->toMediaCollection('images');
-            }
-        } elseif (! file_exists($posterMedia->getPath()) && file_exists($posterPath)) {
-            File::ensureDirectoryExists(dirname($posterMedia->getPath()));
-            File::copy($posterPath, $posterMedia->getPath());
-        }
-
         // 2. About Page
         $aboutPage = Content::firstOrCreate(
+
             ['slug' => 'about'],
             [
                 'content_type_id' => $pageType->id,

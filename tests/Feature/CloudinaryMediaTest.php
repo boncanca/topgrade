@@ -114,14 +114,14 @@ test('homepage supplies hero video and poster props from Spatie media', function
         );
 });
 
-test('homepage supplies null hero props when no media is attached', function () {
+test('homepage supplies canonical hero props when no runtime media is attached', function () {
     $this->get('/')
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
             ->component('Public/Home')
             ->has('hero')
-            ->where('hero.video_url', null)
-            ->where('hero.poster_url', null)
+            ->where('hero.video_url', '/topgrade-video.mp4')
+            ->where('hero.poster_url', '/images/club/hero-football.jpg')
         );
 });
 

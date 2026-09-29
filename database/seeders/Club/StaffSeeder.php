@@ -4,7 +4,6 @@ namespace Database\Seeders\Club;
 
 use App\Models\Staff;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\File;
 
 class StaffSeeder extends Seeder
 {
@@ -23,25 +22,10 @@ class StaffSeeder extends Seeder
         ];
 
         foreach ($staffMembers as $member) {
-            $staff = Staff::firstOrCreate(
+            Staff::firstOrCreate(
                 ['slug' => $member['slug']],
                 $member
             );
-
-            // Attach photo if not already attached and file exists
-            $photoPath = public_path('images/club/club-coach-mentoring.jpg');
-            $media = $staff->getMedia('photo')->first();
-
-            if (! $media) {
-                if (file_exists($photoPath)) {
-                    $staff->addMedia($photoPath)
-                        ->preservingOriginal()
-                        ->toMediaCollection('photo');
-                }
-            } elseif (! file_exists($media->getPath()) && file_exists($photoPath)) {
-                File::ensureDirectoryExists(dirname($media->getPath()));
-                File::copy($photoPath, $media->getPath());
-            }
         }
     }
 }

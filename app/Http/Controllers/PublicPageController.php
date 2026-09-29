@@ -40,9 +40,8 @@ class PublicPageController
             ?? [];
         $quickStats = $heroBlock['stats'] ?? $pageContent?->blocks->firstWhere('type', 'quick_stats')?->payload['items'] ?? [];
 
-        $heroVideo = $pageContent?->getMedia('videos')->first();
-        $heroPoster = $pageContent?->getMedia('images')->where('name', 'hero-poster')->first()
-            ?? $pageContent?->getMedia('images')->first();
+        $heroVideoUrl = $pageContent?->getResolvedMediaUrl('videos') ?? '/topgrade-video.mp4';
+        $heroPosterUrl = $pageContent?->getResolvedMediaUrl('images') ?? '/images/club/hero-football.jpg';
 
         // Dynamic club squads from Team domain model
         $squads = Team::active()
@@ -57,14 +56,14 @@ class PublicPageController
                 'stage' => $team->stage,
                 'description' => $team->description,
                 'visual_variant' => $team->visual_variant,
-                'image_url' => $team->getFirstMediaUrl('image'),
+                'image_url' => $team->getResolvedMediaUrl('image'),
             ]);
 
         // Dynamic Moments Ribbon from actual published/featured Moment records
         $momentsRibbon = Moment::published()
             ->featured()
             ->orderBy('sort_order')
-            ->with('media')
+            ->with(['media', 'coverMedia'])
             ->get()
             ->map(fn (Moment $moment, int $idx) => [
                 'id' => $moment->id,
@@ -72,7 +71,7 @@ class PublicPageController
                 'title' => strtoupper($moment->title),
                 'slug' => $moment->slug,
                 'description' => $moment->description,
-                'image_url' => $moment->getFirstMediaUrl('gallery'),
+                'image_url' => $moment->getResolvedCoverUrl(),
             ]);
 
         // Dynamic Recurring Training Schedule from TrainingSession domain model
@@ -120,8 +119,8 @@ class PublicPageController
                     'label' => 'Book a Trial',
                     'url' => '/bookings/free-trial-session',
                 ],
-                'video_url' => $heroVideo?->getUrl(),
-                'poster_url' => $heroPoster?->getUrl(),
+                'video_url' => $heroVideoUrl,
+                'poster_url' => $heroPosterUrl,
             ],
             'pillars' => $featureListBlock['items'] ?? [],
             'quickStats' => $quickStats,
@@ -130,6 +129,7 @@ class PublicPageController
             'trainingSchedule' => $trainingSchedule,
             'featuredActivities' => $featuredActivities,
         ]);
+
     }
 
     public function about(): Response
@@ -167,7 +167,7 @@ class PublicPageController
                 'role' => $s->role,
                 'bio' => $s->bio,
                 'qualifications' => $s->qualifications,
-                'photo_url' => $s->getFirstMediaUrl('photo'),
+                'photo_url' => $s->getResolvedMediaUrl('photo'),
             ]);
 
         return Inertia::render('Public/About', [
