@@ -15,6 +15,7 @@ use Database\Seeders\Club\VenuesSeeder;
 use Database\Seeders\DatabaseSeeder;
 use Database\Seeders\Site\NavigationSeeder;
 use Database\Seeders\UserSeeder;
+use Illuminate\Support\Facades\DB;
 
 test('database seeder establishes both club admin and protected dev super admin accounts', function () {
     $this->seed(UserSeeder::class);
@@ -167,4 +168,40 @@ test('public pages receive dynamic props from database entities and settings', f
         ->has('weeklySchedule')
         ->has('activities')
     );
+});
+
+test('spatie site and club settings can resolve safely even without database records', function () {
+    // Truncate settings table if exists
+    DB::table('settings')->truncate();
+
+    $siteSettings = app(SiteSettings::class);
+    $clubSettings = app(ClubSettings::class);
+
+    // Verify SiteSettings properties are non-empty strings
+    expect($siteSettings->site_name)->toBe('TopGrade London FC')
+        ->and($siteSettings->site_url)->toBe('https://topgradelondonfc.co.uk')
+        ->and($siteSettings->tagline)->toBe('Youth Football Club in London')
+        ->and($siteSettings->default_og_image)->toBe('/images/og/topgrade-london-fc.jpg')
+        ->and($siteSettings->locale)->toBe('en_GB')
+        ->and($siteSettings->timezone)->toBe('Europe/London');
+
+    // Verify ClubSettings properties are non-empty strings
+    expect($clubSettings->club_name)->toBe('TopGrade London FC')
+        ->and($clubSettings->legal_name)->toBe('TOPGRADE LONDON FC CIC')
+        ->and($clubSettings->company_number)->toBe('14087076')
+        ->and($clubSettings->address)->toBe('30 Broadwater Road, London, England, N17 6ES')
+        ->and($clubSettings->email)->toBe('info@topgradelondonfc.co.uk')
+        ->and($clubSettings->instagram_url)->toBe('https://www.instagram.com/topgradelondonfc/')
+        ->and($clubSettings->instagram_handle)->toBe('@topgradelondonfc')
+        ->and($clubSettings->logo_path)->toBe('/logo.png');
+});
+
+test('schedules migration executes before bookings migration to satisfy foreign key dependency', function () {
+    $migrationFiles = scandir(database_path('migrations'));
+    $schedulesFile = collect($migrationFiles)->first(fn ($file) => str_contains($file, 'create_schedules_table'));
+    $bookingsFile = collect($migrationFiles)->first(fn ($file) => str_contains($file, 'create_bookings_table'));
+
+    expect($schedulesFile)->not->toBeNull()
+        ->and($bookingsFile)->not->toBeNull()
+        ->and(strcmp($schedulesFile, $bookingsFile))->toBeLessThan(0);
 });

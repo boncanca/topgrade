@@ -31,7 +31,8 @@ RUN install-php-extensions \
     gd \
     gmp \
     opcache \
-    swoole
+    swoole \
+    redis
 
 # ==============================================================================
 # STAGE 2: Build stage (Composer, Node.js 22, Vite compilation)
