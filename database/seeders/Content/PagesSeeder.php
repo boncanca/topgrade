@@ -5,6 +5,7 @@ namespace Database\Seeders\Content;
 use App\Models\Content;
 use App\Models\ContentType;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 
 class PagesSeeder extends Seeder
@@ -44,12 +45,18 @@ class PagesSeeder extends Seeder
                         'label' => 'Book a Trial',
                         'url' => '/bookings/free-trial-session',
                     ],
+                    'stats' => [
+                        ['label' => 'Age Groups', 'value' => 'Ages 4–18', 'detail' => 'Junior & youth squads'],
+                        ['label' => 'Weekly Training', 'value' => '3 Days', 'detail' => 'Tuesdays, Wednesdays & Thursdays'],
+                        ['label' => 'Home Grounds', 'value' => '3 Venues', 'detail' => 'Tottenham & Hackney'],
+                        ['label' => 'Matchday', 'value' => 'League', 'detail' => 'Sanctioned youth fixtures'],
+                    ],
                 ],
             ]);
 
             $homePage->blocks()->create([
                 'uuid' => (string) Str::uuid(),
-                'type' => 'pillars',
+                'type' => 'feature_list',
                 'sort_order' => 2,
                 'payload' => [
                     'title' => 'DEVELOP YOUR GAME',
@@ -78,34 +85,29 @@ class PagesSeeder extends Seeder
                     ],
                 ],
             ]);
-
-            $homePage->blocks()->create([
-                'uuid' => (string) Str::uuid(),
-                'type' => 'quick_stats',
-                'sort_order' => 3,
-                'payload' => [
-                    'items' => [
-                        ['label' => 'Age Groups', 'value' => 'Ages 4–18', 'detail' => 'Junior & youth squads'],
-                        ['label' => 'Weekly Training', 'value' => '3 Days', 'detail' => 'Tuesdays, Wednesdays & Thursdays'],
-                        ['label' => 'Home Grounds', 'value' => '3 Venues', 'detail' => 'Tottenham & Hackney'],
-                        ['label' => 'Matchday', 'value' => 'League', 'detail' => 'Sanctioned youth fixtures'],
-                    ],
-                ],
-            ]);
         }
 
         // Attach Home media assets if available
-        if ($homePage->getMedia('videos')->isEmpty()) {
-            $videoPath = public_path('topgrade-video.mp4');
+        $videoPath = public_path('topgrade-video.mp4');
+        $videoMedia = $homePage->getMedia('videos')->first();
+        if (! $videoMedia) {
             if (file_exists($videoPath)) {
                 $homePage->addMedia($videoPath)->preservingOriginal()->toMediaCollection('videos');
             }
+        } elseif (! file_exists($videoMedia->getPath()) && file_exists($videoPath)) {
+            File::ensureDirectoryExists(dirname($videoMedia->getPath()));
+            File::copy($videoPath, $videoMedia->getPath());
         }
-        if ($homePage->getMedia('images')->isEmpty()) {
-            $posterPath = public_path('images/club/hero-football.jpg');
+
+        $posterPath = public_path('images/club/hero-football.jpg');
+        $posterMedia = $homePage->getMedia('images')->first();
+        if (! $posterMedia) {
             if (file_exists($posterPath)) {
                 $homePage->addMedia($posterPath)->preservingOriginal()->toMediaCollection('images');
             }
+        } elseif (! file_exists($posterMedia->getPath()) && file_exists($posterPath)) {
+            File::ensureDirectoryExists(dirname($posterMedia->getPath()));
+            File::copy($posterPath, $posterMedia->getPath());
         }
 
         // 2. About Page

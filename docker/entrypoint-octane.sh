@@ -4,10 +4,10 @@ set -e
 echo "Starting Laravel Octane (Swoole) deployment routines..."
 
 # Ensure storage symlink exists
-php artisan storage:link || true
+php artisan storage:link
 
 # Run database migrations
-php artisan migrate --force --no-interaction || echo "Migration notice: DB unavailable or already up-to-date."
+php artisan migrate --force --no-interaction
 
 # Cache configuration, routes, and views
 php artisan config:cache || true

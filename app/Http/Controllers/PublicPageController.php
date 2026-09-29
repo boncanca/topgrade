@@ -33,10 +33,12 @@ class PublicPageController
             ])
             ->first();
 
-        // Extract ContentBlocks by type
+        // Extract ContentBlocks by canonical type (with temporary fallback during migration)
         $heroBlock = $pageContent?->blocks->firstWhere('type', 'hero')?->payload ?? [];
-        $pillarsBlock = $pageContent?->blocks->firstWhere('type', 'pillars')?->payload ?? [];
-        $quickStatsBlock = $pageContent?->blocks->firstWhere('type', 'quick_stats')?->payload ?? [];
+        $featureListBlock = $pageContent?->blocks->firstWhere('type', 'feature_list')?->payload
+            ?? $pageContent?->blocks->firstWhere('type', 'pillars')?->payload
+            ?? [];
+        $quickStats = $heroBlock['stats'] ?? $pageContent?->blocks->firstWhere('type', 'quick_stats')?->payload['items'] ?? [];
 
         $heroVideo = $pageContent?->getMedia('videos')->first();
         $heroPoster = $pageContent?->getMedia('images')->where('name', 'hero-poster')->first()
@@ -102,9 +104,13 @@ class PublicPageController
             ->limit(3)
             ->get();
 
+        $extraBlocks = $pageContent?->blocks
+            ->filter(fn ($b) => ! in_array($b->type, ['hero', 'feature_list', 'pillars', 'quick_stats']))
+            ->values() ?? [];
+
         return Inertia::render('Public/Home', [
             'page' => $pageContent,
-            'blocks' => $pageContent?->blocks ?? [],
+            'blocks' => $extraBlocks,
             'seo' => $pageContent?->seo,
             'hero' => [
                 'eyebrow' => $heroBlock['eyebrow'] ?? 'MORE THAN FOOTBALL',
@@ -117,8 +123,8 @@ class PublicPageController
                 'video_url' => $heroVideo?->getUrl(),
                 'poster_url' => $heroPoster?->getUrl(),
             ],
-            'pillars' => $pillarsBlock['items'] ?? [],
-            'quickStats' => $quickStatsBlock['items'] ?? [],
+            'pillars' => $featureListBlock['items'] ?? [],
+            'quickStats' => $quickStats,
             'squads' => $squads,
             'momentsRibbon' => $momentsRibbon,
             'trainingSchedule' => $trainingSchedule,

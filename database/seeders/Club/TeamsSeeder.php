@@ -4,6 +4,7 @@ namespace Database\Seeders\Club;
 
 use App\Models\Team;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\File;
 
 class TeamsSeeder extends Seeder
 {
@@ -71,13 +72,18 @@ class TeamsSeeder extends Seeder
                 $item
             );
 
-            if ($team->getMedia('image')->isEmpty()) {
-                $imagePath = public_path($imageAsset);
+            $imagePath = public_path($imageAsset);
+            $media = $team->getMedia('image')->first();
+
+            if (! $media) {
                 if (file_exists($imagePath)) {
                     $team->addMedia($imagePath)
                         ->preservingOriginal()
                         ->toMediaCollection('image');
                 }
+            } elseif (! file_exists($media->getPath()) && file_exists($imagePath)) {
+                File::ensureDirectoryExists(dirname($media->getPath()));
+                File::copy($imagePath, $media->getPath());
             }
         }
     }
