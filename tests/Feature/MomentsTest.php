@@ -12,8 +12,8 @@ beforeEach(function () {
 });
 
 test('unauthenticated visitors cannot access dashboard moments', function () {
-    $this->get('/dashboard/moments')->assertRedirect('/login');
-    $this->get('/dashboard/moments/create')->assertRedirect('/login');
+    $this->get('/dashboard/moments')->assertRedirect(route('login'));
+    $this->get('/dashboard/moments/create')->assertRedirect(route('login'));
 });
 
 test('non-admin users are forbidden from dashboard moments', function () {
@@ -21,7 +21,7 @@ test('non-admin users are forbidden from dashboard moments', function () {
 
     $this->actingAs($user)->getJson('/dashboard/moments')->assertForbidden();
     $this->actingAs($user)->postJson('/dashboard/moments', [])->assertForbidden();
-    $this->actingAs($user)->get('/dashboard/moments')->assertRedirect('/login');
+    $this->actingAs($user)->get('/dashboard/moments')->assertRedirect(route('login'));
 });
 
 test('admin can view moments index', function () {

@@ -54,7 +54,7 @@ const errorStates: Record<number, ErrorStateConfig> = {
         action: 'Return to the Club',
         actionHref: '/',
         secondaryAction: 'Go to Sign In',
-        secondaryHref: '/login',
+        secondaryHref: '/auth/login',
         ballAction: 'Play it back →',
         situation: 'referee',
         showPlayer: false,

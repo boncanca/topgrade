@@ -66,7 +66,7 @@ test('unauthenticated user cannot confirm a booking', function () {
 
     $response = $this->post("/dashboard/bookings/{$booking->id}/confirm");
 
-    $response->assertRedirect('/login');
+    $response->assertRedirect(route('login'));
 
     $booking->refresh();
     expect($booking->status)->toBe(BookingStatus::Pending);
@@ -77,7 +77,7 @@ test('unauthenticated user cannot cancel a booking', function () {
 
     $response = $this->post("/dashboard/bookings/{$booking->id}/cancel");
 
-    $response->assertRedirect('/login');
+    $response->assertRedirect(route('login'));
 
     $booking->refresh();
     expect($booking->status)->toBe(BookingStatus::Pending);
