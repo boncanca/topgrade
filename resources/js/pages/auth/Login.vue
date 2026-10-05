@@ -1,9 +1,12 @@
 <script setup lang="ts">
-import { Form, Head } from '@inertiajs/vue3';
+import { Form, Head, usePage } from '@inertiajs/vue3';
+import { AlertCircle } from '@lucide/vue';
+import { computed } from 'vue';
 import InputError from '@/components/InputError.vue';
 import PasskeyVerify from '@/components/PasskeyVerify.vue';
 import PasswordInput from '@/components/PasswordInput.vue';
 import TextLink from '@/components/TextLink.vue';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
@@ -24,6 +27,87 @@ defineProps<{
     status?: string;
     canResetPassword: boolean;
 }>();
+
+const page = usePage();
+
+const authAlert = computed(() => {
+    const errs = (page.props.errors as Record<string, string>) || {};
+
+    if (errs.auth_notice_title && errs.auth_notice) {
+        return {
+            title: errs.auth_notice_title,
+            message: errs.auth_notice,
+        };
+    }
+
+    if (errs.auth_notice) {
+        return {
+            title: 'Authentication notice',
+            message: errs.auth_notice,
+        };
+    }
+
+    if (errs.session) {
+        return {
+            title: 'Session expired',
+            message: errs.session,
+        };
+    }
+
+    if (errs.password) {
+        return {
+            title: 'Incorrect password',
+            message: errs.password,
+        };
+    }
+
+    if (errs.email) {
+        const text = errs.email.toLowerCase();
+
+        if (text.includes('verified') || text.includes('verification')) {
+            return {
+                title: 'Account verification required',
+                message: errs.email,
+            };
+        }
+
+        if (
+            text.includes('administrator') ||
+            text.includes('permission') ||
+            text.includes('admin')
+        ) {
+            return {
+                title: 'Administrator access required',
+                message: errs.email,
+            };
+        }
+
+        if (
+            text.includes('not found') ||
+            text.includes('no account') ||
+            text.includes('no administrator account')
+        ) {
+            return {
+                title: 'Account not found',
+                message: errs.email,
+            };
+        }
+
+        if (
+            text.includes('credentials') ||
+            text.includes('match') ||
+            text.includes('failed') ||
+            text.includes('incorrect')
+        ) {
+            return {
+                title: 'Authentication failed',
+                message: 'Your email or password is incorrect.',
+            };
+        }
+    }
+
+    return null;
+});
 </script>
 
 <template>
@@ -31,10 +115,30 @@ defineProps<{
 
     <div
         v-if="status"
-        class="mb-4 text-center text-sm font-medium text-green-600"
+        class="mb-4 rounded-lg border border-emerald-500/20 bg-emerald-500/10 px-4 py-3 text-center text-sm font-medium text-emerald-400"
     >
         {{ status }}
     </div>
+
+    <!-- Prominent Red Authentication Notice -->
+    <Alert
+        v-if="authAlert"
+        variant="destructive"
+        class="mb-4 border-red-500/30 bg-red-500/10 text-red-300 shadow-sm"
+        data-test="auth-notice"
+    >
+        <AlertCircle class="size-4 shrink-0 text-red-400" />
+        <div class="grid gap-1">
+            <AlertTitle
+                class="text-sm font-semibold tracking-tight text-red-300"
+            >
+                {{ authAlert.title }}
+            </AlertTitle>
+            <AlertDescription class="text-xs leading-relaxed text-red-400/90">
+                {{ authAlert.message }}
+            </AlertDescription>
+        </div>
+    </Alert>
 
     <PasskeyVerify />
 
@@ -102,7 +206,7 @@ defineProps<{
             </Button>
         </div>
 
-        <div class="text-center text-sm text-muted-foreground">
+        <div class="text-muted-foreground text-center text-sm">
             Don't have an account?
             <TextLink :href="register()" :tabindex="5">Sign up</TextLink>
         </div>

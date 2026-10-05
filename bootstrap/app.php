@@ -20,6 +20,11 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->trustProxies(at: '*');
 
+        $middleware->redirectTo(
+            guests: '/auth/login',
+            users: '/dashboard',
+        );
+
         $middleware->encryptCookies(except: ['appearance', 'sidebar_state']);
 
         $middleware->validateCsrfTokens(except: [
@@ -60,6 +65,14 @@ return Application::configure(basePath: dirname(__DIR__))
             }
 
             if ($status === 419) {
+                if ($request->is('auth/*') || $request->is('login') || $request->is('admin')) {
+                    return redirect()->route('login')->withErrors([
+                        'auth_notice_title' => 'Session expired',
+                        'auth_notice' => 'Your security session has expired. Please try logging in again.',
+                        'session' => 'Your session has expired. Please log in again.',
+                    ]);
+                }
+
                 return Inertia::render('Error', [
                     'status' => 419,
                 ])->toResponse($request)->setStatusCode(419);

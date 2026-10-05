@@ -22,6 +22,10 @@ use Inertia\Inertia;
 use Spatie\Sitemap\Sitemap;
 use Spatie\Sitemap\Tags\Url;
 
+// Authentication & entry redirects
+Route::redirect('/login', '/auth/login')->name('login.redirect');
+Route::redirect('/admin', '/auth/login')->name('admin.redirect');
+
 // Public homepage & editorial
 Route::get('/', [PublicPageController::class, 'home'])->name('home');
 

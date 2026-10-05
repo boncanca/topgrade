@@ -143,8 +143,14 @@ return [
     */
 
     'passkeys' => [
-        'relying_party_id' => parse_url(config('app.url'), PHP_URL_HOST),
-        'allowed_origins' => [config('app.url')],
+        'relying_party_id' => parse_url((string) config('app.url'), PHP_URL_HOST),
+        'allowed_origins' => array_values(array_unique(array_filter([
+            rtrim((string) config('app.url'), '/'),
+            parse_url((string) config('app.url'), PHP_URL_HOST) ? 'https://'.parse_url((string) config('app.url'), PHP_URL_HOST) : null,
+            parse_url((string) config('app.url'), PHP_URL_HOST) && ! str_starts_with((string) parse_url((string) config('app.url'), PHP_URL_HOST), 'www.')
+                ? 'https://www.'.parse_url((string) config('app.url'), PHP_URL_HOST)
+                : null,
+        ]))),
         'user_handle_secret' => env('PASSKEYS_USER_HANDLE_SECRET', config('app.key')),
         'timeout' => 60000,
     ],

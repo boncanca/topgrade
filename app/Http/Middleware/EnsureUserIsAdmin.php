@@ -25,7 +25,9 @@ class EnsureUserIsAdmin
             $request->session()->regenerateToken();
 
             return redirect()->route('login')->withErrors([
-                'email' => 'Your account does not have administrator permissions.',
+                'auth_notice_title' => 'Administrator access required',
+                'auth_notice' => 'This account does not have administrator permissions.',
+                'email' => 'This account does not have administrator permissions.',
             ]);
         }
 
