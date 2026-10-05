@@ -3,6 +3,8 @@
 use App\Models\Content;
 use App\Models\ContentType;
 use App\Models\User;
+use CodebarAg\FlysystemCloudinary\FlysystemCloudinaryAdapter;
+use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Testing\AssertableInertia as Assert;
@@ -15,6 +17,13 @@ test('cloudinary disk is configured in filesystems', function () {
     expect(array_key_exists('cloud_name', $cloudinaryConfig))->toBeTrue();
     expect(array_key_exists('api_key', $cloudinaryConfig))->toBeTrue();
     expect(array_key_exists('api_secret', $cloudinaryConfig))->toBeTrue();
+});
+
+test('cloudinary disk can be resolved from Storage facade', function () {
+    $disk = Storage::disk('cloudinary');
+
+    expect($disk)->toBeInstanceOf(FilesystemAdapter::class);
+    expect($disk->getAdapter())->toBeInstanceOf(FlysystemCloudinaryAdapter::class);
 });
 
 test('media library disk defaults to MEDIA_DISK or public', function () {
