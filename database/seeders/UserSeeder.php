@@ -16,58 +16,84 @@ class UserSeeder extends Seeder
     {
         // 1. Primary Club Administrator
         $adminEmail = env('ADMIN_EMAIL', 'info@topgradelondonfc.co.uk');
+        $adminName = env('ADMIN_NAME', 'TopGrade Club Admin');
+        $adminPassword = env('ADMIN_PASSWORD');
         $existingAdmin = User::where('email', $adminEmail)->first();
 
-        if (! $existingAdmin) {
-            $adminPassword = 'TGFC-'.Str::random(4).'-'.Str::random(4).'-'.Str::random(4);
+        $adminAttributes = [
+            'name' => $adminName,
+            'is_admin' => true,
+            'is_system_account' => false,
+            'email_verified_at' => $existingAdmin?->email_verified_at ?? now(),
+        ];
 
-            User::create([
-                'name' => 'TopGrade Club Admin',
-                'email' => $adminEmail,
-                'is_admin' => true,
-                'is_system_account' => false,
-                'email_verified_at' => now(),
-                'password' => Hash::make($adminPassword),
-            ]);
+        $generatedAdminPassword = null;
+        if (! empty($adminPassword)) {
+            $adminAttributes['password'] = Hash::make($adminPassword);
+        } elseif (! $existingAdmin) {
+            $generatedAdminPassword = 'TGFC-'.Str::random(4).'-'.Str::random(4).'-'.Str::random(4);
+            $adminAttributes['password'] = Hash::make($generatedAdminPassword);
+        }
 
-            if ($this->command) {
-                $this->command->newLine();
-                $this->command->info('========================================================');
-                $this->command->info('TopGrade London FC administrator account created.');
-                $this->command->line("Email:    <comment>{$adminEmail}</comment>");
-                $this->command->line("Password: <comment>{$adminPassword}</comment>");
-                $this->command->warn('IMPORTANT: Store this password securely and change it after first login.');
-                $this->command->info('========================================================');
-                $this->command->newLine();
+        $admin = User::updateOrCreate(
+            ['email' => $adminEmail],
+            $adminAttributes
+        );
+
+        if ($this->command && (! $existingAdmin || ! empty($adminPassword))) {
+            $this->command->newLine();
+            $this->command->info('========================================================');
+            $this->command->info('TopGrade London FC Club Administrator synchronized.');
+            $this->command->line("Email:    <comment>{$admin->email}</comment>");
+            if ($generatedAdminPassword) {
+                $this->command->line("Password: <comment>{$generatedAdminPassword}</comment>");
+                $this->command->warn('IMPORTANT: Generated random password. Store this securely or set ADMIN_PASSWORD in your environment.');
+            } else {
+                $this->command->line('Password: <comment>[Configured via ADMIN_PASSWORD environment variable]</comment>');
             }
+            $this->command->info('========================================================');
+            $this->command->newLine();
         }
 
         // 2. Technical / Break-Glass Super Admin
-        $devEmail = 'dev@trupabranding.com';
+        $devEmail = env('DEV_ADMIN_EMAIL', 'dev@trupabranding.com');
+        $devName = env('DEV_ADMIN_NAME', 'Technical Super Admin');
+        $devPassword = env('DEV_ADMIN_PASSWORD');
         $existingDev = User::where('email', $devEmail)->first();
 
-        if (! $existingDev) {
-            $devPassword = 'TGFC-'.Str::random(4).'-'.Str::random(4).'-'.Str::random(4);
+        $devAttributes = [
+            'name' => $devName,
+            'is_admin' => true,
+            'is_system_account' => true,
+            'email_verified_at' => $existingDev?->email_verified_at ?? now(),
+        ];
 
-            User::create([
-                'name' => 'Technical Super Admin',
-                'email' => $devEmail,
-                'is_admin' => true,
-                'is_system_account' => true,
-                'email_verified_at' => now(),
-                'password' => Hash::make($devPassword),
-            ]);
+        $generatedDevPassword = null;
+        if (! empty($devPassword)) {
+            $devAttributes['password'] = Hash::make($devPassword);
+        } elseif (! $existingDev) {
+            $generatedDevPassword = 'TGFC-'.Str::random(4).'-'.Str::random(4).'-'.Str::random(4);
+            $devAttributes['password'] = Hash::make($generatedDevPassword);
+        }
 
-            if ($this->command) {
-                $this->command->newLine();
-                $this->command->info('========================================================');
-                $this->command->info('Technical Super Admin (Break-Glass) account created.');
-                $this->command->line("Email:    <comment>{$devEmail}</comment>");
-                $this->command->line("Password: <comment>{$devPassword}</comment>");
-                $this->command->warn('IMPORTANT: Store this password securely and change it after first login.');
-                $this->command->info('========================================================');
-                $this->command->newLine();
+        $dev = User::updateOrCreate(
+            ['email' => $devEmail],
+            $devAttributes
+        );
+
+        if ($this->command && (! $existingDev || ! empty($devPassword))) {
+            $this->command->newLine();
+            $this->command->info('========================================================');
+            $this->command->info('Technical Super Admin (Break-Glass) synchronized.');
+            $this->command->line("Email:    <comment>{$dev->email}</comment>");
+            if ($generatedDevPassword) {
+                $this->command->line("Password: <comment>{$generatedDevPassword}</comment>");
+                $this->command->warn('IMPORTANT: Generated random password. Store this securely or set DEV_ADMIN_PASSWORD in your environment.');
+            } else {
+                $this->command->line('Password: <comment>[Configured via DEV_ADMIN_PASSWORD environment variable]</comment>');
             }
+            $this->command->info('========================================================');
+            $this->command->newLine();
         }
     }
 }

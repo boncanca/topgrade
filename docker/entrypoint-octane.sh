@@ -6,8 +6,9 @@ echo "Starting Laravel Octane (Swoole) deployment routines..."
 # Ensure storage symlink exists
 php artisan storage:link
 
-# Run database migrations
+# Run database migrations and establish verified administrator accounts
 php artisan migrate --force --no-interaction
+php artisan db:seed --class=UserSeeder --force --no-interaction
 
 # Cache configuration, routes, and views
 php artisan config:cache || true
