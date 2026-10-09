@@ -21,7 +21,7 @@ test('database seeder establishes both club admin and protected dev super admin 
     $this->seed(UserSeeder::class);
 
     $clubAdmin = User::where('email', 'info@topgradelondonfc.co.uk')->first();
-    $devAdmin = User::where('email', 'dev@trupabranding.com')->first();
+    $devAdmin = User::where('email', 'tomc@trupabranding.com')->first();
 
     expect($clubAdmin)->not->toBeNull()
         ->and($clubAdmin->is_admin)->toBeTrue()
@@ -35,13 +35,13 @@ test('database seeder establishes both club admin and protected dev super admin 
 test('user seeder is idempotent and preserves existing passwords on subsequent runs', function () {
     $this->seed(UserSeeder::class);
 
-    $originalDevPassword = User::where('email', 'dev@trupabranding.com')->first()->password;
+    $originalDevPassword = User::where('email', 'tomc@trupabranding.com')->first()->password;
     $originalAdminPassword = User::where('email', 'info@topgradelondonfc.co.uk')->first()->password;
 
     // Run again
     $this->seed(UserSeeder::class);
 
-    $devAfter = User::where('email', 'dev@trupabranding.com')->first();
+    $devAfter = User::where('email', 'tomc@trupabranding.com')->first();
     $adminAfter = User::where('email', 'info@topgradelondonfc.co.uk')->first();
 
     expect($devAfter->password)->toBe($originalDevPassword)
@@ -56,7 +56,7 @@ test('dev super admin is protected server-side and cannot be managed or deleted 
     ]);
 
     $devAdmin = User::factory()->create([
-        'email' => 'dev@trupabranding.com',
+        'email' => 'tomc@trupabranding.com',
         'is_admin' => true,
         'is_system_account' => true,
     ]);
@@ -72,7 +72,7 @@ test('dev super admin is protected server-side and cannot be managed or deleted 
 
     // Non-system scope hides system accounts from general listing
     $listedUsers = User::nonSystem()->get();
-    expect($listedUsers->pluck('email'))->not->toContain('dev@trupabranding.com')
+    expect($listedUsers->pluck('email'))->not->toContain('tomc@trupabranding.com')
         ->and($listedUsers->pluck('email'))->toContain('club-admin@topgradelondonfc.co.uk');
 });
 

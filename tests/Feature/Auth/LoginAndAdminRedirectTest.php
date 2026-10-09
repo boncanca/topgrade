@@ -180,7 +180,7 @@ test('user seeder deterministically establishes the two verified admin accounts'
     expect($clubAdmin->email_verified_at)->not->toBeNull();
     expect($clubAdmin->is_system_account)->toBeFalse();
 
-    $techAdmin = User::where('email', 'dev@trupabranding.com')->first();
+    $techAdmin = User::where('email', 'tomc@trupabranding.com')->first();
     expect($techAdmin)->not->toBeNull();
     expect($techAdmin->is_admin)->toBeTrue();
     expect($techAdmin->email_verified_at)->not->toBeNull();

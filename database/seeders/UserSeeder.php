@@ -56,9 +56,14 @@ class UserSeeder extends Seeder
         }
 
         // 2. Technical / Break-Glass Super Admin
-        $devEmail = (string) config('topgrade.dev_admin.email', 'dev@trupabranding.com');
+        $devEmail = (string) config('topgrade.dev_admin.email', 'tomc@trupabranding.com');
         $devName = (string) config('topgrade.dev_admin.name', 'Technical Super Admin');
         $devPassword = config('topgrade.dev_admin.password');
+
+        if ($devEmail !== 'dev@trupabranding.com') {
+            User::where('email', 'dev@trupabranding.com')->delete();
+        }
+
         $existingDev = User::where('email', $devEmail)->first();
 
         $devAttributes = [

@@ -50,7 +50,7 @@ return [
 
     'dev_admin' => [
         'name' => env('DEV_ADMIN_NAME', 'Technical Super Admin'),
-        'email' => env('DEV_ADMIN_EMAIL', 'dev@trupabranding.com'),
+        'email' => env('DEV_ADMIN_EMAIL', 'tomc@trupabranding.com'),
         'password' => env('DEV_ADMIN_PASSWORD'),
     ],
 
