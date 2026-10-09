@@ -19,6 +19,11 @@ class BookingConfirmed extends Mailable implements ShouldQueue
 
     public function envelope(): Envelope
     {
+        $isPendingPayment = (float) $this->booking->amount > 0 && ($this->booking->payment_status?->value ?? (string) $this->booking->payment_status) !== 'paid';
+        $subject = $isPendingPayment
+            ? 'Booking Reserved · Awaiting Bank Transfer - Reference: '.$this->booking->reference
+            : 'Your Booking Is Confirmed - Reference: '.$this->booking->reference;
+
         return new Envelope(
             from: new Address(
                 config('topgrade.emails.no_reply', 'no-reply@topgradelondonfc.co.uk'),
@@ -30,7 +35,7 @@ class BookingConfirmed extends Mailable implements ShouldQueue
                     config('mail.from.name', 'TopGrade London FC')
                 ),
             ],
-            subject: 'Your Booking Is Confirmed - Reference: '.$this->booking->reference,
+            subject: $subject,
             to: [$this->booking->participant_email],
         );
     }
@@ -41,6 +46,7 @@ class BookingConfirmed extends Mailable implements ShouldQueue
             view: 'mail.booking-confirmed',
             with: [
                 'booking' => $this->booking,
+                'bank' => config('topgrade.bank'),
             ],
         );
     }

@@ -17,7 +17,7 @@ class ResendEmailService
      */
     public function sendEmail(string|array $to, string $subject, string $htmlContent, ?string $from = null, array $options = []): array
     {
-        $apiKey = (string) config('resend.api_key', env('RESEND_API_KEY'));
+        $apiKey = (string) config('resend.api_key');
 
         if (empty($apiKey) || $apiKey === 're_xxxxxxxxx') {
             throw new \RuntimeException('Resend API key is missing. Please set RESEND_API_KEY in your .env file.');

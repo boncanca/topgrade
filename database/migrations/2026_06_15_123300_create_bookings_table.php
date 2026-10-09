@@ -31,6 +31,7 @@ return new class extends Migration
             $table->decimal('amount', 10, 2)->nullable();
             $table->string('currency', 3)->default('USD');
             $table->string('payment_status')->default('unpaid');
+            $table->timestamp('payment_expires_at')->nullable()->index();
 
             $table->json('metadata')->nullable();
 

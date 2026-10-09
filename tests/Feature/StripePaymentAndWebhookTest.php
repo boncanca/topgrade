@@ -6,9 +6,10 @@ use App\Models\BookableItem;
 use App\Models\Booking;
 use App\Models\Payment;
 use App\Models\Schedule;
+use App\Models\User;
 use App\Services\Mail\TransactionalMailService;
 use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Mail;
 
 beforeEach(function () {
     Config::set('services.stripe.key', 'pk_test_sample_key');
@@ -57,7 +58,48 @@ test('free booking confirms immediately with payment_status not_required and dis
     expect($booking->payment_expires_at)->toBeNull();
 });
 
-test('paid booking creates pending booking with payment_expires_at and initiates stripe checkout with idempotency key', function () {
+test('paid booking creates pending booking with bank_transfer payment and redirects to confirmation with email dispatch', function () {
+    $mailService = Mockery::mock(TransactionalMailService::class);
+    $mailService->shouldReceive('sendBookingConfirmation')->once()->andReturn(true);
+    $mailService->shouldReceive('sendBookingNotification')->once()->andReturn(true);
+    app()->instance(TransactionalMailService::class, $mailService);
+
+    $activity = BookableItem::factory()->create([
+        'name' => 'Weekly Elite Training',
+        'price' => 25.00,
+        'currency' => 'GBP',
+        'requires_payment' => true,
+        'is_active' => true,
+    ]);
+    $schedule = Schedule::factory()->for($activity)->create(['status' => 'active']);
+
+    $response = $this->post('/bookings', [
+        'bookable_item_id' => $activity->id,
+        'schedule_id' => $schedule->id,
+        'participant_name' => 'Paid Athlete',
+        'participant_email' => 'paidathlete@example.com',
+        'participant_phone' => '+447000000002',
+        'timezone' => 'Europe/London',
+    ]);
+
+    $booking = Booking::where('participant_email', 'paidathlete@example.com')->firstOrFail();
+    $response->assertRedirect(route('sessions.confirmation', $booking->reference));
+
+    expect($booking->status)->toBe(BookingStatus::Pending);
+    expect($booking->payment_status)->toBe(PaymentStatus::Unpaid);
+    expect($booking->payment_expires_at)->not->toBeNull();
+    expect($booking->amount)->toEqual(25.00);
+
+    // Internal payment record created with bank_transfer gateway
+    $payment = Payment::where('booking_id', $booking->id)->firstOrFail();
+    expect($payment->status)->toBe('pending');
+    expect($payment->gateway)->toBe('bank_transfer');
+    expect($payment->reference)->toStartWith('PAY');
+});
+
+test('paid booking with stripe driver initiates stripe checkout session with idempotency key', function () {
+    Config::set('topgrade.payments.driver', 'stripe');
+
     $mailService = Mockery::mock(TransactionalMailService::class);
     $mailService->shouldNotReceive('sendBookingConfirmation', 'sendPaymentReceived', 'sendBookingNotification');
     app()->instance(TransactionalMailService::class, $mailService);
@@ -81,21 +123,22 @@ test('paid booking creates pending booking with payment_expires_at and initiates
     $response = $this->post('/bookings', [
         'bookable_item_id' => $activity->id,
         'schedule_id' => $schedule->id,
-        'participant_name' => 'Paid Athlete',
-        'participant_email' => 'paidathlete@example.com',
-        'participant_phone' => '+447000000002',
+        'participant_name' => 'Stripe Athlete',
+        'participant_email' => 'stripeathlete@example.com',
+        'participant_phone' => '+447000000003',
         'timezone' => 'Europe/London',
     ]);
 
-    $booking = Booking::where('participant_email', 'paidathlete@example.com')->firstOrFail();
+    $booking = Booking::where('participant_email', 'stripeathlete@example.com')->firstOrFail();
     expect($booking->status)->toBe(BookingStatus::Pending);
     expect($booking->payment_status)->toBe(PaymentStatus::Unpaid);
     expect($booking->payment_expires_at)->not->toBeNull();
     expect($booking->amount)->toEqual(25.00);
 
-    // Internal payment record created
+    // Internal payment record created with stripe gateway
     $payment = Payment::where('booking_id', $booking->id)->firstOrFail();
     expect($payment->status)->toBe('pending');
+    expect($payment->gateway)->toBe('stripe');
     expect($payment->gateway_session_id)->toBe('cs_test_session_abc123');
     expect($payment->reference)->toStartWith('PAY');
 
@@ -728,6 +771,67 @@ test('stripe checkout.session.expired does not cancel an already confirmed booki
     $payment->refresh();
 
     // Invariant: confirmed booking and succeeded payment are untouched
+    expect($booking->status)->toBe(BookingStatus::Confirmed);
+    expect($booking->payment_status)->toBe(PaymentStatus::Paid);
+    expect($payment->status)->toBe('succeeded');
+});
+
+test('booking confirmation page supplies official club bank details prop for bank transfer', function () {
+    $booking = Booking::factory()->create([
+        'status' => BookingStatus::Pending,
+        'payment_status' => PaymentStatus::Unpaid,
+        'amount' => 30.00,
+        'currency' => 'GBP',
+    ]);
+
+    $response = $this->get(route('sessions.confirmation', $booking->reference));
+
+    $response->assertOk();
+    $response->assertInertia(fn ($page) => $page
+        ->component('Public/BookingConfirmation')
+        ->has('booking')
+        ->has('bank', fn ($bank) => $bank
+            ->where('account_name', 'TOPGRADE LONDON FC')
+            ->where('bank_name', "LLOYD'S BANK")
+            ->where('sort_code', '30-99-50')
+            ->where('account_number', '20184968')
+            ->etc()
+        )
+    );
+});
+
+test('admin confirming booking transitions status to confirmed and marks payment as paid', function () {
+    $user = User::factory()->create(['is_admin' => true]);
+
+    $activity = BookableItem::factory()->create(['requires_payment' => true, 'price' => 25.00]);
+    $schedule = Schedule::factory()->for($activity)->create();
+
+    $booking = Booking::factory()->for($schedule)->create([
+        'bookable_item_id' => $activity->id,
+        'status' => BookingStatus::Pending,
+        'payment_status' => PaymentStatus::Unpaid,
+        'amount' => 25.00,
+    ]);
+
+    $payment = Payment::create([
+        'booking_id' => $booking->id,
+        'reference' => Payment::generateReference(),
+        'gateway' => 'bank_transfer',
+        'status' => 'pending',
+        'amount' => 25.00,
+        'currency' => 'GBP',
+        'customer_email' => $booking->participant_email,
+    ]);
+
+    Mail::fake();
+
+    $response = $this->actingAs($user)->post("/dashboard/bookings/{$booking->id}/confirm");
+
+    $response->assertRedirect(route('bookings.show', $booking));
+
+    $booking->refresh();
+    $payment->refresh();
+
     expect($booking->status)->toBe(BookingStatus::Confirmed);
     expect($booking->payment_status)->toBe(PaymentStatus::Paid);
     expect($payment->status)->toBe('succeeded');

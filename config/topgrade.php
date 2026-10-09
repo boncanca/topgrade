@@ -33,10 +33,56 @@ return [
     |
     */
 
-    'stripe' => [
-        'key' => env('STRIPE_KEY'),
-        'secret' => env('STRIPE_SECRET'),
-        'webhook_secret' => env('STRIPE_WEBHOOK_SECRET'),
+    /*
+    |--------------------------------------------------------------------------
+    | Administrator Bootstrap Credentials
+    |--------------------------------------------------------------------------
+    |
+    | Configuration for deterministic administrator account synchronization.
+    |
+    */
+
+    'admin' => [
+        'name' => env('ADMIN_NAME', 'TopGrade Club Admin'),
+        'email' => env('ADMIN_EMAIL', 'info@topgradelondonfc.co.uk'),
+        'password' => env('ADMIN_PASSWORD'),
+    ],
+
+    'dev_admin' => [
+        'name' => env('DEV_ADMIN_NAME', 'Technical Super Admin'),
+        'email' => env('DEV_ADMIN_EMAIL', 'dev@trupabranding.com'),
+        'password' => env('DEV_ADMIN_PASSWORD'),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Club Bank Account Details for Payments
+    |--------------------------------------------------------------------------
+    |
+    | Official club bank transfer credentials displayed on booking confirmations
+    | and transactional emails.
+    |
+    */
+
+    'bank' => [
+        'account_name' => env('BANK_ACCOUNT_NAME', 'TOPGRADE LONDON FC'),
+        'bank_name' => env('BANK_NAME', "LLOYD'S BANK"),
+        'sort_code' => env('BANK_SORT_CODE', '30-99-50'),
+        'account_number' => env('BANK_ACCOUNT_NUMBER', '20184968'),
+        'payment_instructions' => env('BANK_PAYMENT_INSTRUCTIONS', 'Please use your Booking Reference as the payment reference when making the transfer.'),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Payment Gateway Driver ('bank_transfer' or 'stripe')
+    |--------------------------------------------------------------------------
+    |
+    | Toggle between direct manual bank transfer and automated Stripe checkout.
+    | Defaults to 'bank_transfer'.
+    |
+    */
+    'payments' => [
+        'driver' => env('PAYMENT_DRIVER', 'bank_transfer'),
     ],
 
 ];

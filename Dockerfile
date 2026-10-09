@@ -1,13 +1,15 @@
 # ==============================================================================
-# STAGE 1: Base PHP 8.4 environment with system dependencies & Swoole
+# STAGE 1: Base PHP 8.4 FPM environment with system dependencies & OPcache
 # ==============================================================================
-FROM php:8.4-cli AS base
+FROM php:8.4-fpm AS base
 
 ENV COMPOSER_ALLOW_SUPERUSER=1 \
     COMPOSER_MEMORY_LIMIT=-1
 
-# Install basic system utilities
+# Install system dependencies, Nginx, Supervisor
 RUN apt-get update && apt-get install -y \
+    nginx \
+    supervisor \
     git \
     unzip \
     curl \
@@ -17,10 +19,10 @@ RUN apt-get update && apt-get install -y \
 # Install official PHP extension installer
 ADD --chmod=0755 https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
 
-# Install required PHP extensions (including GD, GMP, OPcache & Swoole for PHP 8.4)
+# Install required PHP extensions (PostgreSQL, OPcache, GD, etc.)
 RUN install-php-extensions \
-    pdo_mysql \
     pdo_pgsql \
+    pdo_mysql \
     mbstring \
     zip \
     exif \
@@ -29,17 +31,17 @@ RUN install-php-extensions \
     sockets \
     intl \
     gd \
-    gmp \
-    opcache \
-    swoole \
-    redis
+    opcache
+
+# Configure OPcache
+COPY docker/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
 
 # ==============================================================================
-# STAGE 2: Build stage (Composer, Node.js 22, Vite compilation)
+# STAGE 2: Build stage (Composer & Node 22 for Vite compilation)
 # ==============================================================================
 FROM base AS builder
 
-# Copy Node.js 22 & npm directly from official Node image
+# Copy Node.js 22 & npm from official Node image
 COPY --from=node:22-slim /usr/local/bin/node /usr/local/bin/node
 COPY --from=node:22-slim /usr/local/lib/node_modules /usr/local/lib/node_modules
 RUN ln -s /usr/local/lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm \
@@ -48,12 +50,10 @@ RUN ln -s /usr/local/lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm \
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-WORKDIR /var/www
+WORKDIR /var/www/html
 
-# Copy Composer files
+# Install Composer dependencies
 COPY composer.json composer.lock ./
-
-# Install Composer vendor packages safely
 RUN composer install \
     --no-dev \
     --prefer-dist \
@@ -62,58 +62,53 @@ RUN composer install \
     --no-scripts \
     --ignore-platform-reqs
 
-# Copy NPM package definitions & install Node dependencies
+# Install NPM dependencies
 COPY package*.json ./
 RUN npm ci
 
 # Copy Application Source Code
 COPY . .
 
-# Generate Autoloader FIRST (creates vendor/autoload.php), then run package discovery
+# Dump optimized autoloader and run package discovery
 RUN composer dump-autoload --optimize --classmap-authoritative --ignore-platform-reqs \
     && php artisan package:discover --ansi
 
-# Build Frontend Assets (Vite)
+# Build Frontend Assets
 RUN npm run build
 
-# Remove development node modules (not needed in runner stage)
+# Remove development node modules
 RUN rm -rf node_modules
 
 # ==============================================================================
-# STAGE 3: Production Runner Image (Lean, Safe, Non-Root)
+# STAGE 3: Production Runner Image (Lean, Nginx + PHP-FPM + Supervisor)
 # ==============================================================================
 FROM base AS runner
 
-# Create non-root system user & group
-RUN groupadd -g 1000 laravel && useradd -u 1000 -ms /bin/bash -g laravel laravel
+WORKDIR /var/www/html
 
-WORKDIR /var/www
+# Copy application & vendor directory from builder stage
+COPY --chown=www-data:www-data --from=builder /var/www/html /var/www/html
 
-# Copy application & vendor directory from builder stage with proper ownership
-COPY --chown=laravel:laravel --from=builder /var/www /var/www
+# Copy configuration files
+COPY docker/nginx.conf /etc/nginx/nginx.conf
+COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+COPY --chmod=0755 docker/entrypoint.sh /usr/local/bin/entrypoint.sh
 
-# Ensure required storage and cache directories exist with correct permissions
+# Ensure storage and bootstrap directories exist with proper permissions
 RUN mkdir -p \
-    storage/app/public \
     storage/framework/cache/data \
     storage/framework/sessions \
     storage/framework/views \
     storage/logs \
     bootstrap/cache \
-    && chown -R laravel:laravel storage bootstrap/cache \
+    /var/log/supervisor \
+    && chown -R www-data:www-data storage bootstrap/cache /var/log/supervisor \
     && chmod -R 775 storage bootstrap/cache
 
-# Copy entrypoint script
-COPY --chmod=0755 docker/entrypoint-octane.sh /usr/local/bin/entrypoint.sh
+EXPOSE 80
 
-# Expose Port 8000 for Dokploy/Traefik routing
-EXPOSE 8000
-
-# Health Check using Laravel /up endpoint
 HEALTHCHECK --interval=15s --timeout=5s --start-period=30s --retries=3 \
-    CMD curl -f http://localhost:8000/up || exit 1
-
-# Switch to non-root user for execution
-USER laravel
+    CMD curl -f http://localhost/up || exit 1
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]

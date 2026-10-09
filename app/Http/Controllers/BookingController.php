@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\BookingStatus;
+use App\Enums\PaymentStatus;
 use App\Mail\BookingCancelled;
 use App\Mail\BookingConfirmed;
 use App\Models\Booking;
@@ -54,15 +55,25 @@ class BookingController extends Controller
                 }
 
                 $booking->transitionTo(BookingStatus::Confirmed);
+
+                if ((float) $booking->amount > 0) {
+                    $booking->update(['payment_status' => PaymentStatus::Paid->value]);
+                    $booking->latestPayment?->update(['status' => 'succeeded']);
+                }
             });
         } else {
             $booking->transitionTo(BookingStatus::Confirmed);
+
+            if ((float) $booking->amount > 0) {
+                $booking->update(['payment_status' => PaymentStatus::Paid->value]);
+                $booking->latestPayment?->update(['status' => 'succeeded']);
+            }
         }
 
         Mail::to($booking->participant_email)->send(new BookingConfirmed($booking));
 
         return redirect()->route('bookings.show', $booking)
-            ->with('success', 'Booking confirmed');
+            ->with('success', 'Booking confirmed and payment marked as received');
     }
 
     public function complete(Booking $booking): RedirectResponse

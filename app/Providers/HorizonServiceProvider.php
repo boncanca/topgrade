@@ -28,9 +28,15 @@ class HorizonServiceProvider extends HorizonApplicationServiceProvider
     protected function gate(): void
     {
         Gate::define('viewHorizon', function ($user = null) {
-            return $user && ($user->is_admin || in_array($user->email, [
+            if (! $user) {
+                return false;
+            }
+
+            return (bool) ($user->is_admin || in_array($user->email, array_filter([
+                config('topgrade.admin.email'),
+                config('topgrade.dev_admin.email'),
                 'admin@topgrade.test',
-            ]));
+            ]), true));
         });
     }
 }

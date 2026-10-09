@@ -110,7 +110,10 @@
     },
     "extra": {
         "laravel": {
-            "dont-discover": [],
+            "dont-discover": [
+                "laravel/horizon",
+                "laravel/octane"
+            ],
             "installer": {
                 "post-create-project": []
             }

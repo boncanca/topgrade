@@ -16,7 +16,7 @@ class SiteSettingsSeeder extends Seeder
             $settings->site_name = 'TopGrade London FC';
         }
         if (empty($settings->site_url)) {
-            $settings->site_url = env('APP_URL', 'https://topgradelondonfc.co.uk');
+            $settings->site_url = config('app.url', 'https://topgradelondonfc.co.uk');
         }
         if (empty($settings->tagline)) {
             $settings->tagline = 'Youth Football Club in London';

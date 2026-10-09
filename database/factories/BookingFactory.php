@@ -28,6 +28,7 @@ class BookingFactory extends Factory
             'amount' => $this->faker->optional()->randomFloat(2, 10, 500),
             'currency' => 'USD',
             'payment_status' => 'unpaid',
+            'payment_expires_at' => null,
             'metadata' => null,
         ];
     }

@@ -147,10 +147,12 @@ class PublicBookingController
         /** @var BookableItem $bookableItem */
         $bookableItem = BookableItem::findOrFail($validated['bookable_item_id']);
         $requiresPayment = (bool) $bookableItem->requires_payment && (float) ($bookableItem->price ?? 0) > 0;
+        $paymentDriver = config('topgrade.payments.driver', 'bank_transfer');
+        $isStripe = $paymentDriver === 'stripe';
 
         /** @var Booking $booking */
         /** @var Payment|null $payment */
-        [$booking, $payment] = DB::transaction(function () use ($validated, $bookableItem, $requiresPayment) {
+        [$booking, $payment] = DB::transaction(function () use ($validated, $bookableItem, $requiresPayment, $isStripe) {
             /** @var Schedule $schedule */
             $schedule = Schedule::where('id', $validated['schedule_id'])
                 ->lockForUpdate()
@@ -217,7 +219,7 @@ class PublicBookingController
             $bookingReference = Booking::generateReference();
 
             if ($requiresPayment) {
-                $expiresAt = now()->addMinutes(30);
+                $expiresAt = $isStripe ? now()->addMinutes(30) : now()->addDays(3);
 
                 $createdBooking = Booking::create([
                     'bookable_item_id' => $schedule->bookable_item_id,
@@ -240,13 +242,21 @@ class PublicBookingController
                 $createdPayment = Payment::create([
                     'booking_id' => $createdBooking->id,
                     'reference' => Payment::generateReference(),
-                    'gateway' => 'stripe',
+                    'gateway' => $isStripe ? 'stripe' : 'bank_transfer',
                     'status' => 'pending',
                     'amount' => $createdBooking->amount,
                     'currency' => $createdBooking->currency,
                     'customer_email' => $createdBooking->participant_email,
                     'expires_at' => $expiresAt,
                 ]);
+
+                // For manual bank transfer, dispatch confirmation email immediately with instructions
+                if (! $isStripe) {
+                    DB::afterCommit(function () use ($createdBooking) {
+                        SendTransactionalBookingEmailJob::dispatch($createdBooking->id, 'booking-confirmation');
+                        SendTransactionalBookingEmailJob::dispatch($createdBooking->id, 'booking-notification');
+                    });
+                }
 
                 return [$createdBooking, $createdPayment];
             }
@@ -278,13 +288,12 @@ class PublicBookingController
             return [$createdBooking, null];
         });
 
-        // 1. FREE SESSION: confirm immediately & redirect (emails handled post-commit)
-        if (! $requiresPayment) {
+        // 1. FREE SESSION OR DIRECT BANK TRANSFER: redirect to confirmation
+        if (! $requiresPayment || ! $isStripe) {
             return redirect()->route('sessions.confirmation', $booking->reference);
         }
 
-        // 2. PAID SESSION: initiate checkout session with outbound idempotency
-        // NOTE: No confirmation emails sent here. Verified Stripe webhook is authoritative.
+        // 2. STRIPE CHECKOUT SESSION: initiates checkout gateway redirect
         if (! $paymentService->isConfigured()) {
             throw ValidationException::withMessages([
                 'schedule_id' => 'Payment gateway is currently being configured. Please contact info@topgradelondonfc.co.uk to reserve this session.',
@@ -316,6 +325,7 @@ class PublicBookingController
     {
         return Inertia::render('Public/BookingConfirmation', [
             'booking' => $booking->load(['bookableItem', 'latestPayment']),
+            'bank' => config('topgrade.bank'),
         ]);
     }
 }

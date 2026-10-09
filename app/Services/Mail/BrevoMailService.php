@@ -30,8 +30,15 @@ class BrevoMailService implements TransactionalMailService
 
     public function sendBookingConfirmation(Booking $booking): bool
     {
-        $subject = "Your Booking Is Confirmed - Reference: {$booking->reference}";
-        $html = view('mail.booking-confirmed', ['booking' => $booking])->render();
+        $isPendingPayment = (float) $booking->amount > 0 && ($booking->payment_status?->value ?? (string) $booking->payment_status) !== 'paid';
+        $subject = $isPendingPayment
+            ? "Booking Reserved · Awaiting Bank Transfer - Reference: {$booking->reference}"
+            : "Your Booking Is Confirmed - Reference: {$booking->reference}";
+
+        $html = view('mail.booking-confirmed', [
+            'booking' => $booking,
+            'bank' => config('topgrade.bank'),
+        ])->render();
 
         return $this->send(
             type: 'booking_confirmation',

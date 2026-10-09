@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import { Link } from '@inertiajs/vue3';
-import { CheckCircle, Clock, AlertCircle, XCircle } from '@lucide/vue';
+import { CheckCircle, Clock, AlertCircle, XCircle, Copy, Check, Building2 } from '@lucide/vue';
 import PublicLayout from '@/layouts/PublicLayout.vue';
 import SeoHead from '@/components/SEO/SeoHead.vue';
 
@@ -13,6 +13,12 @@ interface Activity {
     price?: string;
     currency?: string;
     requires_payment?: boolean;
+}
+
+interface Payment {
+    id: number;
+    gateway: string;
+    status: string;
 }
 
 interface Booking {
@@ -29,10 +35,20 @@ interface Booking {
     amount: string | number | null;
     currency: string;
     bookable_item: Activity;
+    latest_payment?: Payment | null;
+}
+
+interface BankDetails {
+    account_name: string;
+    bank_name: string;
+    sort_code: string;
+    account_number: string;
+    payment_instructions?: string;
 }
 
 const props = defineProps<{
     booking: Booking;
+    bank?: BankDetails;
 }>();
 
 defineOptions({
@@ -61,7 +77,7 @@ const currentState = computed<UIState>(() => {
         return 'cancelled';
     }
 
-    // Default paid flow while webhook is processing / awaiting confirmation
+    // Default paid flow while awaiting payment
     return 'awaiting_payment';
 });
 
@@ -86,10 +102,20 @@ const stateConfig = computed(() => {
                 iconColor: 'text-emerald-400',
             };
         case 'awaiting_payment':
+            if (props.booking.latest_payment?.gateway === 'stripe') {
+                return {
+                    title: 'Payment Processing',
+                    description: `We've received your booking and are waiting for payment confirmation from Stripe. Once confirmed, your booking will activate and an email will be sent to ${props.booking.participant_email}.`,
+                    statusLabel: 'Awaiting Gateway Confirmation',
+                    badgeClass: 'bg-amber-500/15 border-amber-500/30 text-amber-400',
+                    icon: Clock,
+                    iconColor: 'text-amber-400',
+                };
+            }
             return {
-                title: 'Payment Processing',
-                description: `We've received your booking and are waiting for payment confirmation from Stripe. Once confirmed, your booking will activate and an email will be sent to ${props.booking.participant_email}.`,
-                statusLabel: 'Awaiting Gateway Confirmation',
+                title: 'Booking Reserved · Awaiting Bank Transfer',
+                description: `Your place has been reserved. Please transfer your session fee to the club bank account below using your Booking Reference as payment reference.`,
+                statusLabel: 'Awaiting Bank Transfer',
                 badgeClass: 'bg-amber-500/15 border-amber-500/30 text-amber-400',
                 icon: Clock,
                 iconColor: 'text-amber-400',
@@ -115,6 +141,21 @@ const stateConfig = computed(() => {
             };
     }
 });
+
+const copiedField = ref<string | null>(null);
+
+function copyToClipboard(text: string, field: string): void {
+    if (navigator?.clipboard?.writeText) {
+        navigator.clipboard.writeText(text).then(() => {
+            copiedField.value = field;
+            setTimeout(() => {
+                if (copiedField.value === field) {
+                    copiedField.value = null;
+                }
+            }, 2500);
+        }).catch(() => {});
+    }
+}
 
 function formatScheduled(dateStr: string): string {
     const date = new Date(dateStr);
@@ -172,8 +213,103 @@ function formatPrice(amount: string | number | null, currency: string): string {
             <!-- Booking Reference -->
             <div class="mt-8 rounded-xs bg-tg-bg border border-tg-border p-5 text-center">
                 <p class="text-xs uppercase tracking-widest text-tg-text-muted font-semibold">Booking Reference</p>
-                <p class="mt-1 font-mono text-2xl sm:text-3xl font-bold text-tg-accent tracking-wider">{{ booking.reference }}</p>
+                <div class="mt-1 flex items-center justify-center gap-3">
+                    <p class="font-mono text-2xl sm:text-3xl font-bold text-tg-accent tracking-wider">{{ booking.reference }}</p>
+                    <button
+                        type="button"
+                        @click="copyToClipboard(booking.reference, 'booking_ref_main')"
+                        class="inline-flex items-center gap-1 text-xs text-tg-accent hover:text-tg-accent-hover px-2.5 py-1 rounded border border-tg-border bg-tg-bg-deep cursor-pointer transition-colors"
+                        title="Copy Booking Reference"
+                    >
+                        <component :is="copiedField === 'booking_ref_main' ? Check : Copy" class="h-3.5 w-3.5" />
+                        <span>{{ copiedField === 'booking_ref_main' ? 'Copied' : 'Copy' }}</span>
+                    </button>
+                </div>
                 <p class="mt-1 text-xs text-tg-text-muted">Save this reference for all club communications</p>
+            </div>
+
+            <!-- Bank Transfer Details Card (Visible for manual bank transfer bookings awaiting payment) -->
+            <div v-if="currentState === 'awaiting_payment' && booking.latest_payment?.gateway !== 'stripe'" class="mt-8 rounded-xs border-2 border-amber-500/40 bg-amber-500/5 p-5 sm:p-6 relative overflow-hidden">
+                <div class="flex items-center gap-2 mb-3">
+                    <Building2 class="h-5 w-5 text-tg-accent" />
+                    <h3 class="text-base sm:text-lg font-bold uppercase tracking-wider text-tg-text-strong" style="font-family: var(--tg-display);">
+                        Club Bank Transfer Details
+                    </h3>
+                </div>
+
+                <p class="text-xs sm:text-sm text-tg-text-muted mb-4">
+                    Please transfer the fee of <strong class="text-tg-accent font-mono">{{ formatPrice(booking.amount, booking.currency) }}</strong> using your online banking / banking app:
+                </p>
+
+                <div class="space-y-3 bg-tg-bg border border-tg-border rounded-xs p-4">
+                    <!-- Bank -->
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between py-1.5 border-b border-tg-border/50 text-sm">
+                        <span class="text-xs uppercase tracking-wider text-tg-text-muted font-semibold">Bank</span>
+                        <span class="font-semibold text-tg-text-strong">{{ bank?.bank_name ?? "LLOYD'S BANK" }}</span>
+                    </div>
+
+                    <!-- Account Name -->
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between py-1.5 border-b border-tg-border/50 text-sm">
+                        <span class="text-xs uppercase tracking-wider text-tg-text-muted font-semibold">Account Name</span>
+                        <span class="font-semibold text-tg-text-strong font-mono">{{ bank?.account_name ?? 'TOPGRADE LONDON FC' }}</span>
+                    </div>
+
+                    <!-- Sort Code -->
+                    <div class="flex items-center justify-between py-1.5 border-b border-tg-border/50 text-sm">
+                        <span class="text-xs uppercase tracking-wider text-tg-text-muted font-semibold">Sort Code</span>
+                        <div class="flex items-center gap-2">
+                            <span class="font-mono font-bold text-tg-text-strong text-base">{{ bank?.sort_code ?? '30-99-50' }}</span>
+                            <button
+                                type="button"
+                                @click="copyToClipboard(bank?.sort_code ?? '30-99-50', 'sort_code')"
+                                class="inline-flex items-center gap-1 text-[11px] text-tg-accent hover:text-tg-accent-hover px-2 py-0.5 rounded border border-tg-border bg-tg-bg-deep cursor-pointer transition-colors"
+                            >
+                                <component :is="copiedField === 'sort_code' ? Check : Copy" class="h-3 w-3" />
+                                <span>{{ copiedField === 'sort_code' ? 'Copied' : 'Copy' }}</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Account Number -->
+                    <div class="flex items-center justify-between py-1.5 border-b border-tg-border/50 text-sm">
+                        <span class="text-xs uppercase tracking-wider text-tg-text-muted font-semibold">Account Number</span>
+                        <div class="flex items-center gap-2">
+                            <span class="font-mono font-bold text-tg-text-strong text-base">{{ bank?.account_number ?? '20184968' }}</span>
+                            <button
+                                type="button"
+                                @click="copyToClipboard(bank?.account_number ?? '20184968', 'account_number')"
+                                class="inline-flex items-center gap-1 text-[11px] text-tg-accent hover:text-tg-accent-hover px-2 py-0.5 rounded border border-tg-border bg-tg-bg-deep cursor-pointer transition-colors"
+                            >
+                                <component :is="copiedField === 'account_number' ? Check : Copy" class="h-3 w-3" />
+                                <span>{{ copiedField === 'account_number' ? 'Copied' : 'Copy' }}</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Payment Reference -->
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 py-2.5 bg-tg-accent/10 -mx-4 -mb-4 px-4 rounded-b-xs border-t border-tg-accent/20">
+                        <div>
+                            <span class="text-[11px] uppercase tracking-wider font-bold text-tg-accent block">Payment Reference</span>
+                            <span class="text-xs text-tg-text-muted">Must be entered as the transfer note</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="font-mono font-extrabold text-tg-accent text-lg sm:text-xl tracking-wider">{{ booking.reference }}</span>
+                            <button
+                                type="button"
+                                @click="copyToClipboard(booking.reference, 'ref_btn')"
+                                class="inline-flex items-center gap-1.5 text-xs font-bold text-black bg-tg-accent hover:bg-tg-accent-hover px-3 py-1.5 rounded-xs cursor-pointer transition-colors shadow-sm"
+                            >
+                                <component :is="copiedField === 'ref_btn' ? Check : Copy" class="h-3.5 w-3.5" />
+                                <span>{{ copiedField === 'ref_btn' ? 'Copied!' : 'Copy Reference' }}</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4 flex items-start gap-2 text-xs text-amber-300/90 bg-amber-500/10 p-3 rounded-xs border border-amber-500/20">
+                    <span class="font-bold text-amber-400">Notice:</span>
+                    <span>{{ bank?.payment_instructions ?? 'Please use your Booking Reference as the payment reference when making the transfer. Once your payment arrives in our account, our club administrators will confirm your booking.' }}</span>
+                </div>
             </div>
 
             <!-- Booking Details -->

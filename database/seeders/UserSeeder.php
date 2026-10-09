@@ -15,9 +15,9 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         // 1. Primary Club Administrator
-        $adminEmail = env('ADMIN_EMAIL', 'info@topgradelondonfc.co.uk');
-        $adminName = env('ADMIN_NAME', 'TopGrade Club Admin');
-        $adminPassword = env('ADMIN_PASSWORD');
+        $adminEmail = (string) config('topgrade.admin.email', 'info@topgradelondonfc.co.uk');
+        $adminName = (string) config('topgrade.admin.name', 'TopGrade Club Admin');
+        $adminPassword = config('topgrade.admin.password');
         $existingAdmin = User::where('email', $adminEmail)->first();
 
         $adminAttributes = [
@@ -56,9 +56,9 @@ class UserSeeder extends Seeder
         }
 
         // 2. Technical / Break-Glass Super Admin
-        $devEmail = env('DEV_ADMIN_EMAIL', 'dev@trupabranding.com');
-        $devName = env('DEV_ADMIN_NAME', 'Technical Super Admin');
-        $devPassword = env('DEV_ADMIN_PASSWORD');
+        $devEmail = (string) config('topgrade.dev_admin.email', 'dev@trupabranding.com');
+        $devName = (string) config('topgrade.dev_admin.name', 'Technical Super Admin');
+        $devPassword = config('topgrade.dev_admin.password');
         $existingDev = User::where('email', $devEmail)->first();
 
         $devAttributes = [
