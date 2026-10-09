@@ -19,18 +19,20 @@ php /var/www/html/artisan storage:link --no-interaction || true
 
 # Run database migrations automatically
 echo "Running database migrations..."
-php /var/www/html/artisan migrate --force --no-interaction
-
-# Synchronize deterministic administrator accounts
-echo "Synchronizing administrator accounts..."
-php /var/www/html/artisan db:seed --class=UserSeeder --force --no-interaction
+if php /var/www/html/artisan migrate --force --no-interaction; then
+    echo "Database migrations completed successfully."
+    echo "Synchronizing administrator accounts..."
+    php /var/www/html/artisan db:seed --class=UserSeeder --force --no-interaction || echo "Warning: Admin account seeding failed. Run manually via terminal."
+else
+    echo "Warning: Database migrations failed on startup. Please check DB credentials and run 'php artisan migrate --force' manually."
+fi
 
 # Optimize application caches for production
 echo "Caching Laravel configuration, routes, views, and events..."
-php /var/www/html/artisan config:cache
-php /var/www/html/artisan route:cache
-php /var/www/html/artisan view:cache
-php /var/www/html/artisan event:cache
+php /var/www/html/artisan config:cache || true
+php /var/www/html/artisan route:cache || true
+php /var/www/html/artisan view:cache || true
+php /var/www/html/artisan event:cache || true
 
 echo "Startup complete. Starting Nginx, PHP-FPM, queue worker, and scheduler..."
 exec "$@"
