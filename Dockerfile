@@ -105,10 +105,11 @@ RUN mkdir -p \
     && chown -R www-data:www-data storage bootstrap/cache /var/log/supervisor \
     && chmod -R 775 storage bootstrap/cache
 
-EXPOSE 80
+# Port 8000 matches the Dokploy/Traefik domain configuration
+EXPOSE 8000
 
 HEALTHCHECK --interval=15s --timeout=5s --start-period=30s --retries=3 \
-    CMD curl -f http://localhost/up || exit 1
+    CMD curl -f http://localhost:8000/up || exit 1
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
