@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
 import { Camera, ChevronLeft, ChevronRight } from '@lucide/vue';
+import { ref } from 'vue';
 import MomentCard from './MomentCard.vue';
 
 interface MomentMediaItem {
@@ -45,7 +45,9 @@ function getAspectClass(idx: number, total: number): string {
     if (total === 1) {
         return 'aspect-16/10 sm:aspect-21/10 min-h-[380px]';
     }
+
     const pattern = idx % 5;
+
     switch (pattern) {
         case 0:
             return 'aspect-16/10 md:aspect-4/3 min-h-[340px]';
@@ -66,18 +68,25 @@ function getColumnSpan(idx: number, total: number): string {
     if (total >= 3 && idx % 5 === 2) {
         return 'md:col-span-2';
     }
+
     return 'col-span-1';
 }
 
 function nextActive(): void {
-    if (props.moments.length <= 1) return;
+    if (props.moments.length <= 1) {
+return;
+}
+
     const currentIdx = props.moments.findIndex((m) => m.id === activeId.value);
     const nextIdx = (currentIdx + 1) % props.moments.length;
     activeId.value = props.moments[nextIdx].id;
 }
 
 function prevActive(): void {
-    if (props.moments.length <= 1) return;
+    if (props.moments.length <= 1) {
+return;
+}
+
     const currentIdx = props.moments.findIndex((m) => m.id === activeId.value);
     const prevIdx = (currentIdx - 1 + props.moments.length) % props.moments.length;
     activeId.value = props.moments[prevIdx].id;

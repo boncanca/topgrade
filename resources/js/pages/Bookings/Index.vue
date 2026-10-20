@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { Head, Link } from '@inertiajs/vue3';
+import EmptyState from '@/components/EmptyState.vue';
 import PageHeader from '@/components/PageHeader.vue';
 import { Button } from '@/components/ui/button';
-import EmptyState from '@/components/EmptyState.vue';
 import { index as bookingsIndex, show as bookingsShow } from '@/routes/bookings';
 
 interface Activity {
@@ -83,6 +83,7 @@ const paymentColors = {
 
 function formatScheduled(dateStr: string): string {
     const date = new Date(dateStr);
+
     return new Intl.DateTimeFormat(undefined, {
         month: 'short',
         day: 'numeric',
@@ -96,6 +97,7 @@ function formatPrice(price: number | null, currency: string): string {
     if (price === null) {
         return 'Free';
     }
+
     return new Intl.NumberFormat(undefined, {
         style: 'currency',
         currency: currency || 'USD',

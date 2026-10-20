@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Head } from '@inertiajs/vue3';
-import { useSeo, type SeoOptions } from '@/composables/useSeo';
+import { useSeo  } from '@/composables/useSeo';
+import type {SeoOptions} from '@/composables/useSeo';
 
 const props = withDefaults(defineProps<SeoOptions>(), {
     path: '',

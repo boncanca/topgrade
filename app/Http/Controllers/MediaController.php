@@ -23,15 +23,9 @@ class MediaController extends Controller
             'content_id' => ['nullable', 'integer', 'exists:content_entries,id'],
         ]);
 
-        /** @var Content $content */
-        if ($request->filled('content_id')) {
-            $content = Content::findOrFail($request->integer('content_id'));
-        } else {
-            // Temporary: use first content or create a placeholder association.
-            // The media stays orphaned until the block is saved with the real content.
-            // We use a dummy approach: store on a real Content if possible.
-            $content = Content::firstOrFail();
-        }
+        $content = $request->filled('content_id')
+            ? Content::findOrFail($request->integer('content_id'))
+            : Content::firstOrFail();
 
         $media = $content
             ->addMediaFromRequest('file')
@@ -46,11 +40,21 @@ class MediaController extends Controller
     }
 
     /**
-     * Delete a media item by its UUID.
+     * Delete a block-images media item by its UUID.
+     *
+     * Restricted strictly to block-images to prevent accidental or unauthorized deletion
+     * of gallery images, cover images, or other model media through this generic endpoint.
      */
     public function destroy(string $uuid): JsonResponse
     {
         $media = Media::where('uuid', $uuid)->firstOrFail();
+
+        abort_unless(
+            $media->collection_name === 'block-images' && $media->model_type === Content::class,
+            403,
+            'Only CMS block content media can be deleted through this endpoint.'
+        );
+
         $media->delete();
 
         return response()->json(['deleted' => true]);

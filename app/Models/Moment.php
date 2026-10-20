@@ -145,8 +145,10 @@ class Moment extends Model implements HasMedia
         $cover = $this->getCoverMedia();
 
         if ($cover !== null) {
+            $isRemote = ! in_array($cover->disk, ['public', 'local'], true);
             $path = $cover->getPath();
-            if (empty($path) || file_exists($path)) {
+
+            if ($isRemote || empty($path) || file_exists($path)) {
                 return $cover->getUrl();
             }
 
@@ -179,8 +181,10 @@ class Moment extends Model implements HasMedia
         $mediaItems = $this->getMedia('gallery');
 
         foreach ($mediaItems as $media) {
+            $isRemote = ! in_array($media->disk, ['public', 'local'], true);
             $path = $media->getPath();
-            if (empty($path) || file_exists($path)) {
+
+            if ($isRemote || empty($path) || file_exists($path)) {
                 $gallery[] = [
                     'id' => $media->id,
                     'url' => $media->getUrl(),

@@ -1,9 +1,5 @@
 <script setup lang="ts">
 import { Link, router } from '@inertiajs/vue3';
-import { ref, computed, watch } from 'vue';
-import { Button } from '@/components/ui/button';
-import PublicLayout from '@/layouts/PublicLayout.vue';
-import SeoHead from '@/components/SEO/SeoHead.vue';
 import {
     ArrowLeft,
     Clock,
@@ -12,6 +8,9 @@ import {
     CheckCircle2,
     AlertCircle
 } from '@lucide/vue';
+import { ref, computed, watch } from 'vue';
+import SeoHead from '@/components/SEO/SeoHead.vue';
+import PublicLayout from '@/layouts/PublicLayout.vue';
 
 interface Activity {
     id: number;
@@ -94,6 +93,7 @@ function submit() {
 
 function formatScheduleDate(dateStr: string): string {
     const date = new Date(dateStr);
+
     return new Intl.DateTimeFormat('en-GB', {
         weekday: 'short',
         month: 'short',
@@ -112,12 +112,11 @@ function formatScheduleTime(startsAt: string, endsAt: string): string {
         hour: '2-digit',
         minute: '2-digit',
     }).format(end);
+
     return `${startFormatted} – ${endFormatted}`;
 }
 
-function getSelectedSchedule(): Schedule | undefined {
-    return props.schedules.find(s => s.id.toString() === form.value.schedule_id);
-}
+
 </script>
 
 <template>
@@ -305,6 +304,15 @@ function getSelectedSchedule(): Schedule | undefined {
 
                     <!-- Booking Form -->
                     <form v-else class="space-y-5" @submit.prevent="submit">
+                        <!-- Top Error Alert -->
+                        <div
+                            v-if="Object.keys(formErrors).length > 0"
+                            class="p-3.5 rounded-xs border border-rose-500/40 bg-rose-500/10 text-rose-300 text-xs flex items-center gap-2.5"
+                        >
+                            <AlertCircle class="w-4 h-4 text-rose-400 shrink-0" />
+                            <span>Please review the highlighted booking details below.</span>
+                        </div>
+
                         <!-- Choose Schedule Slot -->
                         <div>
                             <label class="block text-xs font-semibold uppercase tracking-wider text-tg-text-muted mb-2.5">
@@ -324,7 +332,7 @@ function getSelectedSchedule(): Schedule | undefined {
                                     :class="[
                                         String(form.schedule_id) === String(schedule.id)
                                             ? 'border-tg-accent bg-tg-accent/15 ring-1 ring-tg-accent'
-                                            : 'border-tg-border bg-tg-bg/70 hover:border-tg-border-strong',
+                                            : (formErrors.schedule_id ? 'border-rose-500/80 bg-rose-500/5' : 'border-tg-border bg-tg-bg/70 hover:border-tg-border-strong'),
                                         'flex items-center justify-between p-3 rounded-xs border cursor-pointer transition-all'
                                     ]"
                                 >
@@ -356,7 +364,7 @@ function getSelectedSchedule(): Schedule | undefined {
                                     </span>
                                 </label>
                             </div>
-                            <p v-if="formErrors.schedule_id" class="mt-1 text-xs text-rose-400">
+                            <p v-if="formErrors.schedule_id" class="mt-1 text-xs text-rose-400 font-medium">
                                 {{ formErrors.schedule_id }}
                             </p>
                         </div>
@@ -370,10 +378,13 @@ function getSelectedSchedule(): Schedule | undefined {
                                 v-model="form.participant_name"
                                 type="text"
                                 required
-                                class="w-full rounded-xs border border-tg-border bg-tg-bg px-3.5 py-2.5 text-sm text-tg-text-strong placeholder:text-tg-text-muted/60 outline-none focus:border-tg-accent focus:ring-1 focus:ring-tg-accent transition-colors"
+                                :class="[
+                                    formErrors.participant_name ? 'border-rose-500 focus:border-rose-500 focus:ring-rose-500' : 'border-tg-border focus:border-tg-accent focus:ring-tg-accent',
+                                    'w-full rounded-xs bg-tg-bg px-3.5 py-2.5 text-sm sm:text-base text-tg-text-strong placeholder:text-tg-text-muted/60 outline-none focus:ring-1 transition-colors'
+                                ]"
                                 placeholder="e.g. Alex Smith"
                             />
-                            <p v-if="formErrors.participant_name" class="mt-1 text-xs text-rose-400">
+                            <p v-if="formErrors.participant_name" class="mt-1 text-xs text-rose-400 font-medium">
                                 {{ formErrors.participant_name }}
                             </p>
                         </div>
@@ -387,10 +398,13 @@ function getSelectedSchedule(): Schedule | undefined {
                                 v-model="form.participant_email"
                                 type="email"
                                 required
-                                class="w-full rounded-xs border border-tg-border bg-tg-bg px-3.5 py-2.5 text-sm text-tg-text-strong placeholder:text-tg-text-muted/60 outline-none focus:border-tg-accent focus:ring-1 focus:ring-tg-accent transition-colors"
+                                :class="[
+                                    formErrors.participant_email ? 'border-rose-500 focus:border-rose-500 focus:ring-rose-500' : 'border-tg-border focus:border-tg-accent focus:ring-tg-accent',
+                                    'w-full rounded-xs bg-tg-bg px-3.5 py-2.5 text-sm sm:text-base text-tg-text-strong placeholder:text-tg-text-muted/60 outline-none focus:ring-1 transition-colors'
+                                ]"
                                 placeholder="alex@example.com"
                             />
-                            <p v-if="formErrors.participant_email" class="mt-1 text-xs text-rose-400">
+                            <p v-if="formErrors.participant_email" class="mt-1 text-xs text-rose-400 font-medium">
                                 {{ formErrors.participant_email }}
                             </p>
                         </div>
@@ -403,9 +417,15 @@ function getSelectedSchedule(): Schedule | undefined {
                             <input
                                 v-model="form.participant_phone"
                                 type="tel"
-                                class="w-full rounded-xs border border-tg-border bg-tg-bg px-3.5 py-2.5 text-sm text-tg-text-strong placeholder:text-tg-text-muted/60 outline-none focus:border-tg-accent focus:ring-1 focus:ring-tg-accent transition-colors"
+                                :class="[
+                                    formErrors.participant_phone ? 'border-rose-500 focus:border-rose-500 focus:ring-rose-500' : 'border-tg-border focus:border-tg-accent focus:ring-tg-accent',
+                                    'w-full rounded-xs bg-tg-bg px-3.5 py-2.5 text-sm sm:text-base text-tg-text-strong placeholder:text-tg-text-muted/60 outline-none focus:ring-1 transition-colors'
+                                ]"
                                 placeholder="+44 7123 456789"
                             />
+                            <p v-if="formErrors.participant_phone" class="mt-1 text-xs text-rose-400 font-medium">
+                                {{ formErrors.participant_phone }}
+                            </p>
                         </div>
 
                         <!-- Notes -->
@@ -415,10 +435,16 @@ function getSelectedSchedule(): Schedule | undefined {
                             </label>
                             <textarea
                                 v-model="form.notes"
-                                rows="2"
-                                class="w-full rounded-xs border border-tg-border bg-tg-bg px-3.5 py-2.5 text-sm text-tg-text-strong placeholder:text-tg-text-muted/60 outline-none focus:border-tg-accent focus:ring-1 focus:ring-tg-accent transition-colors"
+                                rows="3"
+                                :class="[
+                                    formErrors.notes ? 'border-rose-500 focus:border-rose-500 focus:ring-rose-500' : 'border-tg-border focus:border-tg-accent focus:ring-tg-accent',
+                                    'w-full rounded-xs bg-tg-bg px-3.5 py-2.5 text-sm sm:text-base text-tg-text-strong placeholder:text-tg-text-muted/60 outline-none focus:ring-1 transition-colors resize-y'
+                                ]"
                                 placeholder="Player age or medical notes..."
                             />
+                            <p v-if="formErrors.notes" class="mt-1 text-xs text-rose-400 font-medium">
+                                {{ formErrors.notes }}
+                            </p>
                         </div>
 
                         <!-- Submit Button -->

@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { router, useForm } from '@inertiajs/vue3';
+import BlockEditor from '@/components/CMS/BlockEditor.vue';
+import type {Block} from '@/components/CMS/BlockEditor.vue';
 import FormPage from '@/components/FormPage.vue';
 import FormSection from '@/components/FormSection.vue';
 import PageActions from '@/components/PageActions.vue';
 import { Button } from '@/components/ui/button';
-import BlockEditor, { type Block } from '@/components/CMS/BlockEditor.vue';
 import { index as contentIndex, store as contentStore } from '@/routes/content';
 
 interface ContentType {
@@ -59,6 +60,7 @@ function handleSubmit(): void {
             // let server validate JSON
         }
     }
+
     form.submit(contentStore());
 }
 

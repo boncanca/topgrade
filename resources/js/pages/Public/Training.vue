@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { computed } from 'vue';
 import { Link } from '@inertiajs/vue3';
-import PublicLayout from '@/layouts/PublicLayout.vue';
-import SeoHead from '@/components/SEO/SeoHead.vue';
 import { Clock, MapPin, ArrowRight, CheckCircle2 } from '@lucide/vue';
+import { computed } from 'vue';
+import SeoHead from '@/components/SEO/SeoHead.vue';
+import PublicLayout from '@/layouts/PublicLayout.vue';
 
 interface Activity {
     id: number;

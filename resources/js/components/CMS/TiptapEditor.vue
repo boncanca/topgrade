@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, watch } from 'vue';
-import { useEditor, EditorContent } from '@tiptap/vue-3';
-import StarterKit from '@tiptap/starter-kit';
 import Link from '@tiptap/extension-link';
+import StarterKit from '@tiptap/starter-kit';
+import { useEditor, EditorContent } from '@tiptap/vue-3';
+import { computed, onBeforeUnmount, watch } from 'vue';
 
 const props = defineProps<{
     modelValue: string;
@@ -41,6 +41,7 @@ watch(
 
 const toolbarActions = computed(() => {
     const e = editor.value;
+
     if (!e) {
         return [];
     }

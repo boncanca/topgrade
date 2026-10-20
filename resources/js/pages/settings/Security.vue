@@ -57,6 +57,17 @@ defineOptions({
             class="space-y-6"
             v-slot="{ errors, processing }"
         >
+            <input
+                type="text"
+                name="username"
+                :value="$page.props.auth?.user?.email"
+                autocomplete="username"
+                class="sr-only"
+                tabindex="-1"
+                aria-hidden="true"
+                readonly
+            />
+
             <div class="grid gap-2">
                 <Label for="current_password">Current password</Label>
                 <PasswordInput

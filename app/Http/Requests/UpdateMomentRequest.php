@@ -5,6 +5,7 @@ namespace App\Http\Requests;
 use App\Models\Moment;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Validator;
 
 class UpdateMomentRequest extends FormRequest
 {
@@ -34,11 +35,27 @@ class UpdateMomentRequest extends FormRequest
             'people.*.role' => ['nullable', 'string', 'max:100'],
             'people.*.url' => ['nullable', 'url', 'max:255'],
             'people.*.visible' => ['nullable', 'boolean'],
-            'images' => ['nullable', 'array'],
+            'images' => ['nullable', 'array', 'max:15'],
             'images.*' => ['file', 'image', 'max:15360'],
             'seo.title' => ['nullable', 'string', 'max:255'],
             'seo.description' => ['nullable', 'string', 'max:500'],
             'seo.canonical_url' => ['nullable', 'url'],
         ];
+    }
+
+    public function withValidator(Validator $validator): void
+    {
+        $validator->after(function ($validator) {
+            $images = $this->file('images');
+            if (is_array($images)) {
+                $totalSize = array_sum(array_map(fn ($file) => $file?->getSize() ?? 0, $images));
+                if ($totalSize > 50 * 1024 * 1024) {
+                    $validator->errors()->add(
+                        'images',
+                        'Total batch size cannot exceed 50MB. Please upload photos in smaller batches.'
+                    );
+                }
+            }
+        });
     }
 }

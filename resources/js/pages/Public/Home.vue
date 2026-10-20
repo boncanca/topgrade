@@ -1,18 +1,15 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
-import PublicLayout from '@/layouts/PublicLayout.vue';
-import BlockRenderer from '@/components/CMS/BlockRenderer.vue';
-import SeoHead from '@/components/SEO/SeoHead.vue';
-import JsonLd from '@/components/SEO/JsonLd.vue';
-import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue';
 import {
     ArrowRight,
-    Clock,
     MapPin,
     CheckCircle2,
-    Calendar,
-    Sparkles,
 } from '@lucide/vue';
+import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue';
+import BlockRenderer from '@/components/CMS/BlockRenderer.vue';
+import JsonLd from '@/components/SEO/JsonLd.vue';
+import SeoHead from '@/components/SEO/SeoHead.vue';
+import PublicLayout from '@/layouts/PublicLayout.vue';
 
 interface Activity {
     id: number;
@@ -116,11 +113,13 @@ const heroPrimaryCta = computed(() => props.hero?.primary_cta || { label: 'Book 
 const heroHeadlineParts = computed(() => {
     const text = heroHeadline.value;
     const words = text.split(/\s+/);
+
     if (words.length >= 4) {
         return [words.slice(0, 2).join(' '), words[2], words.slice(3).join(' ')];
     } else if (words.length === 3) {
         return [words[0], words[1], words[2]];
     }
+
     return [text];
 });
 
@@ -132,6 +131,7 @@ const quickStats = computed(() => {
     if (props.quickStats && props.quickStats.length > 0) {
         return props.quickStats;
     }
+
     return [
         { label: 'Age Groups', value: 'Ages 4–18', detail: 'Junior & youth squads' },
         { label: 'Weekly Training', value: '3 Days', detail: 'Tuesdays, Wednesdays & Thursdays' },
@@ -144,6 +144,7 @@ const pillars = computed(() => {
     if (props.pillars && props.pillars.length > 0) {
         return props.pillars;
     }
+
     return [
         {
             num: '01',
@@ -173,6 +174,7 @@ const trainingSchedule = computed(() => {
     if (props.trainingSchedule && props.trainingSchedule.length > 0) {
         return props.trainingSchedule;
     }
+
     return [
         {
             days: 'Tuesdays & Thursdays',
@@ -264,6 +266,7 @@ const squads = computed(() => {
         return props.squads.map((team, idx) => {
             const variantKey = team.visual_variant || (['foundation', 'acquisition', 'development', 'progression', 'competition'][idx % 5]);
             const style = squadVariantStyles[variantKey] || squadVariantStyles.foundation;
+
             return {
                 name: team.name,
                 stage: team.stage,
@@ -273,6 +276,7 @@ const squads = computed(() => {
             };
         });
     }
+
     return [
         {
             name: 'U7 – U8',
@@ -346,6 +350,7 @@ const momentsRibbon = computed(() => {
     if (props.momentsRibbon && props.momentsRibbon.length > 0) {
         return props.momentsRibbon.map((m, idx) => {
             const style = momentsRibbonStyles[idx % momentsRibbonStyles.length];
+
             return {
                 num: m.num,
                 title: m.title,
@@ -354,6 +359,7 @@ const momentsRibbon = computed(() => {
             };
         });
     }
+
     return [
         {
             num: '01',
@@ -484,7 +490,9 @@ onMounted(async () => {
         if (ball) {
             ball.style.opacity = '0';
         }
+
         root.style.setProperty('--zoom', '1');
+
         return;
     }
 
@@ -525,7 +533,11 @@ onMounted(async () => {
         const mob = window.innerWidth < 880;
         pts = STOPS.map((k) => {
             const el = document.getElementById(k.sec);
-            if (!el) return null;
+
+            if (!el) {
+return null;
+}
+
             const top = el.getBoundingClientRect().top + window.scrollY;
             const o: Point = {
                 y: top + k.at * el.offsetHeight,
@@ -536,12 +548,25 @@ onMounted(async () => {
                 o: k.o,
                 p: k.p,
             };
+
             if (mob && k.m) {
-                if (k.m.x !== undefined) o.x = k.m.x;
-                if (k.m.y !== undefined) o.ty = k.m.y;
-                if (k.m.s !== undefined) o.s = k.m.s;
-                if (k.m.o !== undefined) o.o = k.m.o;
+                if (k.m.x !== undefined) {
+o.x = k.m.x;
+}
+
+                if (k.m.y !== undefined) {
+o.ty = k.m.y;
+}
+
+                if (k.m.s !== undefined) {
+o.s = k.m.s;
+}
+
+                if (k.m.o !== undefined) {
+o.o = k.m.o;
+}
             }
+
             return o;
         }).filter(Boolean) as Point[];
 
@@ -659,7 +684,9 @@ onUnmounted(() => {
     if (animFrameId) {
         cancelAnimationFrame(animFrameId);
     }
+
     io?.disconnect();
+
     if (motionMedia) {
         motionMedia.removeEventListener('change', onMotionChange);
     }

@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
 import { Link } from '@inertiajs/vue3';
 import { ArrowRight, Camera, ChevronLeft, ChevronRight, Play } from '@lucide/vue';
+import { ref, computed } from 'vue';
 import MomentMedia from './MomentMedia.vue';
 
 interface MomentMediaItem {
@@ -50,6 +50,7 @@ const mediaList = computed(() => {
     if (props.moment.media && props.moment.media.length > 0) {
         return props.moment.media;
     }
+
     if (props.moment.cover_url) {
         return [
             {
@@ -61,6 +62,7 @@ const mediaList = computed(() => {
             },
         ];
     }
+
     return [];
 });
 
@@ -71,14 +73,22 @@ const activeMedia = computed(() => {
 function nextMedia(e: Event): void {
     e.stopPropagation();
     e.preventDefault();
-    if (mediaList.value.length <= 1) return;
+
+    if (mediaList.value.length <= 1) {
+return;
+}
+
     currentPhotoIdx.value = (currentPhotoIdx.value + 1) % mediaList.value.length;
 }
 
 function prevMedia(e: Event): void {
     e.stopPropagation();
     e.preventDefault();
-    if (mediaList.value.length <= 1) return;
+
+    if (mediaList.value.length <= 1) {
+return;
+}
+
     currentPhotoIdx.value = (currentPhotoIdx.value - 1 + mediaList.value.length) % mediaList.value.length;
 }
 

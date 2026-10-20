@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { Link } from '@inertiajs/vue3';
 import { ArrowRight, ChevronLeft, ChevronRight } from '@lucide/vue';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
 import MomentMedia from './MomentMedia.vue';
 
 interface MomentImage {
@@ -40,6 +40,7 @@ const carouselImages = computed(() => {
     if (!props.featured || !props.featured.images || props.featured.images.length === 0) {
         return [];
     }
+
     return props.featured.images;
 });
 
@@ -65,26 +66,31 @@ function resetTimer(): void {
 }
 
 function nextSlide(): void {
-    if (carouselImages.value.length <= 1) return;
+    if (carouselImages.value.length <= 1) {
+return;
+}
+
     currentSlide.value = (currentSlide.value + 1) % carouselImages.value.length;
     resetTimer();
 }
 
 function prevSlide(): void {
-    if (carouselImages.value.length <= 1) return;
+    if (carouselImages.value.length <= 1) {
+return;
+}
+
     currentSlide.value =
         (currentSlide.value - 1 + carouselImages.value.length) % carouselImages.value.length;
     resetTimer();
 }
 
-function goToSlide(idx: number): void {
-    currentSlide.value = idx;
-    resetTimer();
-}
 
 function onHeroMouseEnter(): void {
     isPaused.value = true;
-    if (autoplayTimer) clearInterval(autoplayTimer);
+
+    if (autoplayTimer) {
+clearInterval(autoplayTimer);
+}
 }
 
 function onHeroMouseLeave(): void {
@@ -99,6 +105,7 @@ function onTouchStart(e: TouchEvent): void {
 function onTouchEnd(e: TouchEvent): void {
     touchEndX = e.changedTouches[0].screenX;
     const diff = touchEndX - touchStartX;
+
     if (Math.abs(diff) > 40) {
         if (diff > 0) {
             prevSlide();
@@ -110,7 +117,9 @@ function onTouchEnd(e: TouchEvent): void {
 
 function onVisibilityChange(): void {
     if (document.visibilityState === 'hidden') {
-        if (autoplayTimer) clearInterval(autoplayTimer);
+        if (autoplayTimer) {
+clearInterval(autoplayTimer);
+}
     } else {
         resetTimer();
     }
@@ -124,7 +133,10 @@ onMounted(() => {
 
 onUnmounted(() => {
     document.removeEventListener('visibilitychange', onVisibilityChange);
-    if (autoplayTimer) clearInterval(autoplayTimer);
+
+    if (autoplayTimer) {
+clearInterval(autoplayTimer);
+}
 });
 </script>
 

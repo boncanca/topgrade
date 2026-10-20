@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { Link, router, useForm } from '@inertiajs/vue3';
 import FormSection from '@/components/FormSection.vue';
-import PageHeader from '@/components/PageHeader.vue';
 import PageActions from '@/components/PageActions.vue';
+import PageHeader from '@/components/PageHeader.vue';
 import { Button } from '@/components/ui/button';
 import { show as contactShow } from '@/routes/contacts';
 import { index as inquiriesIndex, update as inquiriesUpdate } from '@/routes/inquiries';
@@ -69,6 +69,7 @@ function handleCancel(): void {
 
 function formatDate(dateStr: string): string {
     const date = new Date(dateStr);
+
     return new Intl.DateTimeFormat(undefined, {
         month: 'long',
         day: 'numeric',
@@ -171,30 +172,26 @@ function formatDate(dateStr: string): string {
             </FormSection>
 
             <FormSection
-                title="Message"
-                description="The full inquiry message."
+                title="Message Details"
+                description="The full enquiry message submitted by the contact."
             >
-                <div class="space-y-4">
+                <div class="space-y-6">
                     <div>
-                        <label
-                            class="mb-2 block text-sm font-medium text-foreground"
-                        >
+                        <span class="mb-1 block text-xs font-bold uppercase tracking-wider text-muted-foreground">
                             Subject
-                        </label>
-                        <p class="text-sm text-foreground">
+                        </span>
+                        <p class="text-xl font-bold text-foreground">
                             {{ inquiry.subject }}
                         </p>
                     </div>
 
                     <div>
-                        <label
-                            class="mb-2 block text-sm font-medium text-foreground"
-                        >
-                            Message
-                        </label>
-                        <p class="whitespace-pre-wrap text-sm text-foreground">
+                        <span class="mb-2 block text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                            Full Message Body
+                        </span>
+                        <div class="w-full rounded-xl bg-slate-50/80 dark:bg-slate-900/60 p-6 sm:p-8 border border-border text-slate-900 dark:text-slate-100 text-base sm:text-lg leading-relaxed sm:leading-8 whitespace-pre-wrap font-sans select-text shadow-inner">
                             {{ inquiry.message }}
-                        </p>
+                        </div>
                     </div>
                 </div>
             </FormSection>

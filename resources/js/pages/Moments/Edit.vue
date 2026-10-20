@@ -1,14 +1,8 @@
 <script setup lang="ts">
-import { ref } from 'vue';
 import { Head, router, useForm } from '@inertiajs/vue3';
-import FormPage from '@/components/FormPage.vue';
-import FormSection from '@/components/FormSection.vue';
-import PageActions from '@/components/PageActions.vue';
-import { Button } from '@/components/ui/button';
 import {
     ArrowLeft,
     ArrowRight,
-    Check,
     Eye,
     Plus,
     Star,
@@ -16,6 +10,11 @@ import {
     Upload,
     X,
 } from '@lucide/vue';
+import { computed, ref, watch } from 'vue';
+import FormPage from '@/components/FormPage.vue';
+import FormSection from '@/components/FormSection.vue';
+import PageActions from '@/components/PageActions.vue';
+import { Button } from '@/components/ui/button';
 
 const fieldClass =
     'w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50';
@@ -85,6 +84,32 @@ const form = useForm({
 });
 
 const localGallery = ref<GalleryItem[]>([...props.gallery]);
+
+// Re-sync after saves/uploads, which return fresh props from the server.
+watch(
+    () => props.gallery,
+    (fresh) => {
+        localGallery.value = [...fresh];
+    }
+);
+watch(
+    () => props.moment.cover_media_id,
+    (coverId) => {
+        form.cover_media_id = coverId;
+    }
+);
+
+const MAX_IMAGE_BYTES = 15 * 1024 * 1024;
+const MAX_BATCH_BYTES = 50 * 1024 * 1024;
+const MAX_BATCH_COUNT = 15;
+
+const clientErrors = ref<string[]>([]);
+const imageErrors = computed(() => [
+    ...clientErrors.value,
+    ...Object.entries(form.errors)
+        .filter(([key]) => key === 'images' || key.startsWith('images.'))
+        .map(([, message]) => message),
+]);
 const newImagePreviews = ref<{ file: File; url: string }[]>([]);
 const isReordering = ref(false);
 
@@ -103,10 +128,41 @@ function removePerson(index: number): void {
 
 function onFileSelect(e: Event): void {
     const input = e.target as HTMLInputElement;
-    if (!input.files || input.files.length === 0) return;
+
+    if (!input.files || input.files.length === 0) {
+        return;
+    }
+
+    clientErrors.value = [];
+
+    if (form.images.length + input.files.length > MAX_BATCH_COUNT) {
+        clientErrors.value.push(`Cannot upload more than ${MAX_BATCH_COUNT} images in one batch.`);
+        input.value = '';
+
+        return;
+    }
+
+    let batchBytes = form.images.reduce((sum, f) => sum + f.size, 0);
 
     for (let i = 0; i < input.files.length; i++) {
         const file = input.files[i];
+
+        if (!file.type.startsWith('image/')) {
+            clientErrors.value.push(`${file.name} is not an image and was skipped.`);
+            continue;
+        }
+
+        if (file.size > MAX_IMAGE_BYTES) {
+            clientErrors.value.push(`${file.name} is larger than 15MB and was skipped.`);
+            continue;
+        }
+
+        if (batchBytes + file.size > MAX_BATCH_BYTES) {
+            clientErrors.value.push(`Total batch size exceeds 50MB. ${file.name} and subsequent files were skipped.`);
+            break;
+        }
+
+        batchBytes += file.size;
         form.images.push(file);
         newImagePreviews.value.push({
             file,
@@ -119,9 +175,11 @@ function onFileSelect(e: Event): void {
 
 function removeNewImage(index: number): void {
     const preview = newImagePreviews.value[index];
+
     if (preview) {
         URL.revokeObjectURL(preview.url);
     }
+
     newImagePreviews.value.splice(index, 1);
     form.images.splice(index, 1);
 }
@@ -134,7 +192,9 @@ function setCover(item: GalleryItem): void {
 }
 
 function moveImage(fromIdx: number, toIdx: number): void {
-    if (toIdx < 0 || toIdx >= localGallery.value.length) return;
+    if (toIdx < 0 || toIdx >= localGallery.value.length) {
+return;
+}
 
     const item = localGallery.value.splice(fromIdx, 1)[0];
     localGallery.value.splice(toIdx, 0, item);
@@ -156,15 +216,19 @@ function moveImage(fromIdx: number, toIdx: number): void {
 }
 
 function deleteMedia(item: GalleryItem): void {
-    if (!confirm('Remove this photo from the moment gallery?')) return;
+    if (!confirm('Remove this photo from the moment gallery?')) {
+return;
+}
 
     router.delete(`/dashboard/moments/${props.moment.id}/media/${item.id}`, {
         preserveScroll: true,
         onSuccess: () => {
             const idx = localGallery.value.findIndex((m) => m.id === item.id);
+
             if (idx !== -1) {
                 localGallery.value.splice(idx, 1);
             }
+
             if (form.cover_media_id === item.id) {
                 form.cover_media_id = localGallery.value[0]?.id ?? null;
             }
@@ -324,6 +388,16 @@ function handleCancel(): void {
                                 @change="onFileSelect"
                             />
                         </label>
+
+                        <ul v-if="imageErrors.length > 0" class="mt-3 space-y-1 text-sm text-destructive" role="alert">
+                            <li v-for="(message, i) in imageErrors" :key="i">{{ message }}</li>
+                        </ul>
+                        <div v-if="form.processing && form.progress" class="mt-3">
+                            <div class="h-2 w-full overflow-hidden rounded bg-muted">
+                                <div class="h-full bg-primary transition-all" :style="{ width: `${form.progress.percentage}%` }" />
+                            </div>
+                            <p class="mt-1 text-xs text-muted-foreground">Uploading… {{ form.progress.percentage }}%</p>
+                        </div>
 
                         <!-- Previews of newly selected photos -->
                         <div v-if="newImagePreviews.length > 0" class="mt-4">

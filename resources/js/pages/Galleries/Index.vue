@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { Head, Link, router } from '@inertiajs/vue3';
+import { Eye, Plus, Sparkles, Trash2, Edit3, Image } from '@lucide/vue';
 import EmptyState from '@/components/EmptyState.vue';
 import PageHeader from '@/components/PageHeader.vue';
 import StatusBadge from '@/components/StatusBadge.vue';
 import { Button } from '@/components/ui/button';
-import { Eye, Plus, Sparkles, Trash2, Edit3, Image } from '@lucide/vue';
 
 interface MomentItem {
     id: number;
@@ -56,7 +56,10 @@ function handleDelete(moment: MomentItem): void {
 }
 
 function formatDate(dateString: string | null): string {
-    if (!dateString) return '—';
+    if (!dateString) {
+return '—';
+}
+
     return new Date(dateString).toLocaleDateString('en-GB', {
         day: 'numeric',
         month: 'short',
@@ -220,8 +223,9 @@ function formatDate(dateString: string | null): string {
                             :href="link.url"
                             class="rounded px-3 py-1 text-xs font-medium transition-colors"
                             :class="link.active ? 'bg-primary text-primary-foreground' : 'hover:bg-muted text-muted-foreground'"
-                            v-html="link.label"
-                        />
+                        >
+                            <span v-html="link.label" />
+                        </Link>
                         <span
                             v-else
                             class="px-2 py-1 text-xs text-muted-foreground/40"

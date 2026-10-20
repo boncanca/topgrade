@@ -2,7 +2,6 @@
 import { Head, Link, router } from '@inertiajs/vue3';
 import EmptyState from '@/components/EmptyState.vue';
 import PageHeader from '@/components/PageHeader.vue';
-import { Button } from '@/components/ui/button';
 import { index as activitiesIndex } from '@/routes/bookable-items';
 import {
     create as schedulesCreate,
@@ -56,6 +55,7 @@ defineOptions({
 
 function formatDateTime(dateStr: string): string {
     const date = new Date(dateStr);
+
     return new Intl.DateTimeFormat(undefined, {
         month: 'short',
         day: 'numeric',

@@ -3,6 +3,7 @@
 use App\Models\Content;
 use App\Models\ContentType;
 use App\Models\User;
+use App\Services\Storage\CloudinaryAdapter;
 use CodebarAg\FlysystemCloudinary\FlysystemCloudinaryAdapter;
 use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Http\UploadedFile;
@@ -23,7 +24,31 @@ test('cloudinary disk can be resolved from Storage facade', function () {
     $disk = Storage::disk('cloudinary');
 
     expect($disk)->toBeInstanceOf(FilesystemAdapter::class);
+    expect($disk->getAdapter())->toBeInstanceOf(CloudinaryAdapter::class);
     expect($disk->getAdapter())->toBeInstanceOf(FlysystemCloudinaryAdapter::class);
+});
+
+test('cloudinary adapter resolves .jpeg paths with canonical .jpg format suffix', function () {
+    $url = Storage::disk('cloudinary')->url('16/PRINCE-ACHEAMPONG-topgradelondonfc.jpeg');
+
+    expect($url)->toBeString()
+        ->and($url)->toContain('16/PRINCE-ACHEAMPONG-topgradelondonfc.jpeg.jpg');
+});
+
+test('cloudinary adapter appends the delivery format for every image extension', function () {
+    $disk = Storage::disk('cloudinary');
+
+    expect($disk->url('10/training-agility-drills.jpg'))->toContain('10/training-agility-drills.jpg.jpg')
+        ->and($disk->url('12/badge-logo.png'))->toContain('12/badge-logo.png.png')
+        ->and($disk->url('12/hero.webp'))->toContain('12/hero.webp.webp')
+        ->and($disk->url('12/My Photo.JPG'))->toContain('My%20Photo.JPG.jpg')
+        ->and($disk->url('12/badge-logo.png'))->not->toContain('.png.jpg');
+});
+
+test('cloudinary adapter does not double-append the format', function () {
+    $adapter = Storage::disk('cloudinary')->getAdapter();
+
+    expect($adapter->getUrl('a/b.png.png'))->not->toContain('.png.png.png');
 });
 
 test('media library disk defaults to MEDIA_DISK or public', function () {

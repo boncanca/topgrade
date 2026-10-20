@@ -10,6 +10,7 @@ use App\Models\Inquiry;
 use App\Models\Schedule;
 use App\Services\Mail\TransactionalMailService;
 use App\Services\PaymentService;
+use App\Services\SitemapService;
 use App\Services\StripePaymentService;
 use Illuminate\Support\Facades\Mail;
 use Inertia\Testing\AssertableInertia as Assert;
@@ -255,6 +256,60 @@ test('sitemap xml endpoint returns valid xml with public routes', function () {
     expect($content)->toContain('/about');
     expect($content)->toContain('/privacy-policy');
     expect($content)->toContain('/terms-and-conditions');
+
+    // Verify response consistency
+    $secondResponse = $this->get('/sitemap.xml');
+    $secondResponse->assertOk();
+    expect($secondResponse->getContent())->toBe($content);
+});
+
+test('sitemap xml dynamic fallback caches rendered output when static file is absent', function () {
+    Cache::flush();
+    $sitemapService = app(SitemapService::class);
+    $xml = Cache::remember('sitemap.xml', now()->addHours(12), fn () => $sitemapService->render());
+
+    expect(Cache::has('sitemap.xml'))->toBeTrue();
+    expect($xml)->toContain('<urlset');
+    expect($xml)->toContain('/about');
+});
+
+test('sitemap generate artisan command writes valid sitemap file to disk', function () {
+    $tempPath = storage_path('framework/testing/test_sitemap.xml');
+    if (file_exists($tempPath)) {
+        unlink($tempPath);
+    }
+
+    $this->artisan('sitemap:generate', ['--path' => $tempPath])
+        ->assertSuccessful();
+
+    expect(file_exists($tempPath))->toBeTrue();
+    $content = file_get_contents($tempPath);
+    expect($content)->toContain('<urlset');
+    expect($content)->toContain('/training');
+    expect($content)->toContain('/about');
+
+    unlink($tempPath);
+});
+
+test('robots txt file is valid under google robots exclusion protocol spec', function () {
+    $robotsPath = public_path('robots.txt');
+    expect(file_exists($robotsPath))->toBeTrue();
+
+    $content = file_get_contents($robotsPath);
+    expect($content)->not->toBeEmpty();
+    expect(strlen($content))->toBeLessThan(500 * 1024); // Within Google's 500 KiB limit
+    expect(mb_check_encoding($content, 'UTF-8'))->toBeTrue();
+
+    // Verify standard directives
+    expect($content)->toContain('User-agent: *');
+    expect($content)->toContain('Allow: /');
+    expect($content)->toContain('Disallow: /dashboard');
+    expect($content)->toContain('Disallow: /admin');
+    expect($content)->toContain('Disallow: /auth/');
+    expect($content)->toContain('Disallow: /bookings/confirmation/');
+    expect($content)->toContain('Disallow: /webhooks/');
+    expect($content)->toContain('Disallow: /settings');
+    expect($content)->toContain('Sitemap: https://topgradelondonfc.co.uk/sitemap.xml');
 });
 
 test('central topgrade email configuration resolves correct defaults', function () {

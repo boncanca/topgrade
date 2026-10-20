@@ -22,7 +22,7 @@ use Spatie\MediaLibrary\ResponsiveImages\Jobs\GenerateResponsiveImagesJob;
 use Spatie\MediaLibrary\ResponsiveImages\TinyPlaceholderGenerator\Blurred;
 use Spatie\MediaLibrary\ResponsiveImages\WidthCalculator\FileSizeOptimizedWidthCalculator;
 use Spatie\MediaLibrary\Support\FileNamer\DefaultFileNamer;
-use Spatie\MediaLibrary\Support\FileRemover\DefaultFileRemover;
+use Spatie\MediaLibrary\Support\FileRemover\FileBaseFileRemover;
 use Spatie\MediaLibrary\Support\PathGenerator\DefaultPathGenerator;
 use Spatie\MediaLibrary\Support\UrlGenerator\DefaultUrlGenerator;
 use Spatie\MediaLibraryPro\Models\TemporaryUpload;
@@ -50,7 +50,7 @@ return [
      * The maximum file size of an item in bytes.
      * Adding a larger file will result in an exception.
      */
-    'max_file_size' => 1024 * 1024 * 10, // 10MB
+    'max_file_size' => 1024 * 1024 * 15, // 15MB (matches Moment request validation)
 
     /*
      * Uploads whose file name contains any of these extensions will be rejected.
@@ -146,7 +146,7 @@ return [
     /*
      * The class that contains the strategy for determining how to remove files.
      */
-    'file_remover_class' => DefaultFileRemover::class,
+    'file_remover_class' => FileBaseFileRemover::class,
 
     /*
      * Here you can specify which path generator should be used for the given class.

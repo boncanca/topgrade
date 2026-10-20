@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
 import { Link } from '@inertiajs/vue3';
 import { CheckCircle, Clock, AlertCircle, XCircle, Copy, Check, Building2 } from '@lucide/vue';
-import PublicLayout from '@/layouts/PublicLayout.vue';
+import { computed, ref } from 'vue';
 import SeoHead from '@/components/SEO/SeoHead.vue';
+import PublicLayout from '@/layouts/PublicLayout.vue';
 
 interface Activity {
     id?: number;
@@ -112,6 +112,7 @@ const stateConfig = computed(() => {
                     iconColor: 'text-amber-400',
                 };
             }
+
             return {
                 title: 'Booking Reserved · Awaiting Bank Transfer',
                 description: `Your place has been reserved. Please transfer your session fee to the club bank account below using your Booking Reference as payment reference.`,
@@ -159,6 +160,7 @@ function copyToClipboard(text: string, field: string): void {
 
 function formatScheduled(dateStr: string): string {
     const date = new Date(dateStr);
+
     return new Intl.DateTimeFormat(undefined, {
         weekday: 'long',
         month: 'long',
@@ -171,9 +173,11 @@ function formatScheduled(dateStr: string): string {
 
 function formatPrice(amount: string | number | null, currency: string): string {
     const numeric = typeof amount === 'number' ? amount : parseFloat(String(amount ?? '0'));
+
     if (!amount || isNaN(numeric) || numeric === 0) {
         return 'Free';
     }
+
     return new Intl.NumberFormat(undefined, {
         style: 'currency',
         currency: currency || 'GBP',

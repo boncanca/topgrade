@@ -4,7 +4,6 @@ import FormPage from '@/components/FormPage.vue';
 import FormSection from '@/components/FormSection.vue';
 import PageActions from '@/components/PageActions.vue';
 import { Button } from '@/components/ui/button';
-import { index as activitiesIndex } from '@/routes/bookable-items';
 import {
     index as schedulesIndex,
     store as schedulesStore,
@@ -33,6 +32,7 @@ const form = useForm({
 function getMinDateTime(): string {
     const now = new Date();
     now.setHours(now.getHours() + 1);
+
     return now.toISOString().slice(0, 16);
 }
 

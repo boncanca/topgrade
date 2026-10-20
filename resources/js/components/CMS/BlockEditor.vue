@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import draggable from 'vuedraggable';
+import { blockSchemas  } from './blockSchemas';
+import type {BlockFieldDefinition} from './blockSchemas';
 import BlockTypePickerModal from './BlockTypePickerModal.vue';
 import TiptapEditor from './TiptapEditor.vue';
-import { blockSchemas, type BlockFieldDefinition } from './blockSchemas';
 
 export interface Block {
     uuid: string;
@@ -24,16 +25,13 @@ const emit = defineEmits<{
 const pickerOpen = ref(false);
 const collapsedBlocks = ref<Set<string>>(new Set());
 
-function blocks(): Block[] {
-    return props.modelValue;
-}
-
 function updateBlocks(newBlocks: Block[]) {
     emit('update:modelValue', newBlocks);
 }
 
 function addBlock(type: string) {
     const schema = blockSchemas[type];
+
     if (!schema) {
         return;
     }
@@ -127,6 +125,7 @@ const uploadingBlocks = ref<Set<string>>(new Set());
 
 async function handleImageUpload(uuid: string, fieldKey: string, event: Event) {
     const file = (event.target as HTMLInputElement).files?.[0];
+
     if (!file) {
         return;
     }
@@ -135,6 +134,7 @@ async function handleImageUpload(uuid: string, fieldKey: string, event: Event) {
 
     const formData = new FormData();
     formData.append('file', file);
+
     if (props.contentId) {
         formData.append('content_id', String(props.contentId));
     }
@@ -163,6 +163,7 @@ async function handleImageUpload(uuid: string, fieldKey: string, event: Event) {
 
 function getImageValue(block: Block, fieldKey: string): { url: string; mediaId: number | null } {
     const val = block.payload[fieldKey];
+
     if (val && typeof val === 'object' && 'url' in val) {
         return val as { url: string; mediaId: number | null };
     }

@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { ref } from 'vue';
 import { router, useForm } from '@inertiajs/vue3';
+import BlockEditor from '@/components/CMS/BlockEditor.vue';
+import type {Block} from '@/components/CMS/BlockEditor.vue';
 import FormPage from '@/components/FormPage.vue';
 import FormSection from '@/components/FormSection.vue';
 import PageActions from '@/components/PageActions.vue';
 import { Button } from '@/components/ui/button';
-import BlockEditor, { type Block } from '@/components/CMS/BlockEditor.vue';
 import {
     destroy as contentDestroy,
     show as contentShow,

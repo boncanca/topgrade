@@ -15,6 +15,7 @@ interface Inquiry {
     name: string;
     email: string;
     subject: string;
+    message?: string;
     status: 'new' | 'open' | 'in_progress' | 'resolved' | 'closed' | 'archived';
     created_at: string;
 }
@@ -59,6 +60,7 @@ const statusColors = {
 
 function formatDate(dateStr: string): string {
     const date = new Date(dateStr);
+
     return new Intl.DateTimeFormat(undefined, {
         month: 'short',
         day: 'numeric',
@@ -143,8 +145,19 @@ function deleteInquiry(inquiry: Inquiry): void {
                                     </p>
                                 </div>
                             </td>
-                            <td class="px-4 py-4 text-sm text-foreground">
-                                {{ inquiry.subject }}
+                            <td class="px-4 py-4 text-sm text-foreground max-w-xs sm:max-w-md">
+                                <Link
+                                    :href="inquiriesShow(inquiry.id)"
+                                    class="font-semibold text-foreground hover:text-purple-600 dark:hover:text-purple-400 transition-colors block truncate"
+                                >
+                                    {{ inquiry.subject }}
+                                </Link>
+                                <p
+                                    v-if="inquiry.message"
+                                    class="text-xs text-muted-foreground truncate mt-0.5 line-clamp-1"
+                                >
+                                    {{ inquiry.message }}
+                                </p>
                             </td>
                             <td class="px-4 py-4 whitespace-nowrap">
                                 <span
@@ -167,16 +180,21 @@ function deleteInquiry(inquiry: Inquiry): void {
                                 {{ formatDate(inquiry.created_at) }}
                             </td>
                             <td class="px-4 py-4">
-                                <div class="flex justify-end gap-2">
-                                    <Button variant="ghost" size="sm" as-child>
-                                        <Link :href="inquiriesEdit(inquiry.id)">
+                                <div class="flex justify-end gap-1.5">
+                                    <Button variant="outline" size="sm" as-child class="h-8 text-xs px-2.5">
+                                        <Link :href="inquiriesShow(inquiry.id)">
                                             View
+                                        </Link>
+                                    </Button>
+                                    <Button variant="ghost" size="sm" as-child class="h-8 text-xs px-2.5">
+                                        <Link :href="inquiriesEdit(inquiry.id)">
+                                            Edit
                                         </Link>
                                     </Button>
                                     <Button
                                         variant="ghost"
                                         size="sm"
-                                        class="text-destructive hover:text-destructive"
+                                        class="h-8 text-xs px-2 text-destructive hover:text-destructive"
                                         @click="deleteInquiry(inquiry)"
                                     >
                                         Delete

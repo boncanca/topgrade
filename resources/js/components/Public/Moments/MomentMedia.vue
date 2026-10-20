@@ -34,7 +34,10 @@ const checkReducedMotion = () => {
 watch(
     () => props.active,
     (isActive) => {
-        if (!videoRef.value || prefersReducedMotion.value) return;
+        if (!videoRef.value || prefersReducedMotion.value) {
+return;
+}
+
         if (isActive) {
             videoRef.value.play().catch(() => {
                 videoError.value = true;
@@ -47,6 +50,7 @@ watch(
 
 onMounted(() => {
     checkReducedMotion();
+
     if (props.isVideo && videoRef.value && props.active && !prefersReducedMotion.value) {
         videoRef.value.play().catch(() => {
             videoError.value = true;

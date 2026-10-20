@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { Link, usePage } from '@inertiajs/vue3';
-import { ref, computed, watch } from 'vue';
 import { Menu, X, ArrowRight } from '@lucide/vue';
-import PitchGrid from '@/components/Public/PitchGrid.vue';
+import { ref, computed, watch } from 'vue';
 import BackToTop from '@/components/Public/BackToTop.vue';
+import PitchGrid from '@/components/Public/PitchGrid.vue';
 
 const mobileOpen = ref(false);
 const page = usePage();
@@ -13,6 +13,7 @@ const clubSettings = computed(() => (page.props as any).clubSettings ?? {});
 const headerNav = computed(() => {
     const props = page.props as any;
     const dbItems = props.headerMenu?.all_items || props.headerMenu?.allItems;
+
     if (dbItems && dbItems.length > 0) {
         return dbItems.map((item: any) => ({
             label: item.label,
@@ -20,6 +21,7 @@ const headerNav = computed(() => {
             external: item.is_external || item.url.startsWith('http'),
         }));
     }
+
     return [
         { label: 'About', href: '/#develop' },
         { label: 'Training', href: '/#train' },
@@ -32,6 +34,7 @@ const headerNav = computed(() => {
 
 const clubLinks = computed(() => {
     const settings = clubSettings.value;
+
     return [
         { label: 'About the Club', href: '/about' },
         { label: 'Weekly Training', href: '/training' },

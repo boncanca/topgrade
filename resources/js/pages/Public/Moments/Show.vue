@@ -1,8 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { Link } from '@inertiajs/vue3';
-import PublicLayout from '@/layouts/PublicLayout.vue';
-import SeoHead from '@/components/SEO/SeoHead.vue';
 import {
     ArrowLeft,
     ArrowRight,
@@ -13,6 +10,9 @@ import {
     Maximize2,
     X,
 } from '@lucide/vue';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
+import SeoHead from '@/components/SEO/SeoHead.vue';
+import PublicLayout from '@/layouts/PublicLayout.vue';
 
 interface GalleryImage {
     id: number;
@@ -76,12 +76,18 @@ const currentImage = computed(() => {
 });
 
 function nextImage(): void {
-    if (props.gallery.length <= 1) return;
+    if (props.gallery.length <= 1) {
+return;
+}
+
     activeIndex.value = (activeIndex.value + 1) % props.gallery.length;
 }
 
 function prevImage(): void {
-    if (props.gallery.length <= 1) return;
+    if (props.gallery.length <= 1) {
+return;
+}
+
     activeIndex.value = (activeIndex.value - 1 + props.gallery.length) % props.gallery.length;
 }
 
@@ -114,6 +120,7 @@ function onTouchStart(e: TouchEvent): void {
 function onTouchEnd(e: TouchEvent): void {
     touchEndX = e.changedTouches[0].screenX;
     const diff = touchEndX - touchStartX;
+
     if (Math.abs(diff) > 40) {
         if (diff > 0) {
             prevImage();
@@ -137,9 +144,16 @@ function onCardMouseLeave(): void {
 }
 
 function onCardMouseMove(e: MouseEvent): void {
-    if (reduceMotion.value) return;
+    if (reduceMotion.value) {
+return;
+}
+
     const target = e.currentTarget as HTMLElement;
-    if (!target) return;
+
+    if (!target) {
+return;
+}
+
     const rect = target.getBoundingClientRect();
     const relX = (e.clientX - rect.left - rect.width / 2) / (rect.width / 2);
     const relY = (e.clientY - rect.top - rect.height / 2) / (rect.height / 2);

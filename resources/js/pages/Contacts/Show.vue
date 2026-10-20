@@ -3,7 +3,7 @@ import { Link } from '@inertiajs/vue3';
 import PageHeader from '@/components/PageHeader.vue';
 import { Button } from '@/components/ui/button';
 import { index as contactsIndex, edit as contactsEdit } from '@/routes/contacts';
-import { index as inquiriesIndex, edit as inquiriesEdit, show as inquiriesShow } from '@/routes/inquiries';
+import { show as inquiriesShow } from '@/routes/inquiries';
 
 interface Inquiry {
   id: number;
@@ -44,6 +44,7 @@ const props = defineProps<Props>();
 
 function formatDate(dateStr: string): string {
   const date = new Date(dateStr);
+
   return new Intl.DateTimeFormat(undefined, {
     month: 'short',
     day: 'numeric',
@@ -53,6 +54,7 @@ function formatDate(dateStr: string): string {
 
 function formatDateTime(dateStr: string): string {
   const date = new Date(dateStr);
+
   return new Intl.DateTimeFormat(undefined, {
     month: 'short',
     day: 'numeric',

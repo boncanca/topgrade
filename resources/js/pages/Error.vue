@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { computed, ref, onMounted } from 'vue';
 import { Link, router } from '@inertiajs/vue3';
-import ErrorLayout from '@/layouts/ErrorLayout.vue';
+import { computed, ref, onMounted } from 'vue';
 import SeoHead from '@/components/SEO/SeoHead.vue';
+import ErrorLayout from '@/layouts/ErrorLayout.vue';
 
 defineOptions({
     layout: ErrorLayout,
@@ -106,6 +106,7 @@ const current = computed<ErrorStateConfig>(() => {
     if (errorStates[props.status]) {
         return errorStates[props.status];
     }
+
     return {
         code: String(props.status || 500),
         label: 'PLAY STOPPED',
@@ -137,10 +138,13 @@ function handleSecondaryClick() {
 }
 
 function handleBallInteraction() {
-    if (ballState.value === 'in-motion') return;
+    if (ballState.value === 'in-motion') {
+return;
+}
 
     if (prefersReducedMotion.value) {
         router.visit(current.value.actionHref);
+
         return;
     }
 

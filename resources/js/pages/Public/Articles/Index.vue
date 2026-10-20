@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
-import PublicLayout from '@/layouts/PublicLayout.vue';
-import SeoHead from '@/components/SEO/SeoHead.vue';
 import { Newspaper } from '@lucide/vue';
+import SeoHead from '@/components/SEO/SeoHead.vue';
+import PublicLayout from '@/layouts/PublicLayout.vue';
 
 interface Article {
     id: number;

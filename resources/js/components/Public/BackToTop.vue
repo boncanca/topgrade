@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue';
 import { ArrowUp } from '@lucide/vue';
+import { ref, onMounted, onUnmounted } from 'vue';
 
 const isVisible = ref(false);
 

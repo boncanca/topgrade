@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { router, useForm } from '@inertiajs/vue3';
+import { Plus, Trash2, ArrowUp, ArrowDown, GripVertical } from '@lucide/vue';
 import { ref } from 'vue';
 import FormPage from '@/components/FormPage.vue';
 import FormSection from '@/components/FormSection.vue';
 import PageActions from '@/components/PageActions.vue';
 import { Button } from '@/components/ui/button';
 import { index as menuIndex, update as menuUpdate } from '@/routes/menus';
-import { Plus, Trash2, ArrowUp, ArrowDown, GripVertical } from '@lucide/vue';
 
 interface MenuItem {
     id?: number;
@@ -47,6 +47,7 @@ const draggedIndex = ref<number | null>(null);
 
 function onDragStart(index: number, event: DragEvent): void {
     draggedIndex.value = index;
+
     if (event.dataTransfer) {
         event.dataTransfer.effectAllowed = 'move';
         event.dataTransfer.setData('text/plain', String(index));
@@ -55,6 +56,7 @@ function onDragStart(index: number, event: DragEvent): void {
 
 function onDragOver(index: number, event: DragEvent): void {
     event.preventDefault();
+
     if (event.dataTransfer) {
         event.dataTransfer.dropEffect = 'move';
     }
@@ -62,12 +64,14 @@ function onDragOver(index: number, event: DragEvent): void {
 
 function onDrop(targetIndex: number, event: DragEvent): void {
     event.preventDefault();
+
     if (draggedIndex.value !== null && draggedIndex.value !== targetIndex) {
         const item = form.items[draggedIndex.value];
         form.items.splice(draggedIndex.value, 1);
         form.items.splice(targetIndex, 0, item);
         reorder();
     }
+
     draggedIndex.value = null;
 }
 
@@ -86,7 +90,10 @@ function removeItem(index: number): void {
 }
 
 function moveUp(index: number): void {
-    if (index === 0) return;
+    if (index === 0) {
+return;
+}
+
     const item = form.items[index];
     form.items.splice(index, 1);
     form.items.splice(index - 1, 0, item);
@@ -94,7 +101,10 @@ function moveUp(index: number): void {
 }
 
 function moveDown(index: number): void {
-    if (index === form.items.length - 1) return;
+    if (index === form.items.length - 1) {
+return;
+}
+
     const item = form.items[index];
     form.items.splice(index, 1);
     form.items.splice(index + 1, 0, item);

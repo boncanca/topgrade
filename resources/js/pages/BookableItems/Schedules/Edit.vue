@@ -4,7 +4,6 @@ import FormPage from '@/components/FormPage.vue';
 import FormSection from '@/components/FormSection.vue';
 import PageActions from '@/components/PageActions.vue';
 import { Button } from '@/components/ui/button';
-import { index as activitiesIndex } from '@/routes/bookable-items';
 import {
     index as schedulesIndex,
     update as schedulesUpdate,
@@ -42,6 +41,7 @@ const form = useForm({
 
 function formatDateTimeForInput(dateStr: string): string {
     const date = new Date(dateStr);
+
     return date.toISOString().slice(0, 16);
 }
 

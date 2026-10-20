@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { computed } from 'vue';
 import { Link } from '@inertiajs/vue3';
-import PublicLayout from '@/layouts/PublicLayout.vue';
-import SeoHead from '@/components/SEO/SeoHead.vue';
 import { ArrowRight, Trophy, Users, Target, MapPin, Award } from '@lucide/vue';
+import { computed } from 'vue';
+import SeoHead from '@/components/SEO/SeoHead.vue';
+import PublicLayout from '@/layouts/PublicLayout.vue';
 
 defineOptions({
     layout: PublicLayout,
@@ -47,6 +47,7 @@ const defaultValues = [
 
 const values = computed(() => {
     const list = props.values && props.values.length > 0 ? props.values : defaultValues;
+
     return list.map((item) => ({
         ...item,
         iconComponent: (item.icon && iconMap[item.icon]) ? iconMap[item.icon] : Target,
@@ -86,10 +87,6 @@ const defaultFacilities = [
 
 const facilities = computed(() => {
     return props.facilities && props.facilities.length > 0 ? props.facilities : defaultFacilities;
-});
-
-const headCoach = computed(() => {
-    return props.staff?.find((s) => s.role.toLowerCase().includes('head coach')) || props.staff?.[0];
 });
 </script>
 

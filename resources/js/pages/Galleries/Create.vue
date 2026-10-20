@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { ref } from 'vue';
 import { Head, router, useForm } from '@inertiajs/vue3';
+import { Plus, Trash2, Upload, X } from '@lucide/vue';
+import { computed, ref } from 'vue';
 import FormPage from '@/components/FormPage.vue';
 import FormSection from '@/components/FormSection.vue';
 import PageActions from '@/components/PageActions.vue';
 import { Button } from '@/components/ui/button';
-import { Plus, Trash2, Upload, X, Image as ImageIcon } from '@lucide/vue';
 
 const fieldClass =
     'w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50';
@@ -37,10 +37,25 @@ const form = useForm({
     },
 });
 
+const MAX_IMAGE_BYTES = 15 * 1024 * 1024;
+const MAX_BATCH_BYTES = 50 * 1024 * 1024;
+const MAX_BATCH_COUNT = 15;
+
+const clientErrors = ref<string[]>([]);
+const imageErrors = computed(() => [
+    ...clientErrors.value,
+    ...Object.entries(form.errors)
+        .filter(([key]) => key === 'images' || key.startsWith('images.'))
+        .map(([, message]) => message),
+]);
+
 const imagePreviews = ref<{ file: File; url: string }[]>([]);
 
 function generateSlug(): void {
-    if (!form.title) return;
+    if (!form.title) {
+return;
+}
+
     form.slug = form.title
         .toLowerCase()
         .replace(/[^\w\s-]/g, '')
@@ -63,10 +78,41 @@ function removePerson(index: number): void {
 
 function onFileSelect(e: Event): void {
     const input = e.target as HTMLInputElement;
-    if (!input.files || input.files.length === 0) return;
+
+    if (!input.files || input.files.length === 0) {
+        return;
+    }
+
+    clientErrors.value = [];
+
+    if (form.images.length + input.files.length > MAX_BATCH_COUNT) {
+        clientErrors.value.push(`Cannot upload more than ${MAX_BATCH_COUNT} images in one batch.`);
+        input.value = '';
+
+        return;
+    }
+
+    let batchBytes = form.images.reduce((sum, f) => sum + f.size, 0);
 
     for (let i = 0; i < input.files.length; i++) {
         const file = input.files[i];
+
+        if (!file.type.startsWith('image/')) {
+            clientErrors.value.push(`${file.name} is not an image and was skipped.`);
+            continue;
+        }
+
+        if (file.size > MAX_IMAGE_BYTES) {
+            clientErrors.value.push(`${file.name} is larger than 15MB and was skipped.`);
+            continue;
+        }
+
+        if (batchBytes + file.size > MAX_BATCH_BYTES) {
+            clientErrors.value.push(`Total batch size exceeds 50MB. ${file.name} and subsequent files were skipped.`);
+            break;
+        }
+
+        batchBytes += file.size;
         form.images.push(file);
         imagePreviews.value.push({
             file,
@@ -79,9 +125,11 @@ function onFileSelect(e: Event): void {
 
 function removeSelectedImage(index: number): void {
     const preview = imagePreviews.value[index];
+
     if (preview) {
         URL.revokeObjectURL(preview.url);
     }
+
     imagePreviews.value.splice(index, 1);
     form.images.splice(index, 1);
 }
@@ -236,7 +284,7 @@ defineOptions({
                     >
                         <Upload class="h-8 w-8 text-muted-foreground mb-2" />
                         <span class="text-sm font-medium text-foreground">Click to upload photos</span>
-                        <span class="text-xs text-muted-foreground mt-1">Select multiple JPG, PNG, or WebP images (up to 15MB each)</span>
+                        <span class="text-xs text-muted-foreground mt-1">Select multiple JPG, PNG, or WebP images (up to 15MB each, max 50MB per batch)</span>
                         <input
                             type="file"
                             multiple
@@ -245,6 +293,16 @@ defineOptions({
                             @change="onFileSelect"
                         />
                     </label>
+
+                    <ul v-if="imageErrors.length > 0" class="mt-3 space-y-1 text-sm text-destructive" role="alert">
+                        <li v-for="(message, i) in imageErrors" :key="i">{{ message }}</li>
+                    </ul>
+                    <div v-if="form.processing && form.progress" class="mt-3">
+                        <div class="h-2 w-full overflow-hidden rounded bg-muted">
+                            <div class="h-full bg-primary transition-all" :style="{ width: `${form.progress.percentage}%` }" />
+                        </div>
+                        <p class="mt-1 text-xs text-muted-foreground">Uploading… {{ form.progress.percentage }}%</p>
+                    </div>
 
                     <!-- Previews -->
                     <div v-if="imagePreviews.length > 0" class="mt-4">

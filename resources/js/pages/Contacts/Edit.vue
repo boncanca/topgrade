@@ -54,6 +54,7 @@ function handleDelete(): void {
     if (!confirm(`Delete ${props.contact.first_name} ${props.contact.last_name}? This cannot be undone.`)) {
         return;
     }
+
     router.delete(contactsDestroy.url(props.contact.id));
 }
 </script>

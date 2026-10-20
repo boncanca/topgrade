@@ -40,6 +40,16 @@ defineOptions({
         v-slot="{ errors, processing }"
     >
         <div class="space-y-6">
+            <input
+                type="text"
+                name="username"
+                :value="$page.props.auth?.user?.email"
+                autocomplete="username"
+                class="sr-only"
+                tabindex="-1"
+                aria-hidden="true"
+                readonly
+            />
             <div class="grid gap-2">
                 <Label htmlFor="password">Password</Label>
                 <PasswordInput

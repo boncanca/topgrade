@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
 import { Link } from '@inertiajs/vue3';
-import PublicLayout from '@/layouts/PublicLayout.vue';
-import SeoHead from '@/components/SEO/SeoHead.vue';
+import { ArrowRight } from '@lucide/vue';
+import { ref, computed } from 'vue';
 import FeaturedMoment from '@/components/Public/Moments/FeaturedMoment.vue';
 import MomentFilters from '@/components/Public/Moments/MomentFilters.vue';
 import MomentGallery from '@/components/Public/Moments/MomentGallery.vue';
-import { ArrowRight } from '@lucide/vue';
+import SeoHead from '@/components/SEO/SeoHead.vue';
+import PublicLayout from '@/layouts/PublicLayout.vue';
 
 interface MomentImage {
     id: number;
@@ -59,10 +59,13 @@ const filteredMoments = computed(() => {
     if (!searchQuery.value.trim()) {
         return props.moments;
     }
+
     const q = searchQuery.value.toLowerCase().trim();
+
     return props.moments.filter((item) => {
         const titleMatch = item.title.toLowerCase().includes(q);
         const descMatch = item.description?.toLowerCase().includes(q);
+
         return titleMatch || descMatch;
     });
 });

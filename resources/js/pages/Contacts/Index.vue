@@ -59,6 +59,7 @@ const statusColors = {
 
 function formatDate(dateStr: string): string {
     const date = new Date(dateStr);
+
     return new Intl.DateTimeFormat(undefined, {
         month: 'short',
         day: 'numeric',

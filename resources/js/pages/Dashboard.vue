@@ -5,15 +5,11 @@ import {
     Calendar,
     CalendarCheck,
     ClipboardList,
-    Clock,
     CreditCard,
-    DollarSign,
     FileText,
     Inbox,
-    Layers,
     Menu,
     Plus,
-    Users,
 } from '@lucide/vue';
 import { dashboard } from '@/routes';
 import { create as createBookableItem, index as bookableItemsIndex } from '@/routes/bookable-items';
@@ -67,7 +63,7 @@ interface ProgramItem {
     capacity: number;
 }
 
-const props = defineProps<{
+defineProps<{
     stats: StatProps;
     recentBookings: BookingItem[];
     recentInquiries: InquiryItem[];
@@ -93,7 +89,10 @@ function formatCurrency(amount: number, currency = 'GBP'): string {
 }
 
 function formatDate(dateStr: string): string {
-    if (!dateStr) return 'N/A';
+    if (!dateStr) {
+return 'N/A';
+}
+
     return new Date(dateStr).toLocaleDateString('en-GB', {
         day: 'numeric',
         month: 'short',
@@ -104,7 +103,10 @@ function formatDate(dateStr: string): string {
 }
 
 function formatShortDate(dateStr: string): string {
-    if (!dateStr) return '';
+    if (!dateStr) {
+return '';
+}
+
     return new Date(dateStr).toLocaleDateString('en-GB', {
         day: 'numeric',
         month: 'short',

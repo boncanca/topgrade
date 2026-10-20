@@ -2,8 +2,8 @@
 import { Head, router } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import FormSection from '@/components/FormSection.vue';
-import PageHeader from '@/components/PageHeader.vue';
 import PageActions from '@/components/PageActions.vue';
+import PageHeader from '@/components/PageHeader.vue';
 import { Button } from '@/components/ui/button';
 import { index as bookingsIndex } from '@/routes/bookings';
 
@@ -85,6 +85,7 @@ const processing = ref(false);
 
 function formatScheduled(dateStr: string): string {
     const date = new Date(dateStr);
+
     return new Intl.DateTimeFormat(undefined, {
         weekday: 'long',
         month: 'long',
@@ -100,6 +101,7 @@ function formatPrice(price: number | null, currency: string): string {
     if (price === null) {
         return 'Free';
     }
+
     return new Intl.NumberFormat(undefined, {
         style: 'currency',
         currency: currency || 'USD',
@@ -113,6 +115,7 @@ function canTransitionTo(newStatus: string): boolean {
         completed: [],
         cancelled: [],
     };
+
     return transitions[props.booking.status]?.includes(newStatus) ?? false;
 }
 
@@ -124,7 +127,9 @@ function transitionStatus(newStatus: 'pending' | 'confirmed' | 'completed' | 'ca
         cancelled: `/dashboard/bookings/${props.booking.id}/cancel`,
     };
     router.post(routeMap[newStatus as keyof typeof routeMap], {}, {
-        onFinish: () => { processing.value = false; },
+        onFinish: () => {
+ processing.value = false; 
+},
     });
 }
 
