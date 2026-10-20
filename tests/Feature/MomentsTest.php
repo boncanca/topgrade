@@ -367,7 +367,7 @@ test('public moments index renders safely when featured moment has no images', f
 
 test('public album keeps video metadata and only lists published related albums', function () {
     $moment = Moment::factory()->create(['slug' => 'matchday-film', 'status' => 'published']);
-    $moment->addMedia(UploadedFile::fake()->create('matchday.mp4', 100, 'video/mp4'))
+    $moment->addMedia(UploadedFile::fake()->createWithContent('matchday.mp4', "\x00\x00\x00\x18ftypmp42\x00\x00\x00\x00mp42isom"))
         ->toMediaCollection('gallery');
 
     $related = Moment::factory()->create([
