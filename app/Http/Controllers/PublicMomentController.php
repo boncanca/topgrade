@@ -82,6 +82,8 @@ class PublicMomentController extends Controller
                 'url' => $item['url'],
                 'name' => $item['name'],
                 'is_cover' => $coverUrl !== null && $item['url'] === $coverUrl,
+                'mime_type' => $item['mime_type'] ?? null,
+                'is_video' => $item['is_video'] ?? false,
             ];
         }, $gallery);
 
@@ -97,6 +99,8 @@ class PublicMomentController extends Controller
                 'id' => $m->id,
                 'title' => $m->title,
                 'slug' => $m->slug,
+                'published_at' => $m->published_at?->format('d M Y'),
+                'cover_mime' => $m->getCoverMedia()?->mime_type,
                 'cover_url' => $m->getResolvedCoverUrl(),
                 'images_count' => count($m->getResolvedGallery()),
             ])
