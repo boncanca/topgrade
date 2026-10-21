@@ -72,7 +72,11 @@ function paginationLabel(label: string): string {
 }
 
 function deleteContact(contact: Contact): void {
-    if (!confirm(`Delete ${contact.first_name} ${contact.last_name}? This cannot be undone.`)) {
+    if (
+        !confirm(
+            `Delete ${contact.first_name} ${contact.last_name}? This cannot be undone.`,
+        )
+    ) {
         return;
     }
 
@@ -99,72 +103,81 @@ function deleteContact(contact: Contact): void {
 
         <div
             v-if="props.contacts.data.length > 0"
-            class="overflow-hidden rounded-lg border border-border bg-background"
+            class="border-border bg-background overflow-hidden rounded-lg border"
         >
             <div class="overflow-x-auto">
                 <table class="w-full min-w-[900px] table-auto">
-                    <thead class="border-b border-border bg-muted/40">
+                    <thead class="border-border bg-muted/40 border-b">
                         <tr>
                             <th
-                                class="px-4 py-3 text-left text-xs font-medium tracking-wide text-muted-foreground uppercase"
+                                class="text-muted-foreground px-4 py-3 text-left text-xs font-medium uppercase tracking-wide"
                             >
                                 Name
                             </th>
                             <th
-                                class="px-4 py-3 text-left text-xs font-medium tracking-wide text-muted-foreground uppercase"
+                                class="text-muted-foreground px-4 py-3 text-left text-xs font-medium uppercase tracking-wide"
                             >
                                 Email
                             </th>
                             <th
-                                class="px-4 py-3 text-left text-xs font-medium tracking-wide text-muted-foreground uppercase"
+                                class="text-muted-foreground px-4 py-3 text-left text-xs font-medium uppercase tracking-wide"
                             >
                                 Company
                             </th>
                             <th
-                                class="px-4 py-3 text-left text-xs font-medium tracking-wide text-muted-foreground uppercase"
+                                class="text-muted-foreground px-4 py-3 text-left text-xs font-medium uppercase tracking-wide"
                             >
                                 Status
                             </th>
                             <th
-                                class="px-4 py-3 text-left text-xs font-medium tracking-wide text-muted-foreground uppercase"
+                                class="text-muted-foreground px-4 py-3 text-left text-xs font-medium uppercase tracking-wide"
                             >
                                 Added
                             </th>
                             <th
-                                class="px-4 py-3 text-right text-xs font-medium tracking-wide text-muted-foreground uppercase"
+                                class="text-muted-foreground px-4 py-3 text-right text-xs font-medium uppercase tracking-wide"
                             >
                                 Actions
                             </th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-border">
+                    <tbody class="divide-border divide-y">
                         <tr
                             v-for="contact in props.contacts.data"
                             :key="contact.id"
-                            class="transition-colors hover:bg-muted/40"
+                            class="hover:bg-muted/40 transition-colors"
                         >
                             <td class="px-4 py-4">
                                 <Link
                                     :href="contactsEdit(contact.id)"
-                                    class="text-sm font-medium text-foreground underline-offset-4 hover:underline"
+                                    class="text-foreground text-sm font-medium underline-offset-4 hover:underline"
                                 >
-                                    {{ contact.first_name }} {{ contact.last_name }}
+                                    {{ contact.first_name }}
+                                    {{ contact.last_name }}
                                 </Link>
                             </td>
-                            <td class="px-4 py-4 text-sm text-muted-foreground">
+                            <td class="text-muted-foreground px-4 py-4 text-sm">
                                 {{ contact.email }}
                             </td>
-                            <td class="px-4 py-4 text-sm text-muted-foreground">
-                                <span v-if="contact.company && contact.position">{{ contact.company }} ({{ contact.position }})</span>
-                                <span v-else-if="contact.company">{{ contact.company }}</span>
-                                <span v-else-if="contact.position">{{ contact.position }}</span>
+                            <td class="text-muted-foreground px-4 py-4 text-sm">
+                                <span v-if="contact.company && contact.position"
+                                    >{{ contact.company }} ({{
+                                        contact.position
+                                    }})</span
+                                >
+                                <span v-else-if="contact.company">{{
+                                    contact.company
+                                }}</span>
+                                <span v-else-if="contact.position">{{
+                                    contact.position
+                                }}</span>
                                 <span v-else>—</span>
                             </td>
-                            <td class="px-4 py-4 whitespace-nowrap">
+                            <td class="whitespace-nowrap px-4 py-4">
                                 <span
                                     :class="[
                                         statusColors[contact.status],
-                                        'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
+                                        'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium',
                                     ]"
                                 >
                                     {{
@@ -173,7 +186,9 @@ function deleteContact(contact: Contact): void {
                                     }}
                                 </span>
                             </td>
-                            <td class="px-4 py-4 text-sm whitespace-nowrap text-muted-foreground">
+                            <td
+                                class="text-muted-foreground whitespace-nowrap px-4 py-4 text-sm"
+                            >
                                 {{ formatDate(contact.created_at) }}
                             </td>
                             <td class="px-4 py-4">
@@ -204,7 +219,7 @@ function deleteContact(contact: Contact): void {
             </div>
 
             <div
-                class="flex flex-col gap-4 border-t border-border px-4 py-3 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between"
+                class="border-border text-muted-foreground flex flex-col gap-4 border-t px-4 py-3 text-sm sm:flex-row sm:items-center sm:justify-between"
             >
                 <p>
                     Showing {{ props.contacts.from }} to

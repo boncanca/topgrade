@@ -50,10 +50,10 @@ const breadcrumbs = computed(() => {
 </script>
 
 <template>
-    <div class="flex h-screen bg-background">
+    <div class="bg-background flex h-screen">
         <!-- Sidebar -->
         <nav
-            class="fixed top-0 bottom-0 left-0 w-60 overflow-y-auto border-r border-border bg-background"
+            class="border-border bg-background fixed bottom-0 left-0 top-0 w-60 overflow-y-auto border-r"
         >
             <div class="p-6">
                 <Link
@@ -68,7 +68,7 @@ const breadcrumbs = computed(() => {
                 <li>
                     <Link
                         href="/dashboard/content"
-                        class="block rounded px-4 py-2 text-sm font-medium hover:bg-accent"
+                        class="hover:bg-accent block rounded px-4 py-2 text-sm font-medium"
                         :class="
                             $page.url.startsWith('/dashboard/content')
                                 ? 'bg-accent text-foreground'
@@ -81,7 +81,7 @@ const breadcrumbs = computed(() => {
                 <li>
                     <Link
                         href="/dashboard/menus"
-                        class="block rounded px-4 py-2 text-sm font-medium hover:bg-accent"
+                        class="hover:bg-accent block rounded px-4 py-2 text-sm font-medium"
                         :class="
                             $page.url.startsWith('/dashboard/menus')
                                 ? 'bg-accent text-foreground'
@@ -94,7 +94,7 @@ const breadcrumbs = computed(() => {
                 <li>
                     <Link
                         href="/dashboard/bookable-items"
-                        class="block rounded px-4 py-2 text-sm font-medium hover:bg-accent"
+                        class="hover:bg-accent block rounded px-4 py-2 text-sm font-medium"
                         :class="
                             $page.url.startsWith('/dashboard/bookable-items')
                                 ? 'bg-accent text-foreground'
@@ -107,7 +107,7 @@ const breadcrumbs = computed(() => {
                 <li>
                     <Link
                         href="/dashboard/bookings"
-                        class="block rounded px-4 py-2 text-sm font-medium hover:bg-accent"
+                        class="hover:bg-accent block rounded px-4 py-2 text-sm font-medium"
                         :class="
                             $page.url.startsWith('/dashboard/bookings')
                                 ? 'bg-accent text-foreground'
@@ -120,7 +120,7 @@ const breadcrumbs = computed(() => {
                 <li>
                     <Link
                         href="/dashboard/contacts"
-                        class="block rounded px-4 py-2 text-sm font-medium hover:bg-accent"
+                        class="hover:bg-accent block rounded px-4 py-2 text-sm font-medium"
                         :class="
                             $page.url.startsWith('/dashboard/contacts')
                                 ? 'bg-accent text-foreground'
@@ -133,7 +133,7 @@ const breadcrumbs = computed(() => {
                 <li>
                     <Link
                         href="/dashboard/inquiries"
-                        class="block rounded px-4 py-2 text-sm font-medium hover:bg-accent"
+                        class="hover:bg-accent block rounded px-4 py-2 text-sm font-medium"
                         :class="
                             $page.url.startsWith('/dashboard/inquiries')
                                 ? 'bg-accent text-foreground'
@@ -149,7 +149,7 @@ const breadcrumbs = computed(() => {
         <!-- Main Content -->
         <main class="ml-60 flex flex-1 flex-col overflow-auto">
             <!-- Header with Breadcrumbs -->
-            <div class="border-b border-border bg-background px-8 py-4">
+            <div class="border-border bg-background border-b px-8 py-4">
                 <Breadcrumbs :items="breadcrumbs" />
             </div>
             <!-- Page Content -->

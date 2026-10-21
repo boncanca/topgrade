@@ -18,17 +18,17 @@ withDefaults(defineProps<Props>(), {});
 <template>
     <nav
         v-if="items.length > 0"
-        class="flex items-center gap-2 text-sm text-muted-foreground"
+        class="text-muted-foreground flex items-center gap-2 text-sm"
     >
         <template v-for="(item, index) in items" :key="index">
             <Link
                 v-if="item.href"
                 :href="item.href"
-                class="transition-colors hover:text-foreground"
+                class="hover:text-foreground transition-colors"
             >
                 {{ item.label ?? item.title }}
             </Link>
-            <span v-else class="font-medium text-foreground">
+            <span v-else class="text-foreground font-medium">
                 {{ item.label ?? item.title }}
             </span>
             <span

@@ -53,8 +53,8 @@ const imagePreviews = ref<{ file: File; url: string }[]>([]);
 
 function generateSlug(): void {
     if (!form.title) {
-return;
-}
+        return;
+    }
 
     form.slug = form.title
         .toLowerCase()
@@ -86,7 +86,9 @@ function onFileSelect(e: Event): void {
     clientErrors.value = [];
 
     if (form.images.length + input.files.length > MAX_BATCH_COUNT) {
-        clientErrors.value.push(`Cannot upload more than ${MAX_BATCH_COUNT} images in one batch.`);
+        clientErrors.value.push(
+            `Cannot upload more than ${MAX_BATCH_COUNT} images in one batch.`,
+        );
         input.value = '';
 
         return;
@@ -98,17 +100,23 @@ function onFileSelect(e: Event): void {
         const file = input.files[i];
 
         if (!file.type.startsWith('image/')) {
-            clientErrors.value.push(`${file.name} is not an image and was skipped.`);
+            clientErrors.value.push(
+                `${file.name} is not an image and was skipped.`,
+            );
             continue;
         }
 
         if (file.size > MAX_IMAGE_BYTES) {
-            clientErrors.value.push(`${file.name} is larger than 15MB and was skipped.`);
+            clientErrors.value.push(
+                `${file.name} is larger than 15MB and was skipped.`,
+            );
             continue;
         }
 
         if (batchBytes + file.size > MAX_BATCH_BYTES) {
-            clientErrors.value.push(`Total batch size exceeds 50MB. ${file.name} and subsequent files were skipped.`);
+            clientErrors.value.push(
+                `Total batch size exceeds 50MB. ${file.name} and subsequent files were skipped.`,
+            );
             break;
         }
 
@@ -173,7 +181,9 @@ defineOptions({
             >
                 <div class="space-y-6">
                     <div>
-                        <label class="mb-2 block text-sm font-medium text-foreground">
+                        <label
+                            class="text-foreground mb-2 block text-sm font-medium"
+                        >
                             Title <span class="text-destructive">*</span>
                         </label>
                         <input
@@ -184,13 +194,18 @@ defineOptions({
                             required
                             @blur="generateSlug"
                         />
-                        <p v-if="form.errors.title" class="mt-1 text-xs text-destructive">
+                        <p
+                            v-if="form.errors.title"
+                            class="text-destructive mt-1 text-xs"
+                        >
                             {{ form.errors.title }}
                         </p>
                     </div>
 
                     <div>
-                        <label class="mb-2 block text-sm font-medium text-foreground">
+                        <label
+                            class="text-foreground mb-2 block text-sm font-medium"
+                        >
                             Slug
                         </label>
                         <input
@@ -199,16 +214,23 @@ defineOptions({
                             :class="fieldClass"
                             placeholder="e.g. matchday-topgrade-u12"
                         />
-                        <p class="mt-1 text-xs text-muted-foreground">
-                            Public URL identifier (/moments/{{ form.slug || '...' }})
+                        <p class="text-muted-foreground mt-1 text-xs">
+                            Public URL identifier (/moments/{{
+                                form.slug || '...'
+                            }})
                         </p>
-                        <p v-if="form.errors.slug" class="mt-1 text-xs text-destructive">
+                        <p
+                            v-if="form.errors.slug"
+                            class="text-destructive mt-1 text-xs"
+                        >
                             {{ form.errors.slug }}
                         </p>
                     </div>
 
                     <div>
-                        <label class="mb-2 block text-sm font-medium text-foreground">
+                        <label
+                            class="text-foreground mb-2 block text-sm font-medium"
+                        >
                             Description
                         </label>
                         <textarea
@@ -217,7 +239,10 @@ defineOptions({
                             placeholder="Brief context about this matchday, squad session, or club moment."
                             rows="3"
                         />
-                        <p v-if="form.errors.description" class="mt-1 text-xs text-destructive">
+                        <p
+                            v-if="form.errors.description"
+                            class="text-destructive mt-1 text-xs"
+                        >
                             {{ form.errors.description }}
                         </p>
                     </div>
@@ -229,22 +254,29 @@ defineOptions({
                 title="Publishing Status"
                 description="Control visibility, feature on the hero carousel, and set publication timing."
             >
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
                     <div>
-                        <label class="mb-2 block text-sm font-medium text-foreground">
+                        <label
+                            class="text-foreground mb-2 block text-sm font-medium"
+                        >
                             Status <span class="text-destructive">*</span>
                         </label>
                         <select v-model="form.status" :class="fieldClass">
                             <option value="draft">Draft</option>
                             <option value="published">Published</option>
                         </select>
-                        <p v-if="form.errors.status" class="mt-1 text-xs text-destructive">
+                        <p
+                            v-if="form.errors.status"
+                            class="text-destructive mt-1 text-xs"
+                        >
                             {{ form.errors.status }}
                         </p>
                     </div>
 
                     <div>
-                        <label class="mb-2 block text-sm font-medium text-foreground">
+                        <label
+                            class="text-foreground mb-2 block text-sm font-medium"
+                        >
                             Published Date & Time
                         </label>
                         <input
@@ -255,18 +287,20 @@ defineOptions({
                     </div>
 
                     <div class="sm:col-span-2">
-                        <label class="flex items-center gap-2 cursor-pointer">
+                        <label class="flex cursor-pointer items-center gap-2">
                             <input
                                 v-model="form.featured"
                                 type="checkbox"
-                                class="h-4 w-4 rounded border-input text-primary focus:ring-ring"
+                                class="border-input text-primary focus:ring-ring h-4 w-4 rounded"
                             />
-                            <span class="text-sm font-medium text-foreground">
-                                Feature this Gallery on the Public Moments Hero Carousel
+                            <span class="text-foreground text-sm font-medium">
+                                Feature this Gallery on the Public Moments Hero
+                                Carousel
                             </span>
                         </label>
-                        <p class="mt-1 text-xs text-muted-foreground ml-6">
-                            Featured galleries rotate on the hero carousel at the top of the /moments page.
+                        <p class="text-muted-foreground ml-6 mt-1 text-xs">
+                            Featured galleries rotate on the hero carousel at
+                            the top of the /moments page.
                         </p>
                     </div>
                 </div>
@@ -280,11 +314,16 @@ defineOptions({
                 <div class="space-y-4">
                     <!-- Dropzone -->
                     <label
-                        class="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-border p-8 text-center cursor-pointer hover:border-primary/50 hover:bg-muted/30 transition-colors"
+                        class="border-border hover:border-primary/50 hover:bg-muted/30 flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed p-8 text-center transition-colors"
                     >
-                        <Upload class="h-8 w-8 text-muted-foreground mb-2" />
-                        <span class="text-sm font-medium text-foreground">Click to upload photos</span>
-                        <span class="text-xs text-muted-foreground mt-1">Select multiple JPG, PNG, or WebP images (up to 15MB each, max 50MB per batch)</span>
+                        <Upload class="text-muted-foreground mb-2 h-8 w-8" />
+                        <span class="text-foreground text-sm font-medium"
+                            >Click to upload photos</span
+                        >
+                        <span class="text-muted-foreground mt-1 text-xs"
+                            >Select multiple JPG, PNG, or WebP images (up to
+                            15MB each, max 50MB per batch)</span
+                        >
                         <input
                             type="file"
                             multiple
@@ -294,26 +333,48 @@ defineOptions({
                         />
                     </label>
 
-                    <ul v-if="imageErrors.length > 0" class="mt-3 space-y-1 text-sm text-destructive" role="alert">
-                        <li v-for="(message, i) in imageErrors" :key="i">{{ message }}</li>
+                    <ul
+                        v-if="imageErrors.length > 0"
+                        class="text-destructive mt-3 space-y-1 text-sm"
+                        role="alert"
+                    >
+                        <li v-for="(message, i) in imageErrors" :key="i">
+                            {{ message }}
+                        </li>
                     </ul>
                     <div v-if="form.processing && form.progress" class="mt-3">
-                        <div class="h-2 w-full overflow-hidden rounded bg-muted">
-                            <div class="h-full bg-primary transition-all" :style="{ width: `${form.progress.percentage}%` }" />
+                        <div
+                            class="bg-muted h-2 w-full overflow-hidden rounded"
+                        >
+                            <div
+                                class="bg-primary h-full transition-all"
+                                :style="{
+                                    width: `${form.progress.percentage}%`,
+                                }"
+                            />
                         </div>
-                        <p class="mt-1 text-xs text-muted-foreground">Uploading… {{ form.progress.percentage }}%</p>
+                        <p class="text-muted-foreground mt-1 text-xs">
+                            Uploading… {{ form.progress.percentage }}%
+                        </p>
                     </div>
 
                     <!-- Previews -->
                     <div v-if="imagePreviews.length > 0" class="mt-4">
-                        <div class="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">
-                            Selected {{ imagePreviews.length }} {{ imagePreviews.length === 1 ? 'photo' : 'photos' }}
+                        <div
+                            class="text-muted-foreground mb-2 text-xs font-semibold uppercase tracking-wider"
+                        >
+                            Selected {{ imagePreviews.length }}
+                            {{
+                                imagePreviews.length === 1 ? 'photo' : 'photos'
+                            }}
                         </div>
-                        <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-3">
+                        <div
+                            class="grid grid-cols-2 gap-3 sm:grid-cols-4 md:grid-cols-6"
+                        >
                             <div
                                 v-for="(preview, idx) in imagePreviews"
                                 :key="idx"
-                                class="group relative aspect-square rounded-md overflow-hidden border border-border bg-muted"
+                                class="border-border bg-muted group relative aspect-square overflow-hidden rounded-md border"
                             >
                                 <img
                                     :src="preview.url"
@@ -323,12 +384,14 @@ defineOptions({
                                 <button
                                     type="button"
                                     @click="removeSelectedImage(idx)"
-                                    class="absolute top-1 right-1 rounded-full bg-black/70 p-1 text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive"
+                                    class="hover:bg-destructive absolute right-1 top-1 rounded-full bg-black/70 p-1 text-white opacity-0 transition-opacity group-hover:opacity-100"
                                     title="Remove photo"
                                 >
                                     <X class="h-3.5 w-3.5" />
                                 </button>
-                                <div class="absolute bottom-0 inset-x-0 bg-black/60 px-1 py-0.5 text-[10px] text-white truncate">
+                                <div
+                                    class="absolute inset-x-0 bottom-0 truncate bg-black/60 px-1 py-0.5 text-[10px] text-white"
+                                >
                                     {{ preview.file.name }}
                                 </div>
                             </div>
@@ -346,24 +409,29 @@ defineOptions({
                     <div
                         v-for="(person, idx) in form.people"
                         :key="idx"
-                        class="p-4 rounded-md border border-border bg-card space-y-3"
+                        class="border-border bg-card space-y-3 rounded-md border p-4"
                     >
                         <div class="flex items-center justify-between">
-                            <span class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                            <span
+                                class="text-muted-foreground text-xs font-semibold uppercase tracking-wider"
+                            >
                                 Person #{{ idx + 1 }}
                             </span>
                             <button
                                 type="button"
                                 @click="removePerson(idx)"
-                                class="text-xs text-destructive hover:underline flex items-center gap-1"
+                                class="text-destructive flex items-center gap-1 text-xs hover:underline"
                             >
                                 <Trash2 class="h-3 w-3" />
                                 Remove
                             </button>
                         </div>
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
                             <div>
-                                <label class="block text-xs font-medium text-foreground mb-1">Name</label>
+                                <label
+                                    class="text-foreground mb-1 block text-xs font-medium"
+                                    >Name</label
+                                >
                                 <input
                                     v-model="person.name"
                                     type="text"
@@ -373,7 +441,10 @@ defineOptions({
                                 />
                             </div>
                             <div>
-                                <label class="block text-xs font-medium text-foreground mb-1">Role / Context</label>
+                                <label
+                                    class="text-foreground mb-1 block text-xs font-medium"
+                                    >Role / Context</label
+                                >
                                 <input
                                     v-model="person.role"
                                     type="text"
@@ -382,7 +453,10 @@ defineOptions({
                                 />
                             </div>
                             <div>
-                                <label class="block text-xs font-medium text-foreground mb-1">External Link (Optional)</label>
+                                <label
+                                    class="text-foreground mb-1 block text-xs font-medium"
+                                    >External Link (Optional)</label
+                                >
                                 <input
                                     v-model="person.url"
                                     type="url"
@@ -392,20 +466,27 @@ defineOptions({
                             </div>
                         </div>
                         <div class="pt-1">
-                            <label class="flex items-center gap-2 cursor-pointer">
+                            <label
+                                class="flex cursor-pointer items-center gap-2"
+                            >
                                 <input
                                     v-model="person.visible"
                                     type="checkbox"
-                                    class="h-3.5 w-3.5 rounded border-input text-primary focus:ring-ring"
+                                    class="border-input text-primary focus:ring-ring h-3.5 w-3.5 rounded"
                                 />
-                                <span class="text-xs text-muted-foreground">
+                                <span class="text-muted-foreground text-xs">
                                     Display publicly on the Moment page
                                 </span>
                             </label>
                         </div>
                     </div>
 
-                    <Button type="button" variant="outline" size="sm" @click="addPerson">
+                    <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        @click="addPerson"
+                    >
                         <Plus class="mr-1 h-3.5 w-3.5" />
                         Add Person
                     </Button>
@@ -417,9 +498,11 @@ defineOptions({
                 title="External Link (Optional)"
                 description="Link out to match fixture details, league table, or external resources."
             >
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
                     <div>
-                        <label class="mb-2 block text-sm font-medium text-foreground">
+                        <label
+                            class="text-foreground mb-2 block text-sm font-medium"
+                        >
                             Link URL
                         </label>
                         <input
@@ -430,7 +513,9 @@ defineOptions({
                         />
                     </div>
                     <div>
-                        <label class="mb-2 block text-sm font-medium text-foreground">
+                        <label
+                            class="text-foreground mb-2 block text-sm font-medium"
+                        >
                             Link Button Label
                         </label>
                         <input
@@ -450,12 +535,28 @@ defineOptions({
             >
                 <div class="space-y-4">
                     <div>
-                        <label class="mb-1 block text-sm font-medium text-foreground">SEO Title</label>
-                        <input v-model="form.seo.title" type="text" :class="fieldClass" placeholder="Defaults to moment title" />
+                        <label
+                            class="text-foreground mb-1 block text-sm font-medium"
+                            >SEO Title</label
+                        >
+                        <input
+                            v-model="form.seo.title"
+                            type="text"
+                            :class="fieldClass"
+                            placeholder="Defaults to moment title"
+                        />
                     </div>
                     <div>
-                        <label class="mb-1 block text-sm font-medium text-foreground">SEO Description</label>
-                        <textarea v-model="form.seo.description" :class="textareaClass" rows="2" placeholder="Defaults to moment description" />
+                        <label
+                            class="text-foreground mb-1 block text-sm font-medium"
+                            >SEO Description</label
+                        >
+                        <textarea
+                            v-model="form.seo.description"
+                            :class="textareaClass"
+                            rows="2"
+                            placeholder="Defaults to moment description"
+                        />
                     </div>
                 </div>
             </FormSection>

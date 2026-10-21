@@ -75,7 +75,9 @@ function paginationLabel(label: string): string {
 }
 
 function deleteInquiry(inquiry: Inquiry): void {
-    if (!confirm(`Delete inquiry from ${inquiry.name}? This cannot be undone.`)) {
+    if (
+        !confirm(`Delete inquiry from ${inquiry.name}? This cannot be undone.`)
+    ) {
         return;
     }
 
@@ -96,97 +98,117 @@ function deleteInquiry(inquiry: Inquiry): void {
 
         <div
             v-if="props.inquiries.data.length > 0"
-            class="overflow-hidden rounded-lg border border-border bg-background"
+            class="border-border bg-background overflow-hidden rounded-lg border"
         >
             <div class="overflow-x-auto">
                 <table class="w-full min-w-[900px] table-auto">
-                    <thead class="border-b border-border bg-muted/40">
+                    <thead class="border-border bg-muted/40 border-b">
                         <tr>
                             <th
-                                class="px-4 py-3 text-left text-xs font-medium tracking-wide text-muted-foreground uppercase"
+                                class="text-muted-foreground px-4 py-3 text-left text-xs font-medium uppercase tracking-wide"
                             >
                                 Name
                             </th>
                             <th
-                                class="px-4 py-3 text-left text-xs font-medium tracking-wide text-muted-foreground uppercase"
+                                class="text-muted-foreground px-4 py-3 text-left text-xs font-medium uppercase tracking-wide"
                             >
                                 Subject
                             </th>
                             <th
-                                class="px-4 py-3 text-left text-xs font-medium tracking-wide text-muted-foreground uppercase"
+                                class="text-muted-foreground px-4 py-3 text-left text-xs font-medium uppercase tracking-wide"
                             >
                                 Status
                             </th>
                             <th
-                                class="px-4 py-3 text-left text-xs font-medium tracking-wide text-muted-foreground uppercase"
+                                class="text-muted-foreground px-4 py-3 text-left text-xs font-medium uppercase tracking-wide"
                             >
                                 Submitted
                             </th>
                             <th
-                                class="px-4 py-3 text-right text-xs font-medium tracking-wide text-muted-foreground uppercase"
+                                class="text-muted-foreground px-4 py-3 text-right text-xs font-medium uppercase tracking-wide"
                             >
                                 Actions
                             </th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-border">
+                    <tbody class="divide-border divide-y">
                         <tr
                             v-for="inquiry in props.inquiries.data"
                             :key="inquiry.id"
-                            class="transition-colors hover:bg-muted/40"
+                            class="hover:bg-muted/40 transition-colors"
                         >
                             <td class="px-4 py-4">
                                 <div class="flex flex-col gap-1">
-                                    <p class="text-sm font-medium text-foreground">
+                                    <p
+                                        class="text-foreground text-sm font-medium"
+                                    >
                                         {{ inquiry.name }}
                                     </p>
-                                    <p class="text-xs text-muted-foreground">
+                                    <p class="text-muted-foreground text-xs">
                                         {{ inquiry.email }}
                                     </p>
                                 </div>
                             </td>
-                            <td class="px-4 py-4 text-sm text-foreground max-w-xs sm:max-w-md">
+                            <td
+                                class="text-foreground max-w-xs px-4 py-4 text-sm sm:max-w-md"
+                            >
                                 <Link
                                     :href="inquiriesShow(inquiry.id)"
-                                    class="font-semibold text-foreground hover:text-purple-600 dark:hover:text-purple-400 transition-colors block truncate"
+                                    class="text-foreground block truncate font-semibold transition-colors hover:text-purple-600 dark:hover:text-purple-400"
                                 >
                                     {{ inquiry.subject }}
                                 </Link>
                                 <p
                                     v-if="inquiry.message"
-                                    class="text-xs text-muted-foreground truncate mt-0.5 line-clamp-1"
+                                    class="text-muted-foreground mt-0.5 line-clamp-1 truncate text-xs"
                                 >
                                     {{ inquiry.message }}
                                 </p>
                             </td>
-                            <td class="px-4 py-4 whitespace-nowrap">
+                            <td class="whitespace-nowrap px-4 py-4">
                                 <span
                                     :class="[
                                         statusColors[inquiry.status],
-                                        'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
+                                        'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium',
                                     ]"
                                 >
                                     {{
                                         inquiry.status
                                             .split('_')
-                                            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                                            .map(
+                                                (word) =>
+                                                    word
+                                                        .charAt(0)
+                                                        .toUpperCase() +
+                                                    word.slice(1),
+                                            )
                                             .join(' ')
                                     }}
                                 </span>
                             </td>
                             <td
-                                class="px-4 py-4 text-sm whitespace-nowrap text-muted-foreground"
+                                class="text-muted-foreground whitespace-nowrap px-4 py-4 text-sm"
                             >
                                 {{ formatDate(inquiry.created_at) }}
                             </td>
                             <td class="px-4 py-4">
                                 <div class="flex justify-end gap-1.5">
-                                    <Button variant="outline" size="sm" as-child class="h-8 text-xs px-2.5">
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        as-child
+                                        class="h-8 px-2.5 text-xs"
+                                    >
                                         <Link :href="inquiriesShow(inquiry.id)">
                                             View
                                         </Link>
                                     </Button>
-                                    <Button variant="ghost" size="sm" as-child class="h-8 text-xs px-2.5">
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        as-child
+                                        class="h-8 px-2.5 text-xs"
+                                    >
                                         <Link :href="inquiriesEdit(inquiry.id)">
                                             Edit
                                         </Link>
@@ -194,7 +216,7 @@ function deleteInquiry(inquiry: Inquiry): void {
                                     <Button
                                         variant="ghost"
                                         size="sm"
-                                        class="h-8 text-xs px-2 text-destructive hover:text-destructive"
+                                        class="text-destructive hover:text-destructive h-8 px-2 text-xs"
                                         @click="deleteInquiry(inquiry)"
                                     >
                                         Delete
@@ -207,7 +229,7 @@ function deleteInquiry(inquiry: Inquiry): void {
             </div>
 
             <div
-                class="flex flex-col gap-4 border-t border-border px-4 py-3 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between"
+                class="border-border text-muted-foreground flex flex-col gap-4 border-t px-4 py-3 text-sm sm:flex-row sm:items-center sm:justify-between"
             >
                 <p>
                     Showing {{ props.inquiries.from }} to

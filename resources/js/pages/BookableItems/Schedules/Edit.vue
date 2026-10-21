@@ -75,7 +75,9 @@ function handleCancel(): void {
                 <div class="space-y-6">
                     <!-- Start Date/Time -->
                     <div>
-                        <label class="mb-2 block text-sm font-medium text-foreground">
+                        <label
+                            class="text-foreground mb-2 block text-sm font-medium"
+                        >
                             Starts <span class="text-destructive">*</span>
                         </label>
                         <input
@@ -84,14 +86,19 @@ function handleCancel(): void {
                             :class="fieldClass"
                             @change="setEndTime"
                         />
-                        <p v-if="form.errors.starts_at" class="mt-1 text-sm text-destructive">
+                        <p
+                            v-if="form.errors.starts_at"
+                            class="text-destructive mt-1 text-sm"
+                        >
                             {{ form.errors.starts_at }}
                         </p>
                     </div>
 
                     <!-- End Date/Time -->
                     <div>
-                        <label class="mb-2 block text-sm font-medium text-foreground">
+                        <label
+                            class="text-foreground mb-2 block text-sm font-medium"
+                        >
                             Ends <span class="text-destructive">*</span>
                         </label>
                         <input
@@ -99,14 +106,19 @@ function handleCancel(): void {
                             type="datetime-local"
                             :class="fieldClass"
                         />
-                        <p v-if="form.errors.ends_at" class="mt-1 text-sm text-destructive">
+                        <p
+                            v-if="form.errors.ends_at"
+                            class="text-destructive mt-1 text-sm"
+                        >
                             {{ form.errors.ends_at }}
                         </p>
                     </div>
 
                     <!-- Capacity -->
                     <div>
-                        <label class="mb-2 block text-sm font-medium text-foreground">
+                        <label
+                            class="text-foreground mb-2 block text-sm font-medium"
+                        >
                             Capacity
                         </label>
                         <input
@@ -116,17 +128,23 @@ function handleCancel(): void {
                             :class="fieldClass"
                             placeholder="Leave blank to use activity default"
                         />
-                        <p class="mt-1 text-xs text-muted-foreground">
-                            Overrides the activity's default capacity for this session
+                        <p class="text-muted-foreground mt-1 text-xs">
+                            Overrides the activity's default capacity for this
+                            session
                         </p>
-                        <p v-if="form.errors.capacity" class="mt-1 text-sm text-destructive">
+                        <p
+                            v-if="form.errors.capacity"
+                            class="text-destructive mt-1 text-sm"
+                        >
                             {{ form.errors.capacity }}
                         </p>
                     </div>
 
                     <!-- Location -->
                     <div>
-                        <label class="mb-2 block text-sm font-medium text-foreground">
+                        <label
+                            class="text-foreground mb-2 block text-sm font-medium"
+                        >
                             Location
                         </label>
                         <input
@@ -135,24 +153,33 @@ function handleCancel(): void {
                             :class="fieldClass"
                             placeholder="e.g., Main Pitch, Training Ground A"
                         />
-                        <p class="mt-1 text-xs text-muted-foreground">
-                            Overrides the activity's default location for this session
+                        <p class="text-muted-foreground mt-1 text-xs">
+                            Overrides the activity's default location for this
+                            session
                         </p>
-                        <p v-if="form.errors.location" class="mt-1 text-sm text-destructive">
+                        <p
+                            v-if="form.errors.location"
+                            class="text-destructive mt-1 text-sm"
+                        >
                             {{ form.errors.location }}
                         </p>
                     </div>
 
                     <!-- Status -->
                     <div>
-                        <label class="mb-2 block text-sm font-medium text-foreground">
+                        <label
+                            class="text-foreground mb-2 block text-sm font-medium"
+                        >
                             Status <span class="text-destructive">*</span>
                         </label>
                         <select v-model="form.status" :class="fieldClass">
                             <option value="active">Active</option>
                             <option value="cancelled">Cancelled</option>
                         </select>
-                        <p v-if="form.errors.status" class="mt-1 text-sm text-destructive">
+                        <p
+                            v-if="form.errors.status"
+                            class="text-destructive mt-1 text-sm"
+                        >
                             {{ form.errors.status }}
                         </p>
                     </div>

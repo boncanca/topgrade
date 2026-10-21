@@ -70,9 +70,7 @@ function handleCancel(): void {
 
 function handleDelete(): void {
     if (
-        !confirm(
-            `Delete "${props.item.name}"? This action cannot be undone.`
-        )
+        !confirm(`Delete "${props.item.name}"? This action cannot be undone.`)
     ) {
         return;
     }
@@ -87,7 +85,11 @@ function handleDelete(): void {
         :description="`Editing: ${props.item.name}`"
     >
         <div class="mb-6 flex justify-end">
-            <Button variant="outline" class="border-purple-300 text-purple-700 hover:bg-purple-50 dark:border-purple-800 dark:text-purple-300 dark:hover:bg-purple-950 font-semibold" as-child>
+            <Button
+                variant="outline"
+                class="border-purple-300 font-semibold text-purple-700 hover:bg-purple-50 dark:border-purple-800 dark:text-purple-300 dark:hover:bg-purple-950"
+                as-child
+            >
                 <Link :href="schedulesIndex(props.item.id)">
                     📅 Manage Schedules
                 </Link>
@@ -102,7 +104,7 @@ function handleDelete(): void {
                 <div class="space-y-6">
                     <div>
                         <label
-                            class="mb-2 block text-sm font-medium text-foreground"
+                            class="text-foreground mb-2 block text-sm font-medium"
                         >
                             Name <span class="text-destructive">*</span>
                         </label>
@@ -115,7 +117,7 @@ function handleDelete(): void {
                         />
                         <p
                             v-if="form.errors.name"
-                            class="mt-1 text-sm text-destructive"
+                            class="text-destructive mt-1 text-sm"
                         >
                             {{ form.errors.name }}
                         </p>
@@ -123,7 +125,7 @@ function handleDelete(): void {
 
                     <div>
                         <label
-                            class="mb-2 block text-sm font-medium text-foreground"
+                            class="text-foreground mb-2 block text-sm font-medium"
                         >
                             Slug <span class="text-destructive">*</span>
                         </label>
@@ -135,7 +137,7 @@ function handleDelete(): void {
                         />
                         <p
                             v-if="form.errors.slug"
-                            class="mt-1 text-sm text-destructive"
+                            class="text-destructive mt-1 text-sm"
                         >
                             {{ form.errors.slug }}
                         </p>
@@ -143,7 +145,7 @@ function handleDelete(): void {
 
                     <div>
                         <label
-                            class="mb-2 block text-sm font-medium text-foreground"
+                            class="text-foreground mb-2 block text-sm font-medium"
                         >
                             Description
                         </label>
@@ -155,7 +157,7 @@ function handleDelete(): void {
                         />
                         <p
                             v-if="form.errors.description"
-                            class="mt-1 text-sm text-destructive"
+                            class="text-destructive mt-1 text-sm"
                         >
                             {{ form.errors.description }}
                         </p>
@@ -171,7 +173,7 @@ function handleDelete(): void {
                     <div class="grid grid-cols-2 gap-6">
                         <div>
                             <label
-                                class="mb-2 block text-sm font-medium text-foreground"
+                                class="text-foreground mb-2 block text-sm font-medium"
                             >
                                 Duration (minutes)
                                 <span class="text-destructive">*</span>
@@ -185,7 +187,7 @@ function handleDelete(): void {
                             />
                             <p
                                 v-if="form.errors.duration_minutes"
-                                class="mt-1 text-sm text-destructive"
+                                class="text-destructive mt-1 text-sm"
                             >
                                 {{ form.errors.duration_minutes }}
                             </p>
@@ -193,7 +195,7 @@ function handleDelete(): void {
 
                         <div>
                             <label
-                                class="mb-2 block text-sm font-medium text-foreground"
+                                class="text-foreground mb-2 block text-sm font-medium"
                             >
                                 Capacity <span class="text-destructive">*</span>
                             </label>
@@ -205,7 +207,7 @@ function handleDelete(): void {
                             />
                             <p
                                 v-if="form.errors.capacity"
-                                class="mt-1 text-sm text-destructive"
+                                class="text-destructive mt-1 text-sm"
                             >
                                 {{ form.errors.capacity }}
                             </p>
@@ -214,7 +216,7 @@ function handleDelete(): void {
 
                     <div>
                         <label
-                            class="mb-2 block text-sm font-medium text-foreground"
+                            class="text-foreground mb-2 block text-sm font-medium"
                         >
                             Location <span class="text-destructive">*</span>
                         </label>
@@ -226,7 +228,7 @@ function handleDelete(): void {
                         />
                         <p
                             v-if="form.errors.location"
-                            class="mt-1 text-sm text-destructive"
+                            class="text-destructive mt-1 text-sm"
                         >
                             {{ form.errors.location }}
                         </p>
@@ -243,9 +245,9 @@ function handleDelete(): void {
                         <input
                             v-model="form.requires_payment"
                             type="checkbox"
-                            class="h-4 w-4 rounded border border-input"
+                            class="border-input h-4 w-4 rounded border"
                         />
-                        <label class="text-sm font-medium text-foreground">
+                        <label class="text-foreground text-sm font-medium">
                             This activity requires payment
                         </label>
                     </div>
@@ -254,7 +256,7 @@ function handleDelete(): void {
                         <div class="grid grid-cols-2 gap-6">
                             <div>
                                 <label
-                                    class="mb-2 block text-sm font-medium text-foreground"
+                                    class="text-foreground mb-2 block text-sm font-medium"
                                 >
                                     Price
                                     <span class="text-destructive">*</span>
@@ -269,7 +271,7 @@ function handleDelete(): void {
                                 />
                                 <p
                                     v-if="form.errors.price"
-                                    class="mt-1 text-sm text-destructive"
+                                    class="text-destructive mt-1 text-sm"
                                 >
                                     {{ form.errors.price }}
                                 </p>
@@ -277,7 +279,7 @@ function handleDelete(): void {
 
                             <div>
                                 <label
-                                    class="mb-2 block text-sm font-medium text-foreground"
+                                    class="text-foreground mb-2 block text-sm font-medium"
                                 >
                                     Currency
                                     <span class="text-destructive">*</span>
@@ -294,7 +296,7 @@ function handleDelete(): void {
                                 </select>
                                 <p
                                     v-if="form.errors.currency"
-                                    class="mt-1 text-sm text-destructive"
+                                    class="text-destructive mt-1 text-sm"
                                 >
                                     {{ form.errors.currency }}
                                 </p>
@@ -313,16 +315,16 @@ function handleDelete(): void {
                         <input
                             v-model="form.is_active"
                             type="checkbox"
-                            class="h-4 w-4 rounded border border-input"
+                            class="border-input h-4 w-4 rounded border"
                         />
-                        <label class="text-sm font-medium text-foreground">
+                        <label class="text-foreground text-sm font-medium">
                             This activity is active and available for booking
                         </label>
                     </div>
 
                     <div>
                         <label
-                            class="mb-2 block text-sm font-medium text-foreground"
+                            class="text-foreground mb-2 block text-sm font-medium"
                         >
                             Booking Button Label
                         </label>
@@ -334,7 +336,7 @@ function handleDelete(): void {
                         />
                         <p
                             v-if="form.errors.booking_label"
-                            class="mt-1 text-sm text-destructive"
+                            class="text-destructive mt-1 text-sm"
                         >
                             {{ form.errors.booking_label }}
                         </p>

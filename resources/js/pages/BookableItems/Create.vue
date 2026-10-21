@@ -4,7 +4,10 @@ import FormPage from '@/components/FormPage.vue';
 import FormSection from '@/components/FormSection.vue';
 import PageActions from '@/components/PageActions.vue';
 import { Button } from '@/components/ui/button';
-import { index as activitiesIndex, store as activitiesStore } from '@/routes/bookable-items';
+import {
+    index as activitiesIndex,
+    store as activitiesStore,
+} from '@/routes/bookable-items';
 
 const fieldClass =
     'w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50';
@@ -58,7 +61,7 @@ function handleCancel(): void {
                 <div class="space-y-6">
                     <div>
                         <label
-                            class="mb-2 block text-sm font-medium text-foreground"
+                            class="text-foreground mb-2 block text-sm font-medium"
                         >
                             Name <span class="text-destructive">*</span>
                         </label>
@@ -71,7 +74,7 @@ function handleCancel(): void {
                         />
                         <p
                             v-if="form.errors.name"
-                            class="mt-1 text-sm text-destructive"
+                            class="text-destructive mt-1 text-sm"
                         >
                             {{ form.errors.name }}
                         </p>
@@ -79,7 +82,7 @@ function handleCancel(): void {
 
                     <div>
                         <label
-                            class="mb-2 block text-sm font-medium text-foreground"
+                            class="text-foreground mb-2 block text-sm font-medium"
                         >
                             Slug <span class="text-destructive">*</span>
                         </label>
@@ -91,7 +94,7 @@ function handleCancel(): void {
                         />
                         <p
                             v-if="form.errors.slug"
-                            class="mt-1 text-sm text-destructive"
+                            class="text-destructive mt-1 text-sm"
                         >
                             {{ form.errors.slug }}
                         </p>
@@ -99,7 +102,7 @@ function handleCancel(): void {
 
                     <div>
                         <label
-                            class="mb-2 block text-sm font-medium text-foreground"
+                            class="text-foreground mb-2 block text-sm font-medium"
                         >
                             Description
                         </label>
@@ -111,7 +114,7 @@ function handleCancel(): void {
                         />
                         <p
                             v-if="form.errors.description"
-                            class="mt-1 text-sm text-destructive"
+                            class="text-destructive mt-1 text-sm"
                         >
                             {{ form.errors.description }}
                         </p>
@@ -127,7 +130,7 @@ function handleCancel(): void {
                     <div class="grid grid-cols-2 gap-6">
                         <div>
                             <label
-                                class="mb-2 block text-sm font-medium text-foreground"
+                                class="text-foreground mb-2 block text-sm font-medium"
                             >
                                 Duration (minutes)
                                 <span class="text-destructive">*</span>
@@ -141,7 +144,7 @@ function handleCancel(): void {
                             />
                             <p
                                 v-if="form.errors.duration_minutes"
-                                class="mt-1 text-sm text-destructive"
+                                class="text-destructive mt-1 text-sm"
                             >
                                 {{ form.errors.duration_minutes }}
                             </p>
@@ -149,7 +152,7 @@ function handleCancel(): void {
 
                         <div>
                             <label
-                                class="mb-2 block text-sm font-medium text-foreground"
+                                class="text-foreground mb-2 block text-sm font-medium"
                             >
                                 Capacity <span class="text-destructive">*</span>
                             </label>
@@ -161,7 +164,7 @@ function handleCancel(): void {
                             />
                             <p
                                 v-if="form.errors.capacity"
-                                class="mt-1 text-sm text-destructive"
+                                class="text-destructive mt-1 text-sm"
                             >
                                 {{ form.errors.capacity }}
                             </p>
@@ -170,7 +173,7 @@ function handleCancel(): void {
 
                     <div>
                         <label
-                            class="mb-2 block text-sm font-medium text-foreground"
+                            class="text-foreground mb-2 block text-sm font-medium"
                         >
                             Location <span class="text-destructive">*</span>
                         </label>
@@ -182,7 +185,7 @@ function handleCancel(): void {
                         />
                         <p
                             v-if="form.errors.location"
-                            class="mt-1 text-sm text-destructive"
+                            class="text-destructive mt-1 text-sm"
                         >
                             {{ form.errors.location }}
                         </p>
@@ -199,9 +202,9 @@ function handleCancel(): void {
                         <input
                             v-model="form.requires_payment"
                             type="checkbox"
-                            class="h-4 w-4 rounded border border-input"
+                            class="border-input h-4 w-4 rounded border"
                         />
-                        <label class="text-sm font-medium text-foreground">
+                        <label class="text-foreground text-sm font-medium">
                             This activity requires payment
                         </label>
                     </div>
@@ -210,7 +213,7 @@ function handleCancel(): void {
                         <div class="grid grid-cols-2 gap-6">
                             <div>
                                 <label
-                                    class="mb-2 block text-sm font-medium text-foreground"
+                                    class="text-foreground mb-2 block text-sm font-medium"
                                 >
                                     Price
                                     <span class="text-destructive">*</span>
@@ -225,7 +228,7 @@ function handleCancel(): void {
                                 />
                                 <p
                                     v-if="form.errors.price"
-                                    class="mt-1 text-sm text-destructive"
+                                    class="text-destructive mt-1 text-sm"
                                 >
                                     {{ form.errors.price }}
                                 </p>
@@ -233,7 +236,7 @@ function handleCancel(): void {
 
                             <div>
                                 <label
-                                    class="mb-2 block text-sm font-medium text-foreground"
+                                    class="text-foreground mb-2 block text-sm font-medium"
                                 >
                                     Currency
                                     <span class="text-destructive">*</span>
@@ -250,7 +253,7 @@ function handleCancel(): void {
                                 </select>
                                 <p
                                     v-if="form.errors.currency"
-                                    class="mt-1 text-sm text-destructive"
+                                    class="text-destructive mt-1 text-sm"
                                 >
                                     {{ form.errors.currency }}
                                 </p>
@@ -269,16 +272,16 @@ function handleCancel(): void {
                         <input
                             v-model="form.is_active"
                             type="checkbox"
-                            class="h-4 w-4 rounded border border-input"
+                            class="border-input h-4 w-4 rounded border"
                         />
-                        <label class="text-sm font-medium text-foreground">
+                        <label class="text-foreground text-sm font-medium">
                             This activity is active and available for booking
                         </label>
                     </div>
 
                     <div>
                         <label
-                            class="mb-2 block text-sm font-medium text-foreground"
+                            class="text-foreground mb-2 block text-sm font-medium"
                         >
                             Booking Button Label
                         </label>
@@ -290,7 +293,7 @@ function handleCancel(): void {
                         />
                         <p
                             v-if="form.errors.booking_label"
-                            class="mt-1 text-sm text-destructive"
+                            class="text-destructive mt-1 text-sm"
                         >
                             {{ form.errors.booking_label }}
                         </p>
@@ -308,7 +311,9 @@ function handleCancel(): void {
                         Cancel
                     </Button>
                     <Button type="submit" :disabled="form.processing">
-                        {{ form.processing ? 'Creating...' : 'Create Activity' }}
+                        {{
+                            form.processing ? 'Creating...' : 'Create Activity'
+                        }}
                     </Button>
                 </div>
             </PageActions>

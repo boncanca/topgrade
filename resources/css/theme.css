@@ -2,586 +2,610 @@
 
 /* TGLFC-inspired configurable theme */
 @layer base {
-  :root {
-    /* Primary palette - derived from TGLFC */
-    --color-primary: 270 60% 38%;
-    --color-primary-light: 270 60% 50%;
-    --color-primary-dark: 270 60% 30%;
+    :root {
+        /* Primary palette - derived from TGLFC */
+        --color-primary: 270 60% 38%;
+        --color-primary-light: 270 60% 50%;
+        --color-primary-dark: 270 60% 30%;
 
-    --color-secondary: 310 50% 45%;
-    --color-secondary-light: 310 50% 50%;
-    --color-secondary-dark: 310 50% 35%;
+        --color-secondary: 310 50% 45%;
+        --color-secondary-light: 310 50% 50%;
+        --color-secondary-dark: 310 50% 35%;
 
-    --color-accent: 310 70% 48%;
-    --color-accent-light: 310 70% 55%;
-    --color-accent-dark: 310 70% 40%;
+        --color-accent: 310 70% 48%;
+        --color-accent-light: 310 70% 55%;
+        --color-accent-dark: 310 70% 40%;
 
-    /* Semantic colors */
-    --color-success: 120 60% 35%;
-    --color-warning: 45 90% 55%;
-    --color-destructive: 0 84% 60%;
-    --color-info: 200 70% 50%;
+        /* Semantic colors */
+        --color-success: 120 60% 35%;
+        --color-warning: 45 90% 55%;
+        --color-destructive: 0 84% 60%;
+        --color-info: 200 70% 50%;
 
-    /* Neutrals */
-    --color-foreground: 260 30% 12%;
-    --color-background: 0 0% 100%;
-    --color-muted: 260 10% 95%;
-    --color-muted-foreground: 260 10% 45%;
-    --color-border: 260 10% 90%;
-    --color-input: 260 10% 90%;
+        /* Neutrals */
+        --color-foreground: 260 30% 12%;
+        --color-background: 0 0% 100%;
+        --color-muted: 260 10% 95%;
+        --color-muted-foreground: 260 10% 45%;
+        --color-border: 260 10% 90%;
+        --color-input: 260 10% 90%;
 
-    /* Surface colors */
-    --color-surface-white: 0 0% 100%;
-    --color-surface-light: 260 10% 97%;
-    --color-dark-section: 260 30% 12%;
+        /* Surface colors */
+        --color-surface-white: 0 0% 100%;
+        --color-surface-light: 260 10% 97%;
+        --color-dark-section: 260 30% 12%;
 
-    /* Sidebar */
-    --color-sidebar-background: 260 30% 12%;
-    --color-sidebar-foreground: 0 0% 95%;
-    --color-sidebar-primary: 270 60% 50%;
-    --color-sidebar-accent: 260 20% 20%;
-    --color-sidebar-border: 260 20% 20%;
+        /* Sidebar */
+        --color-sidebar-background: 260 30% 12%;
+        --color-sidebar-foreground: 0 0% 95%;
+        --color-sidebar-primary: 270 60% 50%;
+        --color-sidebar-accent: 260 20% 20%;
+        --color-sidebar-border: 260 20% 20%;
 
-    /* Shadows & Effects */
-    --shadow-card: 0 2px 12px hsl(260 30% 12% / 0.06);
-    --shadow-glow: 0 0 20px hsl(270 60% 50% / 0.15);
+        /* Shadows & Effects */
+        --shadow-card: 0 2px 12px hsl(260 30% 12% / 0.06);
+        --shadow-glow: 0 0 20px hsl(270 60% 50% / 0.15);
 
-    /* Radius */
-    --radius: 0.5rem;
-    --radius-lg: 1rem;
-    --radius-md: 0.75rem;
-    --radius-sm: 0.375rem;
+        /* Radius */
+        --radius: 0.5rem;
+        --radius-lg: 1rem;
+        --radius-md: 0.75rem;
+        --radius-sm: 0.375rem;
 
-    /* ========================================
+        /* ========================================
        TOPGRADE BRAND PALETTE (PRIMITIVES)
        ======================================== */
-    --tg-black: #08040f;
-    --tg-black-deep: #05020a;
-    --tg-purple-deep: #2a0b57;
-    --tg-purple: #4b0a86;
-    --tg-magenta: #c41e9b;
-    --tg-pink: #ff4fd0;
-    --tg-gold: #f0c247;
-    --tg-white: #ffffff;
-    --tg-paper: #f6f1fb;
+        --tg-black: #08040f;
+        --tg-black-deep: #05020a;
+        --tg-purple-deep: #2a0b57;
+        --tg-purple: #4b0a86;
+        --tg-magenta: #c41e9b;
+        --tg-pink: #ff4fd0;
+        --tg-gold: #f0c247;
+        --tg-white: #ffffff;
+        --tg-paper: #f6f1fb;
 
-    /* ========================================
+        /* ========================================
        PUBLIC SEMANTIC TOKENS (CANONICAL DARK)
        ======================================== */
-    --tg-bg: var(--tg-black);
-    --tg-bg-deep: var(--tg-black-deep);
+        --tg-bg: var(--tg-black);
+        --tg-bg-deep: var(--tg-black-deep);
 
-    --tg-text: var(--tg-paper);
-    --tg-text-strong: var(--tg-white);
-    --tg-text-muted: #a294b8;
+        --tg-text: var(--tg-paper);
+        --tg-text-strong: var(--tg-white);
+        --tg-text-muted: #a294b8;
 
-    --tg-accent: var(--tg-magenta);
-    --tg-accent-hover: var(--tg-pink);
-    --tg-highlight: var(--tg-gold);
+        --tg-accent: var(--tg-magenta);
+        --tg-accent-hover: var(--tg-pink);
+        --tg-highlight: var(--tg-gold);
 
-    --tg-border: rgba(255, 255, 255, 0.12);
-    --tg-border-strong: rgba(255, 255, 255, 0.22);
+        --tg-border: rgba(255, 255, 255, 0.12);
+        --tg-border-strong: rgba(255, 255, 255, 0.22);
 
-    /* Translucent Section Surfaces (Grid & Ball Perceptible Underneath) */
-    --surface-hero: rgba(8, 4, 15, 0.72);
-    --surface-section: rgba(8, 4, 15, 0.82);
-    --surface-dense: rgba(8, 4, 15, 0.91);
+        /* Translucent Section Surfaces (Grid & Ball Perceptible Underneath) */
+        --surface-hero: rgba(8, 4, 15, 0.72);
+        --surface-section: rgba(8, 4, 15, 0.82);
+        --surface-dense: rgba(8, 4, 15, 0.91);
 
-    /* Football / Field */
-    --tg-pitch-stroke: #ffffff;
-    --tg-pitch-opacity: 0.08;
-    --tg-ball-size: 50vmin;
-    --tg-ball-shadow: 0 20px 45px rgba(0, 0, 0, 0.75);
+        /* Football / Field */
+        --tg-pitch-stroke: #ffffff;
+        --tg-pitch-opacity: 0.08;
+        --tg-ball-size: 50vmin;
+        --tg-ball-shadow: 0 20px 45px rgba(0, 0, 0, 0.75);
 
-    /* Typography */
-    --tg-display: "Anton", "Arial Narrow", sans-serif;
-    --tg-body: "Archivo", Arial, sans-serif;
+        /* Typography */
+        --tg-display: 'Anton', 'Arial Narrow', sans-serif;
+        --tg-body: 'Archivo', Arial, sans-serif;
 
-    /* Motion */
-    --tg-spring: cubic-bezier(0.16, 1, 0.3, 1);
-  }
+        /* Motion */
+        --tg-spring: cubic-bezier(0.16, 1, 0.3, 1);
+    }
 
-  /* Base dark background */
-  .dark {
-    --color-foreground: 0 0% 95%;
-    --color-background: 260 30% 5%;
-    --color-muted: 260 20% 15%;
-    --color-muted-foreground: 260 10% 60%;
-    --color-border: 260 20% 18%;
-    --color-input: 260 20% 18%;
+    /* Base dark background */
+    .dark {
+        --color-foreground: 0 0% 95%;
+        --color-background: 260 30% 5%;
+        --color-muted: 260 20% 15%;
+        --color-muted-foreground: 260 10% 60%;
+        --color-border: 260 20% 18%;
+        --color-input: 260 20% 18%;
 
-    --color-primary: 270 60% 55%;
-    --color-primary-light: 270 60% 65%;
-    --color-primary-dark: 270 60% 45%;
+        --color-primary: 270 60% 55%;
+        --color-primary-light: 270 60% 65%;
+        --color-primary-dark: 270 60% 45%;
 
-    --color-secondary: 310 50% 50%;
-    --color-secondary-light: 310 50% 60%;
-    --color-secondary-dark: 310 50% 40%;
+        --color-secondary: 310 50% 50%;
+        --color-secondary-light: 310 50% 60%;
+        --color-secondary-dark: 310 50% 40%;
 
-    --color-accent: 310 70% 55%;
-    --color-accent-light: 310 70% 65%;
-    --color-accent-dark: 310 70% 45%;
+        --color-accent: 310 70% 55%;
+        --color-accent-light: 310 70% 65%;
+        --color-accent-dark: 310 70% 45%;
 
-    --color-destructive: 0 62% 30%;
-    --color-surface-light: 260 20% 15%;
-    --color-dark-section: 260 25% 10%;
-  }
+        --color-destructive: 0 62% 30%;
+        --color-surface-light: 260 20% 15%;
+        --color-dark-section: 260 25% 10%;
+    }
 
-  /* Apply base styles */
-  * {
-    @apply border-border;
-  }
+    /* Apply base styles */
+    * {
+        @apply border-border;
+    }
 
-  html {
-    scroll-behavior: smooth;
-  }
+    html {
+        scroll-behavior: smooth;
+    }
 
-  body {
-    @apply bg-background text-foreground;
-    font-family: 'Archivo', 'Helvetica Neue', Arial, sans-serif;
-  }
+    body {
+        @apply bg-background text-foreground;
+        font-family: 'Archivo', 'Helvetica Neue', Arial, sans-serif;
+    }
 
-  h1, h2, h3, h4, h5, h6 {
-    font-family: 'Anton', 'Haettenschweiler', 'Arial Narrow', sans-serif;
-    text-transform: uppercase;
-    letter-spacing: 0.005em;
-  }
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        font-family: 'Anton', 'Haettenschweiler', 'Arial Narrow', sans-serif;
+        text-transform: uppercase;
+        letter-spacing: 0.005em;
+    }
 
-  h1 {
-    @apply text-4xl font-normal;
-    line-height: 0.9;
-  }
+    h1 {
+        @apply text-4xl font-normal;
+        line-height: 0.9;
+    }
 
-  h2 {
-    @apply text-3xl font-normal;
-    line-height: 0.9;
-  }
+    h2 {
+        @apply text-3xl font-normal;
+        line-height: 0.9;
+    }
 
-  h3 {
-    @apply text-2xl font-normal;
-    line-height: 0.95;
-  }
+    h3 {
+        @apply text-2xl font-normal;
+        line-height: 0.95;
+    }
 
-  h4 {
-    @apply text-xl font-normal;
-    line-height: 1;
-  }
+    h4 {
+        @apply text-xl font-normal;
+        line-height: 1;
+    }
 }
 
 /* Utility layers */
 @layer utilities {
-  /* Surface colors */
-  .bg-surface-white {
-    @apply bg-white dark:bg-slate-900;
-  }
+    /* Surface colors */
+    .bg-surface-white {
+        @apply bg-white dark:bg-slate-900;
+    }
 
-  .bg-surface-light {
-    background-color: hsl(var(--color-surface-light));
-  }
+    .bg-surface-light {
+        background-color: hsl(var(--color-surface-light));
+    }
 
-  .bg-dark-section {
-    background-color: hsl(var(--color-dark-section));
-  }
+    .bg-dark-section {
+        background-color: hsl(var(--color-dark-section));
+    }
 
-  /* Shadows */
-  .shadow-card {
-    box-shadow: var(--shadow-card);
-  }
+    /* Shadows */
+    .shadow-card {
+        box-shadow: var(--shadow-card);
+    }
 
-  /* Typography */
-  .text-heading {
-    font-family: var(--tg-display);
-    @apply text-2xl font-normal uppercase tracking-wider;
-  }
+    /* Typography */
+    .text-heading {
+        font-family: var(--tg-display);
+        @apply text-2xl font-normal uppercase tracking-wider;
+    }
 
-  .text-subheading {
-    font-family: var(--tg-display);
-    @apply text-lg font-normal uppercase;
-  }
+    .text-subheading {
+        font-family: var(--tg-display);
+        @apply text-lg font-normal uppercase;
+    }
 
-  .text-body {
-    @apply text-base font-normal;
-  }
+    .text-body {
+        @apply text-base font-normal;
+    }
 
-  .text-caption {
-    @apply text-xs text-muted-foreground;
-  }
+    .text-caption {
+        @apply text-muted-foreground text-xs;
+    }
 
-  /* Flex utilities */
-  .flex-center {
-    @apply flex items-center justify-center;
-  }
+    /* Flex utilities */
+    .flex-center {
+        @apply flex items-center justify-center;
+    }
 
-  .flex-between {
-    @apply flex items-center justify-between;
-  }
+    .flex-between {
+        @apply flex items-center justify-between;
+    }
 
-  .flex-col-center {
-    @apply flex flex-col items-center justify-center;
-  }
+    .flex-col-center {
+        @apply flex flex-col items-center justify-center;
+    }
 
-  /* Container utilities */
-  .container-center {
-    @apply mx-auto max-w-7xl px-4 sm:px-6 lg:px-8;
-  }
+    /* Container utilities */
+    .container-center {
+        @apply mx-auto max-w-7xl px-4 sm:px-6 lg:px-8;
+    }
 }
 
 /* Component styles */
 @layer components {
-  /* Section */
-  .section-base {
-    @apply py-12 md:py-16;
-  }
-
-  .section-dark {
-    background-color: hsl(var(--color-dark-section));
-    @apply py-12 text-sidebar-foreground md:py-16;
-  }
-
-  .section-hero {
-    background-color: hsl(var(--color-dark-section));
-    @apply py-20 text-sidebar-foreground md:py-32;
-  }
-
-  /* Cards */
-  .card-base {
-    @apply rounded-lg border border-border bg-card p-6 text-card-foreground;
-  }
-
-  .card-hover {
-    @apply rounded-lg border border-border bg-card p-6 text-card-foreground;
-    transition: box-shadow 200ms ease-in-out, transform 200ms ease-in-out;
-  }
-
-  .card-hover:hover {
-    @apply shadow-lg -translate-y-1;
-  }
-
-  /* Badges */
-  .badge {
-    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
-  }
-
-  .badge-primary {
-    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary;
-  }
-
-  .badge-success {
-    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800;
-  }
-
-  .dark .badge-success {
-    @apply bg-green-900 text-green-200;
-  }
-
-  .badge-warning {
-    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800;
-  }
-
-  .dark .badge-warning {
-    @apply bg-amber-900 text-amber-200;
-  }
-
-  .badge-destructive {
-    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800;
-  }
-
-  .dark .badge-destructive {
-    @apply bg-red-900 text-red-200;
-  }
-
-  /* Forms */
-  .form-control {
-    @apply w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-xs transition-colors outline-none placeholder:text-muted-foreground focus:border-ring focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50;
-  }
-
-  .form-label {
-    @apply block text-sm font-medium text-foreground;
-  }
-
-  .form-helper {
-    @apply mt-1 text-xs text-muted-foreground;
-  }
-
-  .form-error {
-    @apply mt-1 text-xs text-destructive;
-  }
-
-  /* Buttons — Admin/generic (existing) */
-  .btn-base {
-    @apply inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50;
-    transition: all 200ms ease-in-out;
-  }
-
-  .btn-primary {
-    @apply inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90;
-    transition: all 200ms ease-in-out;
-  }
-
-  .btn-secondary {
-    @apply inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 bg-secondary text-secondary-foreground hover:bg-secondary/90;
-    transition: all 200ms ease-in-out;
-  }
-
-  .btn-accent {
-    @apply inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 bg-accent text-accent-foreground hover:bg-accent/90;
-    transition: all 200ms ease-in-out;
-  }
-
-  .btn-ghost {
-    @apply inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 hover:bg-muted;
-    transition: all 200ms ease-in-out;
-  }
-
-  .btn-outline {
-    @apply inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 border border-input hover:bg-muted;
-    transition: all 200ms ease-in-out;
-  }
-
-  .btn-sm {
-    @apply h-8 px-3;
-  }
-
-  .btn-md {
-    @apply h-10 px-4;
-  }
-
-  .btn-lg {
-    @apply h-12 px-6;
-  }
-
-  /* ─── TopGrade Public Buttons ─── */
-  .tg-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.55rem;
-    font-family: var(--tg-body);
-    font-weight: 600;
-    font-size: 0.88rem;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    border: 1.5px solid var(--tg-accent);
-    background: var(--tg-accent);
-    color: var(--tg-text-strong);
-    padding: 0.7rem 1.35rem;
-    border-radius: 2px;
-    cursor: pointer;
-    transition: background 0.2s ease, border-color 0.2s ease;
-    text-decoration: none;
-  }
-
-  .tg-btn:hover {
-    background: var(--tg-accent-hover);
-    border-color: var(--tg-accent-hover);
-    color: var(--tg-text-strong);
-  }
-
-  .tg-btn.ghost {
-    background: transparent;
-    border-color: var(--tg-border-strong);
-    color: var(--tg-text);
-  }
-
-  .tg-btn.ghost:hover {
-    border-color: var(--tg-accent);
-    background: transparent;
-    color: var(--tg-accent);
-  }
-
-  .tg-link {
-    font-family: var(--tg-body);
-    font-size: 0.85rem;
-    font-weight: 600;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--tg-text-muted);
-    text-decoration: none;
-    transition: color 0.2s ease;
-  }
-
-  .tg-link:hover {
-    color: var(--tg-text);
-  }
-
-  /* ─── TopGrade Public Eyebrow ─── */
-  .tg-eyebrow {
-    font-family: var(--tg-body);
-    font-size: 0.72rem;
-    letter-spacing: 0.28em;
-    color: var(--tg-accent);
-    font-weight: 600;
-    text-transform: uppercase;
-    margin: 0 0 0.8rem;
-  }
-
-  /* ─── TopGrade Pitch Grid ─── */
-  .tg-pitchgrid {
-    position: fixed;
-    inset: 0;
-    z-index: 0;
-    pointer-events: none;
-    opacity: var(--tg-pitch-opacity);
-    transition: opacity 0.35s ease-out;
-  }
-
-  .tg-pitchgrid svg {
-    width: 100%;
-    height: 100%;
-  }
-
-  .tg-pitchgrid [stroke] {
-    stroke: var(--tg-pitch-stroke);
-    fill: none;
-    stroke-width: 1.1;
-    vector-effect: non-scaling-stroke;
-  }
-
-  /* ─── Photo Slots (Solid Borders, Hard-Edged Crops) ─── */
-  .tg-slot {
-    position: relative;
-    margin: 0;
-    background: var(--tg-purple-deep);
-    border: 1px solid var(--tg-border);
-    overflow: hidden;
-  }
-
-  .tg-slot img {
-    position: relative;
-    z-index: 1;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-  }
-
-  .tg-slot.wide { aspect-ratio: 21/9; }
-  .tg-slot.tall { aspect-ratio: 4/5; }
-  .tg-slot.card { aspect-ratio: 3/4; }
-
-  /* ─── Physical Floating Editorial Photography (Desktop Subtle Movement, No Glow) ─── */
-  .tg-float-card {
-    position: relative;
-    overflow: hidden;
-  }
-
-  .tg-float-img {
-    transform: translate3d(0, 0, 0) scale(1);
-    transition: transform 650ms cubic-bezier(0.22, 1, 0.36, 1);
-    will-change: transform;
-    display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  @media (hover: hover) and (pointer: fine) {
-    .tg-float-card:hover .tg-float-img {
-      transform: translate3d(0, var(--float-y, -5px), 0) rotate(var(--rotate, -0.3deg)) scale(1.02);
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .tg-float-img {
-      transition: none !important;
-      transform: none !important;
-    }
-  }
-
-  @media (max-width: 820px) {
-    .tg-slot.wide { aspect-ratio: 16/10; }
-  }
-
-  /* ─── Scroll Reveal Animations ─── */
-  [data-reveal] {
-    opacity: 0;
-    transform: translateY(28px);
-    transition: opacity 0.8s var(--tg-spring), transform 0.9s var(--tg-spring);
-    transition-delay: var(--d, 0ms);
-  }
-
-  [data-reveal].in {
-    opacity: 1;
-    transform: none;
-  }
-
-  [data-reveal="right"] { transform: translateX(36px); }
-  [data-reveal="scale"] { transform: scale(0.94); }
-
-  /* Navigation */
-  .nav-base {
-    @apply border-b border-border bg-background;
-  }
-
-  .nav-item {
-    @apply relative px-4 py-2 font-medium transition-colors hover:text-primary;
-  }
-
-  .nav-item-active {
-    @apply text-primary;
-  }
-
-  /* ─── TopGrade Nav Link with Underline ─── */
-  .tg-nav-link {
-    font-family: var(--tg-body);
-    font-size: 0.85rem;
-    font-weight: 500;
-    color: var(--tg-text);
-    opacity: 0.82;
-    position: relative;
-    padding: 0.25rem 0;
-    text-decoration: none;
-    transition: opacity 0.2s ease;
-  }
-
-  .tg-nav-link::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    right: 100%;
-    bottom: 0;
-    height: 1.5px;
-    background: var(--tg-magenta);
-    transition: right 0.35s var(--tg-spring);
-  }
-
-  .tg-nav-link:hover {
-    opacity: 1;
-  }
-
-  .tg-nav-link:hover::after {
-    right: 0;
-  }
-
-  /* Keyframe Animations */
-  @keyframes fade-in-up {
-    0% {
-      opacity: 0;
-      transform: translateY(12px);
-    }
-    100% {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  .animate-fade-in-up {
-    animation: fade-in-up 0.5s ease-out both;
-  }
-
-  /* ─── Accessibility: Focus States ─── */
-  .tg-focus:focus-visible {
-    outline: 2px solid var(--tg-pink);
-    outline-offset: 4px;
-  }
-
-  /* ─── Reduced Motion ─── */
-  @media (prefers-reduced-motion: reduce) {
-    .tg-nav-link::after {
-      transition: none;
+    /* Section */
+    .section-base {
+        @apply py-12 md:py-16;
     }
 
+    .section-dark {
+        background-color: hsl(var(--color-dark-section));
+        @apply text-sidebar-foreground py-12 md:py-16;
+    }
+
+    .section-hero {
+        background-color: hsl(var(--color-dark-section));
+        @apply text-sidebar-foreground py-20 md:py-32;
+    }
+
+    /* Cards */
+    .card-base {
+        @apply border-border bg-card text-card-foreground rounded-lg border p-6;
+    }
+
+    .card-hover {
+        @apply border-border bg-card text-card-foreground rounded-lg border p-6;
+        transition:
+            box-shadow 200ms ease-in-out,
+            transform 200ms ease-in-out;
+    }
+
+    .card-hover:hover {
+        @apply -translate-y-1 shadow-lg;
+    }
+
+    /* Badges */
+    .badge {
+        @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium;
+    }
+
+    .badge-primary {
+        @apply bg-primary/10 text-primary inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium;
+    }
+
+    .badge-success {
+        @apply inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800;
+    }
+
+    .dark .badge-success {
+        @apply bg-green-900 text-green-200;
+    }
+
+    .badge-warning {
+        @apply inline-flex items-center rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-medium text-amber-800;
+    }
+
+    .dark .badge-warning {
+        @apply bg-amber-900 text-amber-200;
+    }
+
+    .badge-destructive {
+        @apply inline-flex items-center rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-medium text-red-800;
+    }
+
+    .dark .badge-destructive {
+        @apply bg-red-900 text-red-200;
+    }
+
+    /* Forms */
+    .form-control {
+        @apply border-input bg-background shadow-xs placeholder:text-muted-foreground focus:border-ring focus:ring-ring w-full rounded-md border px-3 py-2 text-sm outline-none transition-colors focus:ring-1 disabled:cursor-not-allowed disabled:opacity-50;
+    }
+
+    .form-label {
+        @apply text-foreground block text-sm font-medium;
+    }
+
+    .form-helper {
+        @apply text-muted-foreground mt-1 text-xs;
+    }
+
+    .form-error {
+        @apply text-destructive mt-1 text-xs;
+    }
+
+    /* Buttons — Admin/generic (existing) */
+    .btn-base {
+        @apply inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50;
+        transition: all 200ms ease-in-out;
+    }
+
+    .btn-primary {
+        @apply bg-primary text-primary-foreground hover:bg-primary/90 inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50;
+        transition: all 200ms ease-in-out;
+    }
+
+    .btn-secondary {
+        @apply bg-secondary text-secondary-foreground hover:bg-secondary/90 inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50;
+        transition: all 200ms ease-in-out;
+    }
+
+    .btn-accent {
+        @apply bg-accent text-accent-foreground hover:bg-accent/90 inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50;
+        transition: all 200ms ease-in-out;
+    }
+
+    .btn-ghost {
+        @apply hover:bg-muted inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50;
+        transition: all 200ms ease-in-out;
+    }
+
+    .btn-outline {
+        @apply border-input hover:bg-muted inline-flex items-center justify-center whitespace-nowrap rounded-md border text-sm font-medium disabled:pointer-events-none disabled:opacity-50;
+        transition: all 200ms ease-in-out;
+    }
+
+    .btn-sm {
+        @apply h-8 px-3;
+    }
+
+    .btn-md {
+        @apply h-10 px-4;
+    }
+
+    .btn-lg {
+        @apply h-12 px-6;
+    }
+
+    /* ─── TopGrade Public Buttons ─── */
     .tg-btn {
-      transition: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.55rem;
+        font-family: var(--tg-body);
+        font-weight: 600;
+        font-size: 0.88rem;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        border: 1.5px solid var(--tg-accent);
+        background: var(--tg-accent);
+        color: var(--tg-text-strong);
+        padding: 0.7rem 1.35rem;
+        border-radius: 2px;
+        cursor: pointer;
+        transition:
+            background 0.2s ease,
+            border-color 0.2s ease;
+        text-decoration: none;
     }
-  }
+
+    .tg-btn:hover {
+        background: var(--tg-accent-hover);
+        border-color: var(--tg-accent-hover);
+        color: var(--tg-text-strong);
+    }
+
+    .tg-btn.ghost {
+        background: transparent;
+        border-color: var(--tg-border-strong);
+        color: var(--tg-text);
+    }
+
+    .tg-btn.ghost:hover {
+        border-color: var(--tg-accent);
+        background: transparent;
+        color: var(--tg-accent);
+    }
+
+    .tg-link {
+        font-family: var(--tg-body);
+        font-size: 0.85rem;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--tg-text-muted);
+        text-decoration: none;
+        transition: color 0.2s ease;
+    }
+
+    .tg-link:hover {
+        color: var(--tg-text);
+    }
+
+    /* ─── TopGrade Public Eyebrow ─── */
+    .tg-eyebrow {
+        font-family: var(--tg-body);
+        font-size: 0.72rem;
+        letter-spacing: 0.28em;
+        color: var(--tg-accent);
+        font-weight: 600;
+        text-transform: uppercase;
+        margin: 0 0 0.8rem;
+    }
+
+    /* ─── TopGrade Pitch Grid ─── */
+    .tg-pitchgrid {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+        opacity: var(--tg-pitch-opacity);
+        transition: opacity 0.35s ease-out;
+    }
+
+    .tg-pitchgrid svg {
+        width: 100%;
+        height: 100%;
+    }
+
+    .tg-pitchgrid [stroke] {
+        stroke: var(--tg-pitch-stroke);
+        fill: none;
+        stroke-width: 1.1;
+        vector-effect: non-scaling-stroke;
+    }
+
+    /* ─── Photo Slots (Solid Borders, Hard-Edged Crops) ─── */
+    .tg-slot {
+        position: relative;
+        margin: 0;
+        background: var(--tg-purple-deep);
+        border: 1px solid var(--tg-border);
+        overflow: hidden;
+    }
+
+    .tg-slot img {
+        position: relative;
+        z-index: 1;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
+    .tg-slot.wide {
+        aspect-ratio: 21/9;
+    }
+    .tg-slot.tall {
+        aspect-ratio: 4/5;
+    }
+    .tg-slot.card {
+        aspect-ratio: 3/4;
+    }
+
+    /* ─── Physical Floating Editorial Photography (Desktop Subtle Movement, No Glow) ─── */
+    .tg-float-card {
+        position: relative;
+        overflow: hidden;
+    }
+
+    .tg-float-img {
+        transform: translate3d(0, 0, 0) scale(1);
+        transition: transform 650ms cubic-bezier(0.22, 1, 0.36, 1);
+        will-change: transform;
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+        .tg-float-card:hover .tg-float-img {
+            transform: translate3d(0, var(--float-y, -5px), 0)
+                rotate(var(--rotate, -0.3deg)) scale(1.02);
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .tg-float-img {
+            transition: none !important;
+            transform: none !important;
+        }
+    }
+
+    @media (max-width: 820px) {
+        .tg-slot.wide {
+            aspect-ratio: 16/10;
+        }
+    }
+
+    /* ─── Scroll Reveal Animations ─── */
+    [data-reveal] {
+        opacity: 0;
+        transform: translateY(28px);
+        transition:
+            opacity 0.8s var(--tg-spring),
+            transform 0.9s var(--tg-spring);
+        transition-delay: var(--d, 0ms);
+    }
+
+    [data-reveal].in {
+        opacity: 1;
+        transform: none;
+    }
+
+    [data-reveal='right'] {
+        transform: translateX(36px);
+    }
+    [data-reveal='scale'] {
+        transform: scale(0.94);
+    }
+
+    /* Navigation */
+    .nav-base {
+        @apply border-border bg-background border-b;
+    }
+
+    .nav-item {
+        @apply hover:text-primary relative px-4 py-2 font-medium transition-colors;
+    }
+
+    .nav-item-active {
+        @apply text-primary;
+    }
+
+    /* ─── TopGrade Nav Link with Underline ─── */
+    .tg-nav-link {
+        font-family: var(--tg-body);
+        font-size: 0.85rem;
+        font-weight: 500;
+        color: var(--tg-text);
+        opacity: 0.82;
+        position: relative;
+        padding: 0.25rem 0;
+        text-decoration: none;
+        transition: opacity 0.2s ease;
+    }
+
+    .tg-nav-link::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        right: 100%;
+        bottom: 0;
+        height: 1.5px;
+        background: var(--tg-magenta);
+        transition: right 0.35s var(--tg-spring);
+    }
+
+    .tg-nav-link:hover {
+        opacity: 1;
+    }
+
+    .tg-nav-link:hover::after {
+        right: 0;
+    }
+
+    /* Keyframe Animations */
+    @keyframes fade-in-up {
+        0% {
+            opacity: 0;
+            transform: translateY(12px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .animate-fade-in-up {
+        animation: fade-in-up 0.5s ease-out both;
+    }
+
+    /* ─── Accessibility: Focus States ─── */
+    .tg-focus:focus-visible {
+        outline: 2px solid var(--tg-pink);
+        outline-offset: 4px;
+    }
+
+    /* ─── Reduced Motion ─── */
+    @media (prefers-reduced-motion: reduce) {
+        .tg-nav-link::after {
+            transition: none;
+        }
+
+        .tg-btn {
+            transition: none;
+        }
+    }
 }

@@ -162,18 +162,25 @@ class MomentController extends Controller
             abort_unless($isOwned, 422, 'Selected cover image does not belong to this gallery.');
         }
 
-        $moment->update($data);
-
-        if (! empty($seoData)) {
-            $moment->seo()->updateOrCreate([], $seoData);
-        }
-
         $uploadedMedia = [];
 
         try {
             foreach ($images as $image) {
                 $uploadedMedia[] = $moment->addMedia($image)->toMediaCollection('gallery');
             }
+
+            DB::transaction(function () use ($moment, $data, $seoData) {
+                $moment->update($data);
+
+                if (! empty($seoData)) {
+                    $moment->seo()->updateOrCreate([], $seoData);
+                }
+
+                // Enforce cover fallback invariant if cover is not set
+                if (! $moment->cover_media_id && ($firstMedia = $moment->fresh()->getFirstMedia('gallery'))) {
+                    $moment->update(['cover_media_id' => $firstMedia->id]);
+                }
+            });
         } catch (\Throwable $e) {
             foreach ($uploadedMedia as $media) {
                 try {
@@ -187,12 +194,7 @@ class MomentController extends Controller
 
             return back()
                 ->withInput()
-                ->withErrors(['images' => 'Failed to upload one or more images to storage. Existing gallery photos were preserved.']);
-        }
-
-        // Enforce cover fallback invariant if cover is not set
-        if (! $moment->cover_media_id && ($firstMedia = $moment->fresh()->getFirstMedia('gallery'))) {
-            $moment->update(['cover_media_id' => $firstMedia->id]);
+                ->withErrors(['images' => 'Failed to upload one or more images to storage. Album details and existing photos were preserved.']);
         }
 
         $redirectRoute = $request->routeIs('dashboard.moments.*') ? 'dashboard.moments.edit' : 'dashboard.galleries.edit';

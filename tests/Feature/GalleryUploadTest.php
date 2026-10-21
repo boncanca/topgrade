@@ -5,6 +5,7 @@ use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Spatie\MediaLibrary\Support\FileRemover\FileBaseFileRemover;
 
 test('gallery accepts images between 10MB and 15MB without a server error', function () {
@@ -146,3 +147,56 @@ test('cloudinary round trip with genuine image formats and bounded timeouts', fu
             ->toBeFalse("{$filename} should be removed from Cloudinary storage");
     }
 })->group('cloudinary-live')->skip(fn () => ! env('CLOUDINARY_LIVE_TEST'), 'Set CLOUDINARY_LIVE_TEST=1 to run live');
+
+test('album update does not commit metadata or change draft to published if an image upload fails', function () {
+    Storage::fake('public');
+    config(['media-library.disk_name' => 'public']);
+
+    $admin = User::factory()->create(['is_admin' => true]);
+    $moment = Moment::factory()->create([
+        'title' => 'Original Draft Album',
+        'status' => 'draft',
+    ]);
+
+    // First image uploads fine, second image triggers exception during media persistence
+    $uploadCount = 0;
+    Media::saving(function () use (&$uploadCount) {
+        $uploadCount++;
+        if ($uploadCount === 2) {
+            throw new RuntimeException('Simulated storage upload failure on second photo.');
+        }
+    });
+
+    $response = $this->actingAs($admin)->put("/dashboard/moments/{$moment->id}", [
+        'title' => 'Should Not Be Published',
+        'slug' => $moment->slug,
+        'status' => 'published',
+        'images' => [
+            UploadedFile::fake()->image('first.jpg', 400, 300),
+            UploadedFile::fake()->image('second.jpg', 400, 300),
+        ],
+    ]);
+
+    $response->assertSessionHasErrors('images');
+
+    // Crucial check: Draft status and original title are preserved; metadata was not committed
+    $refreshed = $moment->fresh();
+    expect($refreshed->status)->toBe('draft');
+    expect($refreshed->title)->toBe('Original Draft Album');
+    expect($refreshed->getMedia('gallery'))->toHaveCount(0);
+});
+
+test('nested or invalid images payload returns validation error instead of 500 server error', function () {
+    $admin = User::factory()->create(['is_admin' => true]);
+
+    $response = $this->actingAs($admin)->post('/dashboard/moments', [
+        'title' => 'Test Nested Array',
+        'status' => 'draft',
+        'images' => [
+            ['nested' => 'not-a-file'],
+        ],
+    ]);
+
+    $response->assertSessionHasErrors(['images.0']);
+    expect($response->status())->toBe(302);
+});

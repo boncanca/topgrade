@@ -1,8 +1,7 @@
-<script setup lang="ts">
-</script>
+<script setup lang="ts"></script>
 
 <template>
-  <div class="flex gap-4 justify-end pt-6 border-t border-border">
-    <slot />
-  </div>
+    <div class="border-border flex justify-end gap-4 border-t pt-6">
+        <slot />
+    </div>
 </template>

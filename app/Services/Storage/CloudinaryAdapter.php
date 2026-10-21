@@ -101,10 +101,15 @@ class CloudinaryAdapter extends FlysystemCloudinaryAdapter
     public function deleteDirectory(string $path): void
     {
         $logicalDir = trim($path, '/');
+        if ($logicalDir === '') {
+            return;
+        }
+
         $prefixedDir = $this->pathsForMetadata()->prefixed($logicalDir);
+        $prefixWithBoundary = rtrim($prefixedDir, '/').'/';
 
         try {
-            $this->cloudinary->adminApi()->deleteAssetsByPrefix($prefixedDir);
+            $this->cloudinary->adminApi()->deleteAssetsByPrefix($prefixWithBoundary);
         } catch (\Throwable) {
             parent::deleteDirectory($path);
 
@@ -112,7 +117,7 @@ class CloudinaryAdapter extends FlysystemCloudinaryAdapter
         }
 
         try {
-            $this->cloudinary->adminApi()->deleteFolder($prefixedDir);
+            $this->cloudinary->adminApi()->deleteFolder(rtrim($prefixedDir, '/'));
         } catch (\Throwable) {
             // Folders are virtual in Cloudinary unless explicitly created; safe to ignore.
         }

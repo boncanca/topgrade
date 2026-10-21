@@ -4,6 +4,8 @@ use App\Models\Content;
 use App\Models\ContentType;
 use App\Models\User;
 use App\Services\Storage\CloudinaryAdapter;
+use Cloudinary\Api\Admin\AdminApi;
+use Cloudinary\Cloudinary;
 use CodebarAg\FlysystemCloudinary\FlysystemCloudinaryAdapter;
 use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Http\UploadedFile;
@@ -237,4 +239,31 @@ test('deleting content removes associated Spatie media', function () {
     $content->delete();
 
     $this->assertDatabaseMissing('media', ['id' => $mediaId]);
+});
+
+test('cloudinary adapter deleteDirectory enforces directory boundary with trailing slash to prevent sibling prefix matching', function () {
+    $cloudinary = Mockery::mock(Cloudinary::class);
+    $adminApi = Mockery::mock(AdminApi::class);
+    $cloudinary->shouldReceive('adminApi')->andReturn($adminApi);
+
+    // Directory '1' must delete prefix ending with '1/' to avoid wiping '10/' or '11/'
+    $adminApi->shouldReceive('deleteAssetsByPrefix')
+        ->once()
+        ->withArgs(function ($prefix) {
+            return str_ends_with($prefix, '1/');
+        });
+
+    $adminApi->shouldReceive('deleteFolder')->once();
+
+    $adapter = new CloudinaryAdapter($cloudinary);
+    $adapter->deleteDirectory('1');
+});
+
+test('cloudinary adapter deleteDirectory ignores empty string path', function () {
+    $cloudinary = Mockery::mock(Cloudinary::class);
+    $cloudinary->shouldNotReceive('adminApi');
+
+    $adapter = new CloudinaryAdapter($cloudinary);
+    $adapter->deleteDirectory('');
+    $adapter->deleteDirectory('/');
 });

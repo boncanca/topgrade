@@ -9,7 +9,9 @@ const checkScroll = () => {
 };
 
 const scrollToTop = () => {
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const prefersReducedMotion = window.matchMedia(
+        '(prefers-reduced-motion: reduce)',
+    ).matches;
     window.scrollTo({
         top: 0,
         behavior: prefersReducedMotion ? 'auto' : 'smooth',
@@ -40,7 +42,7 @@ onUnmounted(() => {
             type="button"
             aria-label="Back to top"
             @click="scrollToTop"
-            class="fixed bottom-5 right-5 sm:bottom-6 sm:right-6 z-35 flex h-10 w-10 items-center justify-center rounded-xs border border-tg-border bg-tg-bg-deep text-tg-text-muted transition-colors duration-200 hover:border-tg-accent hover:text-tg-text-strong focus:outline-none focus:ring-2 focus:ring-tg-accent focus:ring-offset-2 focus:ring-offset-tg-bg shadow-sm"
+            class="z-35 rounded-xs border-tg-border bg-tg-bg-deep text-tg-text-muted hover:border-tg-accent hover:text-tg-text-strong focus:ring-tg-accent focus:ring-offset-tg-bg fixed bottom-5 right-5 flex h-10 w-10 items-center justify-center border shadow-sm transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 sm:bottom-6 sm:right-6"
         >
             <ArrowUp class="h-4 w-4 sm:h-5 sm:w-5" />
         </button>

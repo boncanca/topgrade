@@ -43,7 +43,9 @@ const clubLinks = computed(() => {
         { label: 'Moments & Stories', href: '/moments' },
         {
             label: settings.instagram_handle || '@topgradelondonfc',
-            href: settings.instagram_url || 'https://www.instagram.com/topgradelondonfc/',
+            href:
+                settings.instagram_url ||
+                'https://www.instagram.com/topgradelondonfc/',
             external: true,
         },
     ];
@@ -62,27 +64,36 @@ const supportLinks = [
 ];
 
 // Close mobile menu when page changes
-watch(() => page.url, () => {
-    mobileOpen.value = false;
-});
+watch(
+    () => page.url,
+    () => {
+        mobileOpen.value = false;
+    },
+);
 </script>
 
 <template>
-    <div class="min-h-screen bg-tg-bg text-tg-text">
+    <div class="bg-tg-bg text-tg-text min-h-screen">
         <!-- Persistent Global Pitch Grid (z-index: 2, below ball and translucent surfaces) -->
         <PitchGrid />
 
         <!-- Header: Solid, Non-frosted header per guidelines (z-index: 30) -->
         <header
-            class="fixed top-0 left-0 right-0 z-30 bg-tg-bg border-b border-tg-border"
+            class="bg-tg-bg border-tg-border fixed left-0 right-0 top-0 z-30 border-b"
         >
-            <div class="mx-auto max-w-7xl flex items-center justify-between h-16 px-4 sm:px-6 lg:px-8">
+            <div
+                class="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8"
+            >
                 <!-- Logo -->
-                <Link href="/" class="flex items-center gap-3 tg-focus">
-                    <div class="bg-white rounded p-1 shadow-xs">
-                        <img src="/logo.png" alt="TopGrade London FC Crest" class="h-9 w-auto" />
+                <Link href="/" class="tg-focus flex items-center gap-3">
+                    <div class="shadow-xs rounded bg-white p-1">
+                        <img
+                            src="/logo.png"
+                            alt="TopGrade London FC Crest"
+                            class="h-9 w-auto"
+                        />
                     </div>
-                    <div class="hidden sm:flex flex-col leading-none">
+                    <div class="hidden flex-col leading-none sm:flex">
                         <span
                             style="
                                 font-family: var(--tg-display);
@@ -91,7 +102,8 @@ watch(() => page.url, () => {
                                 letter-spacing: 0.04em;
                                 color: var(--tg-text-strong);
                             "
-                        >TOPGRADE</span>
+                            >TOPGRADE</span
+                        >
                         <span
                             style="
                                 font-family: var(--tg-body);
@@ -100,12 +112,13 @@ watch(() => page.url, () => {
                                 color: var(--tg-text-muted);
                                 margin-top: 1px;
                             "
-                        >LONDON FC</span>
+                            >LONDON FC</span
+                        >
                     </div>
                 </Link>
 
                 <!-- Desktop Nav -->
-                <nav class="hidden md:flex items-center gap-6">
+                <nav class="hidden items-center gap-6 md:flex">
                     <a
                         v-for="item in headerNav"
                         :key="item.href + item.label"
@@ -120,7 +133,7 @@ watch(() => page.url, () => {
                         class="tg-btn tg-focus ml-2"
                     >
                         <span>Book a Trial</span>
-                        <ArrowRight class="w-4 h-4" />
+                        <ArrowRight class="h-4 w-4" />
                     </Link>
                 </nav>
 
@@ -128,12 +141,12 @@ watch(() => page.url, () => {
                 <div class="flex items-center md:hidden">
                     <button
                         @click="mobileOpen = !mobileOpen"
-                        class="p-2 tg-focus"
-                        style="color: var(--tg-text);"
+                        class="tg-focus p-2"
+                        style="color: var(--tg-text)"
                         :aria-label="mobileOpen ? 'Close menu' : 'Open menu'"
                     >
-                        <Menu v-if="!mobileOpen" class="w-6 h-6" />
-                        <X v-else class="w-6 h-6" />
+                        <Menu v-if="!mobileOpen" class="h-6 w-6" />
+                        <X v-else class="h-6 w-6" />
                     </button>
                 </div>
             </div>
@@ -141,14 +154,14 @@ watch(() => page.url, () => {
             <!-- Mobile Nav -->
             <div
                 v-if="mobileOpen"
-                class="md:hidden pb-6 bg-tg-bg border-t border-tg-border"
+                class="bg-tg-bg border-tg-border border-t pb-6 md:hidden"
             >
                 <a
                     v-for="item in headerNav"
                     :key="item.href + item.label"
                     :href="item.href"
                     @click="mobileOpen = false"
-                    class="block px-6 py-3 tg-focus"
+                    class="tg-focus block px-6 py-3"
                     style="
                         font-family: var(--tg-body);
                         font-size: 0.95rem;
@@ -166,7 +179,7 @@ watch(() => page.url, () => {
                         class="tg-btn w-full justify-center"
                     >
                         <span>Book a Trial</span>
-                        <ArrowRight class="w-4 h-4" />
+                        <ArrowRight class="h-4 w-4" />
                     </Link>
                 </div>
             </div>
@@ -180,14 +193,16 @@ watch(() => page.url, () => {
         <!-- Structured 4-Column Footer -->
         <footer
             id="footer"
-            class="relative z-10 px-4 py-16 sm:px-6 lg:px-8 bg-tg-bg-deep/80 border-t border-tg-border"
+            class="bg-tg-bg-deep/80 border-tg-border relative z-10 border-t px-4 py-16 sm:px-6 lg:px-8"
         >
             <div class="mx-auto max-w-7xl space-y-12">
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-12">
+                <div
+                    class="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-4 lg:gap-12"
+                >
                     <!-- Column 1: Club -->
                     <div class="space-y-4">
                         <h4
-                            class="text-xs font-bold uppercase tracking-widest text-tg-accent"
+                            class="text-tg-accent text-xs font-bold uppercase tracking-widest"
                         >
                             Club
                         </h4>
@@ -195,8 +210,14 @@ watch(() => page.url, () => {
                             <li v-for="item in clubLinks" :key="item.label">
                                 <a
                                     :href="item.href"
-                                    :target="item.external ? '_blank' : undefined"
-                                    :rel="item.external ? 'noopener noreferrer' : undefined"
+                                    :target="
+                                        item.external ? '_blank' : undefined
+                                    "
+                                    :rel="
+                                        item.external
+                                            ? 'noopener noreferrer'
+                                            : undefined
+                                    "
                                     class="tg-link text-tg-text-muted hover:text-tg-text-strong"
                                 >
                                     {{ item.label }}
@@ -208,13 +229,16 @@ watch(() => page.url, () => {
                     <!-- Column 2: Information -->
                     <div class="space-y-4">
                         <h4
-                            class="text-xs font-bold uppercase tracking-widest text-tg-accent"
+                            class="text-tg-accent text-xs font-bold uppercase tracking-widest"
                         >
                             Information
                         </h4>
                         <ul class="space-y-2.5 text-sm">
                             <li v-for="item in infoLinks" :key="item.label">
-                                <a :href="item.href" class="tg-link text-tg-text-muted hover:text-tg-text-strong">
+                                <a
+                                    :href="item.href"
+                                    class="tg-link text-tg-text-muted hover:text-tg-text-strong"
+                                >
                                     {{ item.label }}
                                 </a>
                             </li>
@@ -224,13 +248,16 @@ watch(() => page.url, () => {
                     <!-- Column 3: Support & Governance -->
                     <div class="space-y-4">
                         <h4
-                            class="text-xs font-bold uppercase tracking-widest text-tg-accent"
+                            class="text-tg-accent text-xs font-bold uppercase tracking-widest"
                         >
                             Support &amp; Governance
                         </h4>
                         <ul class="space-y-2.5 text-sm">
                             <li v-for="item in supportLinks" :key="item.label">
-                                <Link :href="item.href" class="tg-link text-tg-text-muted hover:text-tg-text-strong">
+                                <Link
+                                    :href="item.href"
+                                    class="tg-link text-tg-text-muted hover:text-tg-text-strong"
+                                >
                                     {{ item.label }}
                                 </Link>
                             </li>
@@ -240,52 +267,104 @@ watch(() => page.url, () => {
                     <!-- Column 4: Verified UK Legal Identity -->
                     <div class="space-y-4">
                         <div class="flex items-center gap-3">
-                            <div class="bg-white rounded-full p-1 shadow-xs">
-                                <img src="/logo.png" alt="TopGrade London FC" class="h-8 w-auto" />
+                            <div class="shadow-xs rounded-full bg-white p-1">
+                                <img
+                                    src="/logo.png"
+                                    alt="TopGrade London FC"
+                                    class="h-8 w-auto"
+                                />
                             </div>
                             <span
-                                style="font-family: var(--tg-display);"
-                                class="text-sm uppercase tracking-wider text-tg-text-strong"
+                                style="font-family: var(--tg-display)"
+                                class="text-tg-text-strong text-sm uppercase tracking-wider"
                             >
                                 TopGrade London FC
                             </span>
                         </div>
 
-                        <div class="text-xs text-tg-text-muted space-y-1.5 leading-relaxed">
-                            <p class="font-bold text-tg-text-strong">{{ clubSettings.legal_name || 'TOPGRADE LONDON FC CIC' }}</p>
+                        <div
+                            class="text-tg-text-muted space-y-1.5 text-xs leading-relaxed"
+                        >
+                            <p class="text-tg-text-strong font-bold">
+                                {{
+                                    clubSettings.legal_name ||
+                                    'TOPGRADE LONDON FC CIC'
+                                }}
+                            </p>
                             <p>Registered in England &amp; Wales</p>
-                            <p>Company No. <span class="text-tg-text-strong font-mono">{{ clubSettings.company_number || '14087076' }}</span></p>
+                            <p>
+                                Company No.
+                                <span class="text-tg-text-strong font-mono">{{
+                                    clubSettings.company_number || '14087076'
+                                }}</span>
+                            </p>
                             <p>Community Interest Company (CIC)</p>
                             <p class="pt-1">
-                                <span class="text-tg-text-strong">Registered Office:</span><br />
-                                {{ clubSettings.address || '30 Broadwater Road, London, England, N17 6ES' }}
+                                <span class="text-tg-text-strong"
+                                    >Registered Office:</span
+                                ><br />
+                                {{
+                                    clubSettings.address ||
+                                    '30 Broadwater Road, London, England, N17 6ES'
+                                }}
                             </p>
                             <p class="pt-1">
                                 <a
-                                     :href="`mailto:${clubSettings.email || 'info@topgradelondonfc.co.uk'}`"
-                                     class="text-tg-accent hover:underline"
-                                 >
-                                     {{ clubSettings.email || 'info@topgradelondonfc.co.uk' }}
-                                 </a>
+                                    :href="`mailto:${clubSettings.email || 'info@topgradelondonfc.co.uk'}`"
+                                    class="text-tg-accent hover:underline"
+                                >
+                                    {{
+                                        clubSettings.email ||
+                                        'info@topgradelondonfc.co.uk'
+                                    }}
+                                </a>
                             </p>
                         </div>
 
                         <!-- Social -->
-                        <div class="pt-2 flex items-center gap-3">
+                        <div class="flex items-center gap-3 pt-2">
                             <a
-                                :href="clubSettings.instagram_url || 'https://www.instagram.com/topgradelondonfc/'"
+                                :href="
+                                    clubSettings.instagram_url ||
+                                    'https://www.instagram.com/topgradelondonfc/'
+                                "
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 aria-label="TopGrade London FC on Instagram"
-                                class="inline-flex items-center gap-1.5 text-xs text-tg-text-muted hover:text-tg-accent transition-colors"
+                                class="text-tg-text-muted hover:text-tg-accent inline-flex items-center gap-1.5 text-xs transition-colors"
                             >
                                 <!-- Instagram SVG -->
-                                <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                                <svg
+                                    class="h-4 w-4 shrink-0"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="1.75"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    aria-hidden="true"
+                                >
+                                    <rect
+                                        x="2"
+                                        y="2"
+                                        width="20"
+                                        height="20"
+                                        rx="5"
+                                        ry="5"
+                                    />
                                     <circle cx="12" cy="12" r="4" />
-                                    <circle cx="17.5" cy="6.5" r="0.8" fill="currentColor" stroke="none" />
+                                    <circle
+                                        cx="17.5"
+                                        cy="6.5"
+                                        r="0.8"
+                                        fill="currentColor"
+                                        stroke="none"
+                                    />
                                 </svg>
-                                <span>{{ clubSettings.instagram_handle || '@topgradelondonfc' }}</span>
+                                <span>{{
+                                    clubSettings.instagram_handle ||
+                                    '@topgradelondonfc'
+                                }}</span>
                             </a>
                         </div>
                     </div>
@@ -293,12 +372,23 @@ watch(() => page.url, () => {
 
                 <!-- Bottom Bar -->
                 <div
-                    class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-8 border-t border-tg-border text-xs text-tg-text-muted"
+                    class="border-tg-border text-tg-text-muted flex flex-col items-center justify-between gap-4 border-t pt-8 text-xs sm:flex-row"
                 >
-                    <p>© {{ new Date().getFullYear() }} {{ clubSettings.legal_name || 'TopGrade London FC CIC' }}. All rights reserved.</p>
+                    <p>
+                        © {{ new Date().getFullYear() }}
+                        {{
+                            clubSettings.legal_name || 'TopGrade London FC CIC'
+                        }}. All rights reserved.
+                    </p>
                     <div class="flex flex-wrap items-center gap-6">
-                        <Link href="/privacy-policy" class="tg-link text-xs">Privacy Policy</Link>
-                        <Link href="/terms-and-conditions" class="tg-link text-xs">Terms &amp; Conditions</Link>
+                        <Link href="/privacy-policy" class="tg-link text-xs"
+                            >Privacy Policy</Link
+                        >
+                        <Link
+                            href="/terms-and-conditions"
+                            class="tg-link text-xs"
+                            >Terms &amp; Conditions</Link
+                        >
                     </div>
                 </div>
             </div>

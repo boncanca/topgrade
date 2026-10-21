@@ -27,15 +27,23 @@ const emit = defineEmits<{
             />
 
             <!-- Modal -->
-            <div class="relative z-10 w-full max-w-lg rounded-xl border border-border bg-background shadow-2xl">
-                <div class="flex items-center justify-between border-b border-border px-5 py-4">
+            <div
+                class="border-border bg-background relative z-10 w-full max-w-lg rounded-xl border shadow-2xl"
+            >
+                <div
+                    class="border-border flex items-center justify-between border-b px-5 py-4"
+                >
                     <div>
-                        <h2 class="text-base font-semibold text-foreground">Add a Block</h2>
-                        <p class="text-sm text-muted-foreground">Choose a block type to insert</p>
+                        <h2 class="text-foreground text-base font-semibold">
+                            Add a Block
+                        </h2>
+                        <p class="text-muted-foreground text-sm">
+                            Choose a block type to insert
+                        </p>
                     </div>
                     <button
                         type="button"
-                        class="rounded-md p-1.5 text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
+                        class="text-muted-foreground hover:bg-accent hover:text-foreground rounded-md p-1.5 transition-colors"
                         aria-label="Close"
                         @click="emit('close')"
                     >
@@ -49,13 +57,26 @@ const emit = defineEmits<{
                         :key="block.type"
                         type="button"
                         :id="`block-type-${block.type}`"
-                        class="flex items-start gap-3 rounded-lg border border-border p-3 text-left transition-colors hover:bg-accent hover:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                        @click="emit('select', block.type); emit('close')"
+                        class="border-border hover:bg-accent hover:border-primary focus-visible:ring-ring flex items-start gap-3 rounded-lg border p-3 text-left transition-colors focus-visible:outline-none focus-visible:ring-2"
+                        @click="
+                            emit('select', block.type);
+                            emit('close');
+                        "
                     >
-                        <span class="text-2xl leading-none mt-0.5" aria-hidden="true">{{ block.icon }}</span>
+                        <span
+                            class="mt-0.5 text-2xl leading-none"
+                            aria-hidden="true"
+                            >{{ block.icon }}</span
+                        >
                         <span>
-                            <span class="block text-sm font-medium text-foreground">{{ block.label }}</span>
-                            <span class="block text-xs text-muted-foreground mt-0.5 leading-snug">{{ block.description }}</span>
+                            <span
+                                class="text-foreground block text-sm font-medium"
+                                >{{ block.label }}</span
+                            >
+                            <span
+                                class="text-muted-foreground mt-0.5 block text-xs leading-snug"
+                                >{{ block.description }}</span
+                            >
                         </span>
                     </button>
                 </div>

@@ -21,7 +21,15 @@
 export interface BlockFieldDefinition {
     key: string;
     label: string;
-    type: 'text' | 'textarea' | 'richtext' | 'url' | 'select' | 'toggle' | 'image' | 'repeater';
+    type:
+        | 'text'
+        | 'textarea'
+        | 'richtext'
+        | 'url'
+        | 'select'
+        | 'toggle'
+        | 'image'
+        | 'repeater';
     required?: boolean;
     placeholder?: string;
     options?: Array<{ value: string; label: string }>;
@@ -47,12 +55,34 @@ export const blockSchemas: Record<string, BlockTypeSchema> = {
     hero: {
         label: 'Hero',
         icon: '🦸',
-        description: 'Full-width hero section with title, subtitle, and optional CTA button.',
+        description:
+            'Full-width hero section with title, subtitle, and optional CTA button.',
         payloadFields: [
-            { key: 'title', label: 'Title', type: 'text', required: true, placeholder: 'Enter headline…' },
-            { key: 'subtitle', label: 'Subtitle', type: 'textarea', placeholder: 'Supporting text below the headline…' },
-            { key: 'button_text', label: 'Button Text', type: 'text', placeholder: 'Book a Trial' },
-            { key: 'button_url', label: 'Button URL', type: 'url', placeholder: '/bookings' },
+            {
+                key: 'title',
+                label: 'Title',
+                type: 'text',
+                required: true,
+                placeholder: 'Enter headline…',
+            },
+            {
+                key: 'subtitle',
+                label: 'Subtitle',
+                type: 'textarea',
+                placeholder: 'Supporting text below the headline…',
+            },
+            {
+                key: 'button_text',
+                label: 'Button Text',
+                type: 'text',
+                placeholder: 'Book a Trial',
+            },
+            {
+                key: 'button_url',
+                label: 'Button URL',
+                type: 'url',
+                placeholder: '/bookings',
+            },
         ],
         settingsFields: [
             {
@@ -78,7 +108,12 @@ export const blockSchemas: Record<string, BlockTypeSchema> = {
                 default: 'center',
             },
         ],
-        defaultPayload: { title: '', subtitle: '', button_text: '', button_url: '' },
+        defaultPayload: {
+            title: '',
+            subtitle: '',
+            button_text: '',
+            button_url: '',
+        },
         defaultSettings: { theme: 'light', align: 'center' },
     },
 
@@ -95,24 +130,62 @@ export const blockSchemas: Record<string, BlockTypeSchema> = {
     cta: {
         label: 'Call to Action',
         icon: '📣',
-        description: 'Highlighted section with a title, description and CTA button.',
+        description:
+            'Highlighted section with a title, description and CTA button.',
         payloadFields: [
-            { key: 'title', label: 'Title', type: 'text', required: true, placeholder: 'Ready to start?' },
-            { key: 'description', label: 'Description', type: 'textarea', placeholder: 'Brief supporting text…' },
-            { key: 'button_text', label: 'Button Text', type: 'text', placeholder: 'Get Started' },
-            { key: 'button_url', label: 'Button URL', type: 'url', placeholder: '/contact' },
+            {
+                key: 'title',
+                label: 'Title',
+                type: 'text',
+                required: true,
+                placeholder: 'Ready to start?',
+            },
+            {
+                key: 'description',
+                label: 'Description',
+                type: 'textarea',
+                placeholder: 'Brief supporting text…',
+            },
+            {
+                key: 'button_text',
+                label: 'Button Text',
+                type: 'text',
+                placeholder: 'Get Started',
+            },
+            {
+                key: 'button_url',
+                label: 'Button URL',
+                type: 'url',
+                placeholder: '/contact',
+            },
         ],
-        defaultPayload: { title: '', description: '', button_text: '', button_url: '' },
+        defaultPayload: {
+            title: '',
+            description: '',
+            button_text: '',
+            button_url: '',
+        },
     },
 
     image: {
         label: 'Image',
         icon: '🖼️',
-        description: 'Single image with optional caption. Supports file upload or external URL.',
+        description:
+            'Single image with optional caption. Supports file upload or external URL.',
         payloadFields: [
             { key: 'image', label: 'Image', type: 'image', required: true },
-            { key: 'alt', label: 'Alt Text', type: 'text', placeholder: 'Describe the image for screen readers…' },
-            { key: 'caption', label: 'Caption', type: 'text', placeholder: 'Optional caption shown below the image…' },
+            {
+                key: 'alt',
+                label: 'Alt Text',
+                type: 'text',
+                placeholder: 'Describe the image for screen readers…',
+            },
+            {
+                key: 'caption',
+                label: 'Caption',
+                type: 'text',
+                placeholder: 'Optional caption shown below the image…',
+            },
         ],
         settingsFields: [
             {
@@ -127,7 +200,11 @@ export const blockSchemas: Record<string, BlockTypeSchema> = {
                 default: 'full',
             },
         ],
-        defaultPayload: { image: { url: '', mediaId: null }, alt: '', caption: '' },
+        defaultPayload: {
+            image: { url: '', mediaId: null },
+            alt: '',
+            caption: '',
+        },
         defaultSettings: { size: 'full' },
     },
 
@@ -136,10 +213,28 @@ export const blockSchemas: Record<string, BlockTypeSchema> = {
         icon: '⬜⬜',
         description: 'Two equal-width columns with rich text content.',
         payloadFields: [
-            { key: 'left_title', label: 'Left Column Title', type: 'text', placeholder: 'Left heading…' },
-            { key: 'left_body', label: 'Left Column Content', type: 'richtext' },
-            { key: 'right_title', label: 'Right Column Title', type: 'text', placeholder: 'Right heading…' },
-            { key: 'right_body', label: 'Right Column Content', type: 'richtext' },
+            {
+                key: 'left_title',
+                label: 'Left Column Title',
+                type: 'text',
+                placeholder: 'Left heading…',
+            },
+            {
+                key: 'left_body',
+                label: 'Left Column Content',
+                type: 'richtext',
+            },
+            {
+                key: 'right_title',
+                label: 'Right Column Title',
+                type: 'text',
+                placeholder: 'Right heading…',
+            },
+            {
+                key: 'right_body',
+                label: 'Right Column Content',
+                type: 'richtext',
+            },
         ],
         settingsFields: [
             {
@@ -154,7 +249,12 @@ export const blockSchemas: Record<string, BlockTypeSchema> = {
                 default: '1:1',
             },
         ],
-        defaultPayload: { left_title: '', left_body: '', right_title: '', right_body: '' },
+        defaultPayload: {
+            left_title: '',
+            left_body: '',
+            right_title: '',
+            right_body: '',
+        },
         defaultSettings: { ratio: '1:1' },
     },
 
@@ -163,14 +263,29 @@ export const blockSchemas: Record<string, BlockTypeSchema> = {
         icon: '✅',
         description: 'A title with a list of icon + text feature items.',
         payloadFields: [
-            { key: 'title', label: 'Section Title', type: 'text', placeholder: 'Why choose us?' },
+            {
+                key: 'title',
+                label: 'Section Title',
+                type: 'text',
+                placeholder: 'Why choose us?',
+            },
             {
                 key: 'items',
                 label: 'Features',
                 type: 'repeater',
                 subFields: [
-                    { key: 'icon', label: 'Icon (emoji or text)', type: 'text', placeholder: '⚡' },
-                    { key: 'text', label: 'Feature Text', type: 'text', placeholder: 'Expert coaching…' },
+                    {
+                        key: 'icon',
+                        label: 'Icon (emoji or text)',
+                        type: 'text',
+                        placeholder: '⚡',
+                    },
+                    {
+                        key: 'text',
+                        label: 'Feature Text',
+                        type: 'text',
+                        placeholder: 'Expert coaching…',
+                    },
                 ],
             },
         ],
@@ -179,9 +294,11 @@ export const blockSchemas: Record<string, BlockTypeSchema> = {
 };
 
 /** Get all block type keys sorted by label. */
-export const blockTypeList = Object.entries(blockSchemas).map(([type, schema]) => ({
-    type,
-    label: schema.label,
-    icon: schema.icon,
-    description: schema.description,
-}));
+export const blockTypeList = Object.entries(blockSchemas).map(
+    ([type, schema]) => ({
+        type,
+        label: schema.label,
+        icon: schema.icon,
+        description: schema.description,
+    }),
+);

@@ -77,11 +77,7 @@ function paginationLabel(label: string): string {
 }
 
 function deleteActivity(item: Activity): void {
-    if (
-        !confirm(
-            `Delete "${item.name}"? This action cannot be undone.`
-        )
-    ) {
+    if (!confirm(`Delete "${item.name}"? This action cannot be undone.`)) {
         return;
     }
 
@@ -108,80 +104,80 @@ function deleteActivity(item: Activity): void {
 
         <div
             v-if="props.items.data.length > 0"
-            class="overflow-hidden rounded-lg border border-border bg-background"
+            class="border-border bg-background overflow-hidden rounded-lg border"
         >
             <div class="overflow-x-auto">
                 <table class="w-full min-w-[760px] table-auto">
-                    <thead class="border-b border-border bg-muted/40">
+                    <thead class="border-border bg-muted/40 border-b">
                         <tr>
                             <th
-                                class="px-4 py-3 text-left text-xs font-medium tracking-wide text-muted-foreground uppercase"
+                                class="text-muted-foreground px-4 py-3 text-left text-xs font-medium uppercase tracking-wide"
                             >
                                 Name
                             </th>
                             <th
-                                class="px-4 py-3 text-left text-xs font-medium tracking-wide text-muted-foreground uppercase"
+                                class="text-muted-foreground px-4 py-3 text-left text-xs font-medium uppercase tracking-wide"
                             >
                                 Duration
                             </th>
                             <th
-                                class="px-4 py-3 text-left text-xs font-medium tracking-wide text-muted-foreground uppercase"
+                                class="text-muted-foreground px-4 py-3 text-left text-xs font-medium uppercase tracking-wide"
                             >
                                 Location
                             </th>
                             <th
-                                class="px-4 py-3 text-left text-xs font-medium tracking-wide text-muted-foreground uppercase"
+                                class="text-muted-foreground px-4 py-3 text-left text-xs font-medium uppercase tracking-wide"
                             >
                                 Price
                             </th>
                             <th
-                                class="px-4 py-3 text-left text-xs font-medium tracking-wide text-muted-foreground uppercase"
+                                class="text-muted-foreground px-4 py-3 text-left text-xs font-medium uppercase tracking-wide"
                             >
                                 Status
                             </th>
                             <th
-                                class="px-4 py-3 text-right text-xs font-medium tracking-wide text-muted-foreground uppercase"
+                                class="text-muted-foreground px-4 py-3 text-right text-xs font-medium uppercase tracking-wide"
                             >
                                 Actions
                             </th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-border">
+                    <tbody class="divide-border divide-y">
                         <tr
                             v-for="item in props.items.data"
                             :key="item.id"
-                            class="transition-colors hover:bg-muted/40"
+                            class="hover:bg-muted/40 transition-colors"
                         >
                             <td class="px-4 py-4">
                                 <Link
                                     :href="activitiesEdit(item.id)"
-                                    class="text-sm font-medium text-foreground underline-offset-4 hover:underline"
+                                    class="text-foreground text-sm font-medium underline-offset-4 hover:underline"
                                 >
                                     {{ item.name }}
                                 </Link>
                             </td>
                             <td
-                                class="px-4 py-4 text-sm whitespace-nowrap text-muted-foreground"
+                                class="text-muted-foreground whitespace-nowrap px-4 py-4 text-sm"
                             >
                                 {{ formatDuration(item.duration_minutes) }}
                             </td>
                             <td
-                                class="px-4 py-4 text-sm whitespace-nowrap text-muted-foreground"
+                                class="text-muted-foreground whitespace-nowrap px-4 py-4 text-sm"
                             >
                                 {{ item.location || '—' }}
                             </td>
                             <td
-                                class="px-4 py-4 text-sm whitespace-nowrap text-muted-foreground"
+                                class="text-muted-foreground whitespace-nowrap px-4 py-4 text-sm"
                             >
                                 {{ formatPrice(item.price, item.currency) }}
                             </td>
-                            <td class="px-4 py-4 whitespace-nowrap">
+                            <td class="whitespace-nowrap px-4 py-4">
                                 <span
                                     :class="[
                                         item.is_active
                                             ? 'bg-green-100 text-green-800'
                                             : 'bg-gray-100 text-gray-800',
-                                        'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
+                                        'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium',
                                     ]"
                                 >
                                     {{ item.is_active ? 'Active' : 'Inactive' }}
@@ -189,7 +185,12 @@ function deleteActivity(item: Activity): void {
                             </td>
                             <td class="px-4 py-4">
                                 <div class="flex justify-end gap-2">
-                                    <Button variant="outline" size="sm" class="border-purple-200 text-purple-700 hover:bg-purple-50 dark:border-purple-900 dark:text-purple-300 dark:hover:bg-purple-950 font-semibold" as-child>
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        class="border-purple-200 font-semibold text-purple-700 hover:bg-purple-50 dark:border-purple-900 dark:text-purple-300 dark:hover:bg-purple-950"
+                                        as-child
+                                    >
                                         <Link :href="schedulesIndex(item.id)">
                                             📅 Manage Schedules
                                         </Link>
@@ -215,11 +216,11 @@ function deleteActivity(item: Activity): void {
             </div>
 
             <div
-                class="flex flex-col gap-4 border-t border-border px-4 py-3 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between"
+                class="border-border text-muted-foreground flex flex-col gap-4 border-t px-4 py-3 text-sm sm:flex-row sm:items-center sm:justify-between"
             >
                 <p>
-                    Showing {{ props.items.from }} to
-                    {{ props.items.to }} of {{ props.items.total }}
+                    Showing {{ props.items.from }} to {{ props.items.to }} of
+                    {{ props.items.total }}
                     entries
                 </p>
 

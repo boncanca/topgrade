@@ -39,7 +39,10 @@ const ratio = props.settings?.ratio ?? '1:1';
 <template>
     <div :class="['grid gap-8', gridClass[ratio]]">
         <div :class="leftColClass[ratio]">
-            <h3 v-if="props.payload.left_title" class="mb-4 text-xl font-semibold text-foreground">
+            <h3
+                v-if="props.payload.left_title"
+                class="text-foreground mb-4 text-xl font-semibold"
+            >
                 {{ props.payload.left_title }}
             </h3>
             <!-- eslint-disable-next-line vue/no-v-html -->
@@ -51,7 +54,10 @@ const ratio = props.settings?.ratio ?? '1:1';
         </div>
 
         <div :class="rightColClass[ratio]">
-            <h3 v-if="props.payload.right_title" class="mb-4 text-xl font-semibold text-foreground">
+            <h3
+                v-if="props.payload.right_title"
+                class="text-foreground mb-4 text-xl font-semibold"
+            >
                 {{ props.payload.right_title }}
             </h3>
             <!-- eslint-disable-next-line vue/no-v-html -->

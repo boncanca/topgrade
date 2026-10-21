@@ -6,7 +6,7 @@ import {
     MapPin,
     Users,
     CheckCircle2,
-    AlertCircle
+    AlertCircle,
 } from '@lucide/vue';
 import { ref, computed, watch } from 'vue';
 import SeoHead from '@/components/SEO/SeoHead.vue';
@@ -44,11 +44,13 @@ defineOptions({
 
 const form = ref({
     bookable_item_id: props.activity.id,
-    schedule_id: props.schedules.length > 0 ? props.schedules[0].id.toString() : '',
+    schedule_id:
+        props.schedules.length > 0 ? props.schedules[0].id.toString() : '',
     participant_name: '',
     participant_email: '',
     participant_phone: '',
-    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'Europe/London',
+    timezone:
+        Intl.DateTimeFormat().resolvedOptions().timeZone || 'Europe/London',
     notes: '',
 });
 
@@ -59,7 +61,7 @@ watch(
             form.value.schedule_id = schedules[0].id.toString();
         }
     },
-    { immediate: true }
+    { immediate: true },
 );
 
 function selectSchedule(id: number | string) {
@@ -70,7 +72,11 @@ const processing = ref(false);
 const submitted = ref(false);
 
 const isTrial = computed(() => {
-    return props.activity.slug.includes('trial') || props.activity.price === '0' || props.activity.price === '0.00';
+    return (
+        props.activity.slug.includes('trial') ||
+        props.activity.price === '0' ||
+        props.activity.price === '0.00'
+    );
 });
 
 const formErrors = ref<Record<string, string>>({});
@@ -115,8 +121,6 @@ function formatScheduleTime(startsAt: string, endsAt: string): string {
 
     return `${startFormatted} – ${endFormatted}`;
 }
-
-
 </script>
 
 <template>
@@ -126,51 +130,63 @@ function formatScheduleTime(startsAt: string, endsAt: string): string {
         :path="`/bookings/${activity.slug}`"
     />
 
-    <div class="min-h-screen bg-tg-bg text-tg-text">
+    <div class="bg-tg-bg text-tg-text min-h-screen">
         <!-- Hero Section with Background Photography -->
-        <section class="relative min-h-[36vh] sm:min-h-[40vh] flex items-end overflow-hidden pb-12 pt-24 sm:pt-28 border-b border-tg-border">
+        <section
+            class="border-tg-border relative flex min-h-[36vh] items-end overflow-hidden border-b pb-12 pt-24 sm:min-h-[40vh] sm:pt-28"
+        >
             <!-- Background Image with Solid Dark Contrast -->
             <div
                 class="absolute inset-0 bg-cover bg-center opacity-35"
-                style="background-image: url('/images/club/training_pitch_evening.jpg')"
+                style="
+                    background-image: url('/images/club/training_pitch_evening.jpg');
+                "
             />
-            <div class="absolute inset-0 bg-gradient-to-t from-tg-bg via-tg-bg/85 to-transparent" />
+            <div
+                class="from-tg-bg via-tg-bg/85 absolute inset-0 bg-gradient-to-t to-transparent"
+            />
 
-            <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full space-y-4">
+            <div
+                class="relative z-10 mx-auto w-full max-w-7xl space-y-4 px-4 sm:px-6 lg:px-8"
+            >
                 <!-- Navigation Link -->
                 <Link
                     href="/bookings"
-                    class="tg-btn ghost inline-flex items-center gap-2 text-xs py-1.5 px-3"
+                    class="tg-btn ghost inline-flex items-center gap-2 px-3 py-1.5 text-xs"
                 >
-                    <ArrowLeft class="w-3.5 h-3.5" />
+                    <ArrowLeft class="h-3.5 w-3.5" />
                     <span>Back to Bookings</span>
                 </Link>
 
                 <div class="flex flex-wrap items-center gap-2.5">
-                    <span class="px-2.5 py-1 rounded-xs bg-tg-bg-deep border border-tg-border text-tg-text-muted text-xs font-semibold">
+                    <span
+                        class="rounded-xs bg-tg-bg-deep border-tg-border text-tg-text-muted border px-2.5 py-1 text-xs font-semibold"
+                    >
                         {{ activity.duration_minutes }} Minutes
                     </span>
-                    <span class="px-2.5 py-1 rounded-xs bg-tg-bg-deep border border-tg-border text-tg-text-muted text-xs font-semibold flex items-center gap-1">
-                        <Users class="w-3.5 h-3.5 text-tg-accent" />
+                    <span
+                        class="rounded-xs bg-tg-bg-deep border-tg-border text-tg-text-muted flex items-center gap-1 border px-2.5 py-1 text-xs font-semibold"
+                    >
+                        <Users class="text-tg-accent h-3.5 w-3.5" />
                         <span>Max {{ activity.capacity }} Players</span>
                     </span>
                     <span
                         v-if="isTrial"
-                        class="px-3 py-1 rounded-xs bg-tg-accent text-tg-text-strong text-xs font-bold uppercase tracking-wider"
+                        class="rounded-xs bg-tg-accent text-tg-text-strong px-3 py-1 text-xs font-bold uppercase tracking-wider"
                     >
                         Free Trial
                     </span>
                     <span
                         v-else
-                        class="px-3 py-1 rounded-xs bg-tg-bg-deep border border-tg-border text-tg-text-muted text-xs font-semibold uppercase tracking-wider"
+                        class="rounded-xs bg-tg-bg-deep border-tg-border text-tg-text-muted border px-3 py-1 text-xs font-semibold uppercase tracking-wider"
                     >
                         Club Training
                     </span>
                 </div>
 
                 <h1
-                    class="text-3xl sm:text-5xl font-normal uppercase tracking-tight text-tg-text-strong"
-                    style="font-family: var(--tg-display);"
+                    class="text-tg-text-strong text-3xl font-normal uppercase tracking-tight sm:text-5xl"
+                    style="font-family: var(--tg-display)"
                 >
                     {{ activity.name }}
                 </h1>
@@ -178,120 +194,195 @@ function formatScheduleTime(startsAt: string, endsAt: string): string {
         </section>
 
         <!-- Main Content Area -->
-        <section class="py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-            <div class="grid gap-10 lg:grid-cols-3 items-start">
+        <section class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+            <div class="grid items-start gap-10 lg:grid-cols-3">
                 <!-- Activity Information & Overview -->
-                <div class="lg:col-span-2 space-y-10">
+                <div class="space-y-10 lg:col-span-2">
                     <!-- Quick Stats Grid -->
-                    <div class="grid grid-cols-3 gap-4 p-6 rounded-sm bg-tg-bg-deep/80 border border-tg-border">
+                    <div
+                        class="bg-tg-bg-deep/80 border-tg-border grid grid-cols-3 gap-4 rounded-sm border p-6"
+                    >
                         <div class="space-y-1">
-                            <div class="flex items-center gap-1.5 text-xs text-tg-accent font-semibold uppercase tracking-wider">
-                                <Clock class="w-3.5 h-3.5" />
+                            <div
+                                class="text-tg-accent flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider"
+                            >
+                                <Clock class="h-3.5 w-3.5" />
                                 <span>Duration</span>
                             </div>
-                            <div class="text-lg font-bold text-tg-text-strong">{{ activity.duration_minutes }} mins</div>
+                            <div class="text-tg-text-strong text-lg font-bold">
+                                {{ activity.duration_minutes }} mins
+                            </div>
                         </div>
 
                         <div class="space-y-1">
-                            <div class="flex items-center gap-1.5 text-xs text-tg-accent font-semibold uppercase tracking-wider">
-                                <MapPin class="w-3.5 h-3.5" />
+                            <div
+                                class="text-tg-accent flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider"
+                            >
+                                <MapPin class="h-3.5 w-3.5" />
                                 <span>Location</span>
                             </div>
-                            <div class="text-sm font-bold text-tg-text-strong truncate">{{ activity.location }}</div>
+                            <div
+                                class="text-tg-text-strong truncate text-sm font-bold"
+                            >
+                                {{ activity.location }}
+                            </div>
                         </div>
 
                         <div class="space-y-1">
-                            <div class="flex items-center gap-1.5 text-xs text-tg-accent font-semibold uppercase tracking-wider">
-                                <Users class="w-3.5 h-3.5" />
+                            <div
+                                class="text-tg-accent flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider"
+                            >
+                                <Users class="h-3.5 w-3.5" />
                                 <span>Group Size</span>
                             </div>
-                            <div class="text-lg font-bold text-tg-text-strong">{{ activity.capacity }} Max</div>
+                            <div class="text-tg-text-strong text-lg font-bold">
+                                {{ activity.capacity }} Max
+                            </div>
                         </div>
                     </div>
 
                     <!-- Program Overview -->
                     <div class="space-y-3">
-                        <span class="text-xs font-bold uppercase tracking-widest text-tg-accent block">Details</span>
+                        <span
+                            class="text-tg-accent block text-xs font-bold uppercase tracking-widest"
+                            >Details</span
+                        >
                         <h2
-                            class="text-2xl font-normal uppercase text-tg-text-strong"
-                            style="font-family: var(--tg-display);"
+                            class="text-tg-text-strong text-2xl font-normal uppercase"
+                            style="font-family: var(--tg-display)"
                         >
                             Programme Overview
                         </h2>
-                        <p class="text-tg-text text-sm sm:text-base leading-relaxed">
+                        <p
+                            class="text-tg-text text-sm leading-relaxed sm:text-base"
+                        >
                             {{ activity.description }}
                         </p>
                     </div>
 
                     <!-- Included Features -->
-                    <div class="p-6 sm:p-8 rounded-sm bg-tg-bg-deep/80 border border-tg-border space-y-6">
+                    <div
+                        class="bg-tg-bg-deep/80 border-tg-border space-y-6 rounded-sm border p-6 sm:p-8"
+                    >
                         <h3
-                            class="text-xl font-normal uppercase text-tg-text-strong"
-                            style="font-family: var(--tg-display);"
+                            class="text-tg-text-strong text-xl font-normal uppercase"
+                            style="font-family: var(--tg-display)"
                         >
                             What's Included in This Session
                         </h3>
 
-                        <div class="grid sm:grid-cols-2 gap-4">
-                            <div class="flex items-start gap-3 text-tg-text text-sm">
-                                <CheckCircle2 class="w-4 h-4 text-tg-accent shrink-0 mt-0.5" />
-                                <span>Dedicated club coaches and training staff</span>
+                        <div class="grid gap-4 sm:grid-cols-2">
+                            <div
+                                class="text-tg-text flex items-start gap-3 text-sm"
+                            >
+                                <CheckCircle2
+                                    class="text-tg-accent mt-0.5 h-4 w-4 shrink-0"
+                                />
+                                <span
+                                    >Dedicated club coaches and training
+                                    staff</span
+                                >
                             </div>
-                            <div class="flex items-start gap-3 text-tg-text text-sm">
-                                <CheckCircle2 class="w-4 h-4 text-tg-accent shrink-0 mt-0.5" />
-                                <span>Technical ball mastery & tactical match play</span>
+                            <div
+                                class="text-tg-text flex items-start gap-3 text-sm"
+                            >
+                                <CheckCircle2
+                                    class="text-tg-accent mt-0.5 h-4 w-4 shrink-0"
+                                />
+                                <span
+                                    >Technical ball mastery & tactical match
+                                    play</span
+                                >
                             </div>
-                            <div class="flex items-start gap-3 text-tg-text text-sm">
-                                <CheckCircle2 class="w-4 h-4 text-tg-accent shrink-0 mt-0.5" />
-                                <span>Quality pitch and training equipment setup</span>
+                            <div
+                                class="text-tg-text flex items-start gap-3 text-sm"
+                            >
+                                <CheckCircle2
+                                    class="text-tg-accent mt-0.5 h-4 w-4 shrink-0"
+                                />
+                                <span
+                                    >Quality pitch and training equipment
+                                    setup</span
+                                >
                             </div>
-                            <div class="flex items-start gap-3 text-tg-text text-sm">
-                                <CheckCircle2 class="w-4 h-4 text-tg-accent shrink-0 mt-0.5" />
-                                <span>Post-session feedback & player evaluation</span>
+                            <div
+                                class="text-tg-text flex items-start gap-3 text-sm"
+                            >
+                                <CheckCircle2
+                                    class="text-tg-accent mt-0.5 h-4 w-4 shrink-0"
+                                />
+                                <span
+                                    >Post-session feedback & player
+                                    evaluation</span
+                                >
                             </div>
                         </div>
                     </div>
 
                     <!-- Venue Details -->
-                    <div class="p-6 sm:p-8 rounded-sm bg-tg-bg-deep/80 border border-tg-border space-y-3">
+                    <div
+                        class="bg-tg-bg-deep/80 border-tg-border space-y-3 rounded-sm border p-6 sm:p-8"
+                    >
                         <div class="flex items-center gap-2">
-                            <MapPin class="w-4 h-4 text-tg-accent" />
+                            <MapPin class="text-tg-accent h-4 w-4" />
                             <h3
-                                class="text-xl font-normal uppercase text-tg-text-strong"
-                                style="font-family: var(--tg-display);"
+                                class="text-tg-text-strong text-xl font-normal uppercase"
+                                style="font-family: var(--tg-display)"
                             >
                                 Venue & Facility
                             </h3>
                         </div>
                         <p class="text-tg-text-muted text-sm leading-relaxed">
-                            Sessions take place on our high-quality pitches at <strong class="text-tg-text-strong">{{ activity.location }}</strong>. Changing rooms, parking, and parent viewing areas are available on site.
+                            Sessions take place on our high-quality pitches at
+                            <strong class="text-tg-text-strong">{{
+                                activity.location
+                            }}</strong
+                            >. Changing rooms, parking, and parent viewing areas
+                            are available on site.
                         </p>
                     </div>
                 </div>
 
                 <!-- Sticky Booking Sidebar Form -->
-                <div class="sticky top-24 rounded-sm bg-tg-bg-deep border border-tg-border p-6 sm:p-8 space-y-6 shadow-xl">
-                    <div class="flex items-baseline justify-between border-b border-tg-border pb-5">
+                <div
+                    class="bg-tg-bg-deep border-tg-border sticky top-24 space-y-6 rounded-sm border p-6 shadow-xl sm:p-8"
+                >
+                    <div
+                        class="border-tg-border flex items-baseline justify-between border-b pb-5"
+                    >
                         <div>
-                            <span class="text-xs font-semibold uppercase tracking-wider text-tg-text-muted">Registration</span>
-                            <div class="text-2xl font-bold text-tg-text-strong mt-0.5">
+                            <span
+                                class="text-tg-text-muted text-xs font-semibold uppercase tracking-wider"
+                                >Registration</span
+                            >
+                            <div
+                                class="text-tg-text-strong mt-0.5 text-2xl font-bold"
+                            >
                                 {{ isTrial ? 'Free Trial' : 'Club Training' }}
                             </div>
                         </div>
-                        <span class="text-xs text-tg-text-muted">{{ isTrial ? 'No fee required' : 'Session booking' }}</span>
+                        <span class="text-tg-text-muted text-xs">{{
+                            isTrial ? 'No fee required' : 'Session booking'
+                        }}</span>
                     </div>
 
                     <!-- Success State -->
-                    <div v-if="submitted" class="p-6 rounded-sm bg-tg-bg border border-tg-accent text-center space-y-3">
-                        <CheckCircle2 class="w-12 h-12 text-tg-accent mx-auto" />
+                    <div
+                        v-if="submitted"
+                        class="bg-tg-bg border-tg-accent space-y-3 rounded-sm border p-6 text-center"
+                    >
+                        <CheckCircle2
+                            class="text-tg-accent mx-auto h-12 w-12"
+                        />
                         <h4
-                            class="text-xl font-normal uppercase text-tg-text-strong"
-                            style="font-family: var(--tg-display);"
+                            class="text-tg-text-strong text-xl font-normal uppercase"
+                            style="font-family: var(--tg-display)"
                         >
                             Booking Confirmed!
                         </h4>
-                        <p class="text-xs text-tg-text-muted">
-                            We have received your registration. Check your email for session details and pitch directions.
+                        <p class="text-tg-text-muted text-xs">
+                            We have received your registration. Check your email
+                            for session details and pitch directions.
                         </p>
                         <button
                             type="button"
@@ -307,33 +398,55 @@ function formatScheduleTime(startsAt: string, endsAt: string): string {
                         <!-- Top Error Alert -->
                         <div
                             v-if="Object.keys(formErrors).length > 0"
-                            class="p-3.5 rounded-xs border border-rose-500/40 bg-rose-500/10 text-rose-300 text-xs flex items-center gap-2.5"
+                            class="rounded-xs flex items-center gap-2.5 border border-rose-500/40 bg-rose-500/10 p-3.5 text-xs text-rose-300"
                         >
-                            <AlertCircle class="w-4 h-4 text-rose-400 shrink-0" />
-                            <span>Please review the highlighted booking details below.</span>
+                            <AlertCircle
+                                class="h-4 w-4 shrink-0 text-rose-400"
+                            />
+                            <span
+                                >Please review the highlighted booking details
+                                below.</span
+                            >
                         </div>
 
                         <!-- Choose Schedule Slot -->
                         <div>
-                            <label class="block text-xs font-semibold uppercase tracking-wider text-tg-text-muted mb-2.5">
-                                Select Session Date & Time <span class="text-tg-accent">*</span>
+                            <label
+                                class="text-tg-text-muted mb-2.5 block text-xs font-semibold uppercase tracking-wider"
+                            >
+                                Select Session Date & Time
+                                <span class="text-tg-accent">*</span>
                             </label>
 
-                            <div v-if="schedules.length === 0" class="p-4 rounded-sm bg-tg-bg border border-tg-border text-tg-highlight text-xs flex items-center gap-2">
-                                <AlertCircle class="w-4 h-4 shrink-0 text-tg-highlight" />
-                                <span>No upcoming slots available currently. Check back soon or contact us.</span>
+                            <div
+                                v-if="schedules.length === 0"
+                                class="bg-tg-bg border-tg-border text-tg-highlight flex items-center gap-2 rounded-sm border p-4 text-xs"
+                            >
+                                <AlertCircle
+                                    class="text-tg-highlight h-4 w-4 shrink-0"
+                                />
+                                <span
+                                    >No upcoming slots available currently.
+                                    Check back soon or contact us.</span
+                                >
                             </div>
 
-                            <div v-else class="space-y-2 max-h-52 overflow-y-auto pr-1">
+                            <div
+                                v-else
+                                class="max-h-52 space-y-2 overflow-y-auto pr-1"
+                            >
                                 <label
                                     v-for="schedule in schedules"
                                     :key="schedule.id"
                                     @click="selectSchedule(schedule.id)"
                                     :class="[
-                                        String(form.schedule_id) === String(schedule.id)
-                                            ? 'border-tg-accent bg-tg-accent/15 ring-1 ring-tg-accent'
-                                            : (formErrors.schedule_id ? 'border-rose-500/80 bg-rose-500/5' : 'border-tg-border bg-tg-bg/70 hover:border-tg-border-strong'),
-                                        'flex items-center justify-between p-3 rounded-xs border cursor-pointer transition-all'
+                                        String(form.schedule_id) ===
+                                        String(schedule.id)
+                                            ? 'border-tg-accent bg-tg-accent/15 ring-tg-accent ring-1'
+                                            : formErrors.schedule_id
+                                              ? 'border-rose-500/80 bg-rose-500/5'
+                                              : 'border-tg-border bg-tg-bg/70 hover:border-tg-border-strong',
+                                        'rounded-xs flex cursor-pointer items-center justify-between border p-3 transition-all',
                                     ]"
                                 >
                                     <div class="flex items-center gap-3">
@@ -342,107 +455,155 @@ function formatScheduleTime(startsAt: string, endsAt: string): string {
                                             :value="schedule.id.toString()"
                                             type="radio"
                                             name="schedule"
-                                            class="accent-pink-500 w-4 h-4"
+                                            class="h-4 w-4 accent-pink-500"
                                             required
                                         />
                                         <div>
-                                            <div class="text-xs font-bold text-tg-text-strong">
-                                                {{ formatScheduleDate(schedule.starts_at) }}
+                                            <div
+                                                class="text-tg-text-strong text-xs font-bold"
+                                            >
+                                                {{
+                                                    formatScheduleDate(
+                                                        schedule.starts_at,
+                                                    )
+                                                }}
                                             </div>
-                                            <div class="text-[11px] text-tg-text-muted mt-0.5">
-                                                {{ formatScheduleTime(schedule.starts_at, schedule.ends_at) }}
+                                            <div
+                                                class="text-tg-text-muted mt-0.5 text-[11px]"
+                                            >
+                                                {{
+                                                    formatScheduleTime(
+                                                        schedule.starts_at,
+                                                        schedule.ends_at,
+                                                    )
+                                                }}
                                             </div>
                                         </div>
                                     </div>
                                     <span
                                         :class="[
-                                            schedule.available_spots > 0 ? 'text-tg-accent bg-tg-bg border-tg-accent/30' : 'text-rose-400 bg-tg-bg border-rose-500/30',
-                                            'px-2 py-0.5 rounded-xs text-[10px] font-semibold border'
+                                            schedule.available_spots > 0
+                                                ? 'text-tg-accent bg-tg-bg border-tg-accent/30'
+                                                : 'bg-tg-bg border-rose-500/30 text-rose-400',
+                                            'rounded-xs border px-2 py-0.5 text-[10px] font-semibold',
                                         ]"
                                     >
                                         {{ schedule.available_spots }} left
                                     </span>
                                 </label>
                             </div>
-                            <p v-if="formErrors.schedule_id" class="mt-1 text-xs text-rose-400 font-medium">
+                            <p
+                                v-if="formErrors.schedule_id"
+                                class="mt-1 text-xs font-medium text-rose-400"
+                            >
                                 {{ formErrors.schedule_id }}
                             </p>
                         </div>
 
                         <!-- Participant Name -->
                         <div>
-                            <label class="block text-xs font-semibold uppercase tracking-wider text-tg-text-muted mb-1">
-                                Participant / Parent Name <span class="text-tg-accent">*</span>
+                            <label
+                                class="text-tg-text-muted mb-1 block text-xs font-semibold uppercase tracking-wider"
+                            >
+                                Participant / Parent Name
+                                <span class="text-tg-accent">*</span>
                             </label>
                             <input
                                 v-model="form.participant_name"
                                 type="text"
                                 required
                                 :class="[
-                                    formErrors.participant_name ? 'border-rose-500 focus:border-rose-500 focus:ring-rose-500' : 'border-tg-border focus:border-tg-accent focus:ring-tg-accent',
-                                    'w-full rounded-xs bg-tg-bg px-3.5 py-2.5 text-sm sm:text-base text-tg-text-strong placeholder:text-tg-text-muted/60 outline-none focus:ring-1 transition-colors'
+                                    formErrors.participant_name
+                                        ? 'border-rose-500 focus:border-rose-500 focus:ring-rose-500'
+                                        : 'border-tg-border focus:border-tg-accent focus:ring-tg-accent',
+                                    'rounded-xs bg-tg-bg text-tg-text-strong placeholder:text-tg-text-muted/60 w-full px-3.5 py-2.5 text-sm outline-none transition-colors focus:ring-1 sm:text-base',
                                 ]"
                                 placeholder="e.g. Alex Smith"
                             />
-                            <p v-if="formErrors.participant_name" class="mt-1 text-xs text-rose-400 font-medium">
+                            <p
+                                v-if="formErrors.participant_name"
+                                class="mt-1 text-xs font-medium text-rose-400"
+                            >
                                 {{ formErrors.participant_name }}
                             </p>
                         </div>
 
                         <!-- Email -->
                         <div>
-                            <label class="block text-xs font-semibold uppercase tracking-wider text-tg-text-muted mb-1">
-                                Email Address <span class="text-tg-accent">*</span>
+                            <label
+                                class="text-tg-text-muted mb-1 block text-xs font-semibold uppercase tracking-wider"
+                            >
+                                Email Address
+                                <span class="text-tg-accent">*</span>
                             </label>
                             <input
                                 v-model="form.participant_email"
                                 type="email"
                                 required
                                 :class="[
-                                    formErrors.participant_email ? 'border-rose-500 focus:border-rose-500 focus:ring-rose-500' : 'border-tg-border focus:border-tg-accent focus:ring-tg-accent',
-                                    'w-full rounded-xs bg-tg-bg px-3.5 py-2.5 text-sm sm:text-base text-tg-text-strong placeholder:text-tg-text-muted/60 outline-none focus:ring-1 transition-colors'
+                                    formErrors.participant_email
+                                        ? 'border-rose-500 focus:border-rose-500 focus:ring-rose-500'
+                                        : 'border-tg-border focus:border-tg-accent focus:ring-tg-accent',
+                                    'rounded-xs bg-tg-bg text-tg-text-strong placeholder:text-tg-text-muted/60 w-full px-3.5 py-2.5 text-sm outline-none transition-colors focus:ring-1 sm:text-base',
                                 ]"
                                 placeholder="alex@example.com"
                             />
-                            <p v-if="formErrors.participant_email" class="mt-1 text-xs text-rose-400 font-medium">
+                            <p
+                                v-if="formErrors.participant_email"
+                                class="mt-1 text-xs font-medium text-rose-400"
+                            >
                                 {{ formErrors.participant_email }}
                             </p>
                         </div>
 
                         <!-- Phone -->
                         <div>
-                            <label class="block text-xs font-semibold uppercase tracking-wider text-tg-text-muted mb-1">
+                            <label
+                                class="text-tg-text-muted mb-1 block text-xs font-semibold uppercase tracking-wider"
+                            >
                                 Phone Number (optional)
                             </label>
                             <input
                                 v-model="form.participant_phone"
                                 type="tel"
                                 :class="[
-                                    formErrors.participant_phone ? 'border-rose-500 focus:border-rose-500 focus:ring-rose-500' : 'border-tg-border focus:border-tg-accent focus:ring-tg-accent',
-                                    'w-full rounded-xs bg-tg-bg px-3.5 py-2.5 text-sm sm:text-base text-tg-text-strong placeholder:text-tg-text-muted/60 outline-none focus:ring-1 transition-colors'
+                                    formErrors.participant_phone
+                                        ? 'border-rose-500 focus:border-rose-500 focus:ring-rose-500'
+                                        : 'border-tg-border focus:border-tg-accent focus:ring-tg-accent',
+                                    'rounded-xs bg-tg-bg text-tg-text-strong placeholder:text-tg-text-muted/60 w-full px-3.5 py-2.5 text-sm outline-none transition-colors focus:ring-1 sm:text-base',
                                 ]"
                                 placeholder="+44 7123 456789"
                             />
-                            <p v-if="formErrors.participant_phone" class="mt-1 text-xs text-rose-400 font-medium">
+                            <p
+                                v-if="formErrors.participant_phone"
+                                class="mt-1 text-xs font-medium text-rose-400"
+                            >
                                 {{ formErrors.participant_phone }}
                             </p>
                         </div>
 
                         <!-- Notes -->
                         <div>
-                            <label class="block text-xs font-semibold uppercase tracking-wider text-tg-text-muted mb-1">
+                            <label
+                                class="text-tg-text-muted mb-1 block text-xs font-semibold uppercase tracking-wider"
+                            >
                                 Player Age / Special Notes
                             </label>
                             <textarea
                                 v-model="form.notes"
                                 rows="3"
                                 :class="[
-                                    formErrors.notes ? 'border-rose-500 focus:border-rose-500 focus:ring-rose-500' : 'border-tg-border focus:border-tg-accent focus:ring-tg-accent',
-                                    'w-full rounded-xs bg-tg-bg px-3.5 py-2.5 text-sm sm:text-base text-tg-text-strong placeholder:text-tg-text-muted/60 outline-none focus:ring-1 transition-colors resize-y'
+                                    formErrors.notes
+                                        ? 'border-rose-500 focus:border-rose-500 focus:ring-rose-500'
+                                        : 'border-tg-border focus:border-tg-accent focus:ring-tg-accent',
+                                    'rounded-xs bg-tg-bg text-tg-text-strong placeholder:text-tg-text-muted/60 w-full resize-y px-3.5 py-2.5 text-sm outline-none transition-colors focus:ring-1 sm:text-base',
                                 ]"
                                 placeholder="Player age or medical notes..."
                             />
-                            <p v-if="formErrors.notes" class="mt-1 text-xs text-rose-400 font-medium">
+                            <p
+                                v-if="formErrors.notes"
+                                class="mt-1 text-xs font-medium text-rose-400"
+                            >
                                 {{ formErrors.notes }}
                             </p>
                         </div>
@@ -451,12 +612,20 @@ function formatScheduleTime(startsAt: string, endsAt: string): string {
                         <button
                             type="submit"
                             :disabled="processing || schedules.length === 0"
-                            class="tg-btn w-full justify-center py-3 text-xs disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                            class="tg-btn w-full cursor-pointer justify-center py-3 text-xs disabled:cursor-not-allowed disabled:opacity-50"
                         >
-                            <span>{{ processing ? 'Processing...' : (activity.slug.includes('trial') ? 'Book a Trial' : 'Confirm Booking') }}</span>
+                            <span>{{
+                                processing
+                                    ? 'Processing...'
+                                    : activity.slug.includes('trial')
+                                      ? 'Book a Trial'
+                                      : 'Confirm Booking'
+                            }}</span>
                         </button>
 
-                        <div class="flex items-center justify-center text-[11px] text-tg-text-muted pt-1 text-center">
+                        <div
+                            class="text-tg-text-muted flex items-center justify-center pt-1 text-center text-[11px]"
+                        >
                             <span>Try a session. See how they develop.</span>
                         </div>
                     </form>
@@ -465,5 +634,3 @@ function formatScheduleTime(startsAt: string, endsAt: string): string {
         </section>
     </div>
 </template>
-
-

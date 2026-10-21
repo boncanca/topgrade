@@ -22,8 +22,12 @@ export function useSeo(options: SeoOptions) {
         // outside Inertia component context
     }
 
-    const siteUrl = computed(() => page?.props?.siteSettings?.site_url || DEFAULT_SITE_URL);
-    const siteName = computed(() => page?.props?.siteSettings?.site_name || 'TopGrade London FC');
+    const siteUrl = computed(
+        () => page?.props?.siteSettings?.site_url || DEFAULT_SITE_URL,
+    );
+    const siteName = computed(
+        () => page?.props?.siteSettings?.site_name || 'TopGrade London FC',
+    );
 
     const canonicalUrl = computed(() => {
         const base = siteUrl.value;
@@ -36,7 +40,8 @@ export function useSeo(options: SeoOptions) {
     });
 
     const ogImageUrl = computed(() => {
-        const defaultImg = page?.props?.siteSettings?.default_og_image || DEFAULT_OG_IMAGE;
+        const defaultImg =
+            page?.props?.siteSettings?.default_og_image || DEFAULT_OG_IMAGE;
         const img = options.image || defaultImg;
 
         if (img.startsWith('http://') || img.startsWith('https://')) {

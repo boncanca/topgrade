@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { router, useForm } from '@inertiajs/vue3';
 import BlockEditor from '@/components/CMS/BlockEditor.vue';
-import type {Block} from '@/components/CMS/BlockEditor.vue';
+import type { Block } from '@/components/CMS/BlockEditor.vue';
 import FormPage from '@/components/FormPage.vue';
 import FormSection from '@/components/FormSection.vue';
 import PageActions from '@/components/PageActions.vue';
@@ -129,7 +129,9 @@ function handleDelete(): void {
                     <input type="hidden" :value="form.content_type_id" />
 
                     <div>
-                        <label class="mb-2 block text-sm font-medium text-foreground">
+                        <label
+                            class="text-foreground mb-2 block text-sm font-medium"
+                        >
                             Title <span class="text-destructive">*</span>
                         </label>
                         <input
@@ -141,14 +143,16 @@ function handleDelete(): void {
                         />
                         <p
                             v-if="form.errors.title"
-                            class="mt-1 text-sm text-destructive"
+                            class="text-destructive mt-1 text-sm"
                         >
                             {{ form.errors.title }}
                         </p>
                     </div>
 
                     <div>
-                        <label class="mb-2 block text-sm font-medium text-foreground">
+                        <label
+                            class="text-foreground mb-2 block text-sm font-medium"
+                        >
                             Slug <span class="text-destructive">*</span>
                         </label>
                         <input
@@ -159,14 +163,16 @@ function handleDelete(): void {
                         />
                         <p
                             v-if="form.errors.slug"
-                            class="mt-1 text-sm text-destructive"
+                            class="text-destructive mt-1 text-sm"
                         >
                             {{ form.errors.slug }}
                         </p>
                     </div>
 
                     <div>
-                        <label class="mb-2 block text-sm font-medium text-foreground">
+                        <label
+                            class="text-foreground mb-2 block text-sm font-medium"
+                        >
                             Excerpt
                         </label>
                         <textarea
@@ -177,7 +183,7 @@ function handleDelete(): void {
                         />
                         <p
                             v-if="form.errors.excerpt"
-                            class="mt-1 text-sm text-destructive"
+                            class="text-destructive mt-1 text-sm"
                         >
                             {{ form.errors.excerpt }}
                         </p>
@@ -194,7 +200,10 @@ function handleDelete(): void {
                     v-model="form.blocks"
                     :content-id="props.content.id"
                 />
-                <p v-if="form.errors.blocks" class="mt-2 text-sm text-destructive">
+                <p
+                    v-if="form.errors.blocks"
+                    class="text-destructive mt-2 text-sm"
+                >
                     {{ form.errors.blocks }}
                 </p>
             </FormSection>
@@ -205,7 +214,9 @@ function handleDelete(): void {
             >
                 <div class="space-y-6">
                     <div>
-                        <label class="mb-2 block text-sm font-medium text-foreground">
+                        <label
+                            class="text-foreground mb-2 block text-sm font-medium"
+                        >
                             Status <span class="text-destructive">*</span>
                         </label>
                         <select v-model="form.status" :class="fieldClass">
@@ -214,14 +225,16 @@ function handleDelete(): void {
                         </select>
                         <p
                             v-if="form.errors.status"
-                            class="mt-1 text-sm text-destructive"
+                            class="text-destructive mt-1 text-sm"
                         >
                             {{ form.errors.status }}
                         </p>
                     </div>
 
                     <div>
-                        <label class="mb-2 block text-sm font-medium text-foreground">
+                        <label
+                            class="text-foreground mb-2 block text-sm font-medium"
+                        >
                             Published At
                         </label>
                         <input
@@ -231,7 +244,7 @@ function handleDelete(): void {
                         />
                         <p
                             v-if="form.errors.published_at"
-                            class="mt-1 text-sm text-destructive"
+                            class="text-destructive mt-1 text-sm"
                         >
                             {{ form.errors.published_at }}
                         </p>
@@ -245,7 +258,9 @@ function handleDelete(): void {
             >
                 <div class="space-y-6">
                     <div>
-                        <label class="mb-2 block text-sm font-medium text-foreground">
+                        <label
+                            class="text-foreground mb-2 block text-sm font-medium"
+                        >
                             SEO Title
                         </label>
                         <input
@@ -256,14 +271,16 @@ function handleDelete(): void {
                         />
                         <p
                             v-if="form.errors['seo.title']"
-                            class="mt-1 text-sm text-destructive"
+                            class="text-destructive mt-1 text-sm"
                         >
                             {{ form.errors['seo.title'] }}
                         </p>
                     </div>
 
                     <div>
-                        <label class="mb-2 block text-sm font-medium text-foreground">
+                        <label
+                            class="text-foreground mb-2 block text-sm font-medium"
+                        >
                             SEO Description
                         </label>
                         <textarea
@@ -274,14 +291,16 @@ function handleDelete(): void {
                         />
                         <p
                             v-if="form.errors['seo.description']"
-                            class="mt-1 text-sm text-destructive"
+                            class="text-destructive mt-1 text-sm"
                         >
                             {{ form.errors['seo.description'] }}
                         </p>
                     </div>
 
                     <div>
-                        <label class="mb-2 block text-sm font-medium text-foreground">
+                        <label
+                            class="text-foreground mb-2 block text-sm font-medium"
+                        >
                             Canonical URL
                         </label>
                         <input
@@ -292,7 +311,7 @@ function handleDelete(): void {
                         />
                         <p
                             v-if="form.errors['seo.canonical_url']"
-                            class="mt-1 text-sm text-destructive"
+                            class="text-destructive mt-1 text-sm"
                         >
                             {{ form.errors['seo.canonical_url'] }}
                         </p>

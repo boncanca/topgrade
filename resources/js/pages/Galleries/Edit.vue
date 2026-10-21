@@ -90,13 +90,13 @@ watch(
     () => props.gallery,
     (fresh) => {
         localGallery.value = [...fresh];
-    }
+    },
 );
 watch(
     () => props.moment.cover_media_id,
     (coverId) => {
         form.cover_media_id = coverId;
-    }
+    },
 );
 
 const MAX_IMAGE_BYTES = 15 * 1024 * 1024;
@@ -136,7 +136,9 @@ function onFileSelect(e: Event): void {
     clientErrors.value = [];
 
     if (form.images.length + input.files.length > MAX_BATCH_COUNT) {
-        clientErrors.value.push(`Cannot upload more than ${MAX_BATCH_COUNT} images in one batch.`);
+        clientErrors.value.push(
+            `Cannot upload more than ${MAX_BATCH_COUNT} images in one batch.`,
+        );
         input.value = '';
 
         return;
@@ -148,17 +150,23 @@ function onFileSelect(e: Event): void {
         const file = input.files[i];
 
         if (!file.type.startsWith('image/')) {
-            clientErrors.value.push(`${file.name} is not an image and was skipped.`);
+            clientErrors.value.push(
+                `${file.name} is not an image and was skipped.`,
+            );
             continue;
         }
 
         if (file.size > MAX_IMAGE_BYTES) {
-            clientErrors.value.push(`${file.name} is larger than 15MB and was skipped.`);
+            clientErrors.value.push(
+                `${file.name} is larger than 15MB and was skipped.`,
+            );
             continue;
         }
 
         if (batchBytes + file.size > MAX_BATCH_BYTES) {
-            clientErrors.value.push(`Total batch size exceeds 50MB. ${file.name} and subsequent files were skipped.`);
+            clientErrors.value.push(
+                `Total batch size exceeds 50MB. ${file.name} and subsequent files were skipped.`,
+            );
             break;
         }
 
@@ -193,8 +201,8 @@ function setCover(item: GalleryItem): void {
 
 function moveImage(fromIdx: number, toIdx: number): void {
     if (toIdx < 0 || toIdx >= localGallery.value.length) {
-return;
-}
+        return;
+    }
 
     const item = localGallery.value.splice(fromIdx, 1)[0];
     localGallery.value.splice(toIdx, 0, item);
@@ -211,14 +219,14 @@ return;
             onFinish: () => {
                 isReordering.value = false;
             },
-        }
+        },
     );
 }
 
 function deleteMedia(item: GalleryItem): void {
     if (!confirm('Remove this photo from the gallery?')) {
-return;
-}
+        return;
+    }
 
     router.delete(`/dashboard/galleries/${props.moment.id}/media/${item.id}`, {
         preserveScroll: true,
@@ -265,7 +273,11 @@ function handleCancel(): void {
                 variant="outline"
                 size="sm"
             >
-                <a :href="`/moments/${moment.slug}`" target="_blank" rel="noopener noreferrer">
+                <a
+                    :href="`/moments/${moment.slug}`"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
                     <Eye class="mr-1.5 h-3.5 w-3.5" />
                     View Public Page
                 </a>
@@ -281,23 +293,42 @@ function handleCancel(): void {
                 <div class="space-y-6">
                     <!-- Existing Gallery Grid -->
                     <div v-if="localGallery.length > 0">
-                        <div class="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3 flex items-center justify-between">
+                        <div
+                            class="text-muted-foreground mb-3 flex items-center justify-between text-xs font-semibold uppercase tracking-wider"
+                        >
                             <span>
-                                Current Gallery ({{ localGallery.length }} {{ localGallery.length === 1 ? 'photo' : 'photos' }})
+                                Current Gallery ({{ localGallery.length }}
+                                {{
+                                    localGallery.length === 1
+                                        ? 'photo'
+                                        : 'photos'
+                                }})
                             </span>
-                            <span v-if="isReordering" class="text-xs text-primary animate-pulse">
+                            <span
+                                v-if="isReordering"
+                                class="text-primary animate-pulse text-xs"
+                            >
                                 Updating order...
                             </span>
                         </div>
 
-                        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                        <div
+                            class="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"
+                        >
                             <div
                                 v-for="(item, idx) in localGallery"
                                 :key="item.id"
-                                class="group relative rounded-lg overflow-hidden border border-border bg-card shadow-xs flex flex-col"
-                                :class="item.is_cover || form.cover_media_id === item.id ? 'ring-2 ring-primary border-primary' : ''"
+                                class="border-border bg-card shadow-xs group relative flex flex-col overflow-hidden rounded-lg border"
+                                :class="
+                                    item.is_cover ||
+                                    form.cover_media_id === item.id
+                                        ? 'ring-primary border-primary ring-2'
+                                        : ''
+                                "
                             >
-                                <div class="relative aspect-4/3 overflow-hidden bg-muted">
+                                <div
+                                    class="aspect-4/3 bg-muted relative overflow-hidden"
+                                >
                                     <img
                                         :src="item.url"
                                         :alt="item.name"
@@ -306,8 +337,11 @@ function handleCancel(): void {
 
                                     <!-- Cover Badge -->
                                     <div
-                                        v-if="item.is_cover || form.cover_media_id === item.id"
-                                        class="absolute top-2 left-2 rounded bg-primary px-2 py-0.5 text-[10px] font-bold text-primary-foreground shadow-sm flex items-center gap-1"
+                                        v-if="
+                                            item.is_cover ||
+                                            form.cover_media_id === item.id
+                                        "
+                                        class="bg-primary text-primary-foreground absolute left-2 top-2 flex items-center gap-1 rounded px-2 py-0.5 text-[10px] font-bold shadow-sm"
                                     >
                                         <Star class="h-3 w-3 fill-current" />
                                         COVER
@@ -317,7 +351,7 @@ function handleCancel(): void {
                                     <button
                                         type="button"
                                         @click="deleteMedia(item)"
-                                        class="absolute top-2 right-2 rounded-full bg-black/70 p-1.5 text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive"
+                                        class="hover:bg-destructive absolute right-2 top-2 rounded-full bg-black/70 p-1.5 text-white opacity-0 transition-opacity group-hover:opacity-100"
                                         title="Delete photo"
                                     >
                                         <Trash2 class="h-3.5 w-3.5" />
@@ -325,15 +359,27 @@ function handleCancel(): void {
                                 </div>
 
                                 <!-- Card Footer: Reorder & Set Cover -->
-                                <div class="p-2.5 flex items-center justify-between gap-1 text-xs border-t border-border bg-muted/30">
+                                <div
+                                    class="border-border bg-muted/30 flex items-center justify-between gap-1 border-t p-2.5 text-xs"
+                                >
                                     <!-- Cover Button -->
                                     <button
                                         type="button"
                                         @click="setCover(item)"
-                                        class="text-[11px] font-medium rounded px-2 py-1 transition-colors"
-                                        :class="item.is_cover || form.cover_media_id === item.id ? 'bg-primary/10 text-primary font-bold' : 'text-muted-foreground hover:bg-muted hover:text-foreground'"
+                                        class="rounded px-2 py-1 text-[11px] font-medium transition-colors"
+                                        :class="
+                                            item.is_cover ||
+                                            form.cover_media_id === item.id
+                                                ? 'bg-primary/10 text-primary font-bold'
+                                                : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                                        "
                                     >
-                                        {{ item.is_cover || form.cover_media_id === item.id ? 'Cover' : 'Make Cover' }}
+                                        {{
+                                            item.is_cover ||
+                                            form.cover_media_id === item.id
+                                                ? 'Cover'
+                                                : 'Make Cover'
+                                        }}
                                     </button>
 
                                     <!-- Reorder Controls -->
@@ -342,19 +388,23 @@ function handleCancel(): void {
                                             type="button"
                                             :disabled="idx === 0"
                                             @click="moveImage(idx, idx - 1)"
-                                            class="rounded p-1 text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-20"
+                                            class="text-muted-foreground hover:bg-muted hover:text-foreground rounded p-1 disabled:opacity-20"
                                             title="Move left"
                                         >
                                             <ArrowLeft class="h-3.5 w-3.5" />
                                         </button>
-                                        <span class="text-[10px] text-muted-foreground px-1 font-mono">
+                                        <span
+                                            class="text-muted-foreground px-1 font-mono text-[10px]"
+                                        >
                                             #{{ idx + 1 }}
                                         </span>
                                         <button
                                             type="button"
-                                            :disabled="idx === localGallery.length - 1"
+                                            :disabled="
+                                                idx === localGallery.length - 1
+                                            "
                                             @click="moveImage(idx, idx + 1)"
-                                            class="rounded p-1 text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-20"
+                                            class="text-muted-foreground hover:bg-muted hover:text-foreground rounded p-1 disabled:opacity-20"
                                             title="Move right"
                                         >
                                             <ArrowRight class="h-3.5 w-3.5" />
@@ -365,21 +415,33 @@ function handleCancel(): void {
                         </div>
                     </div>
 
-                    <div v-else class="rounded-lg border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
-                        No photos currently in this gallery. Upload photos below.
+                    <div
+                        v-else
+                        class="border-border text-muted-foreground rounded-lg border border-dashed p-6 text-center text-sm"
+                    >
+                        No photos currently in this gallery. Upload photos
+                        below.
                     </div>
 
                     <!-- Upload More Photos -->
-                    <div class="pt-4 border-t border-border">
-                        <label class="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">
+                    <div class="border-border border-t pt-4">
+                        <label
+                            class="text-muted-foreground mb-2 block text-xs font-semibold uppercase tracking-wider"
+                        >
                             Add More Photos
                         </label>
                         <label
-                            class="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-border p-6 text-center cursor-pointer hover:border-primary/50 hover:bg-muted/30 transition-colors"
+                            class="border-border hover:border-primary/50 hover:bg-muted/30 flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed p-6 text-center transition-colors"
                         >
-                            <Upload class="h-6 w-6 text-muted-foreground mb-1" />
-                            <span class="text-sm font-medium text-foreground">Click to select photos to append</span>
-                            <span class="text-xs text-muted-foreground mt-0.5">JPG, PNG, or WebP (up to 15MB each)</span>
+                            <Upload
+                                class="text-muted-foreground mb-1 h-6 w-6"
+                            />
+                            <span class="text-foreground text-sm font-medium"
+                                >Click to select photos to append</span
+                            >
+                            <span class="text-muted-foreground mt-0.5 text-xs"
+                                >JPG, PNG, or WebP (up to 15MB each)</span
+                            >
                             <input
                                 type="file"
                                 multiple
@@ -389,26 +451,55 @@ function handleCancel(): void {
                             />
                         </label>
 
-                        <ul v-if="imageErrors.length > 0" class="mt-3 space-y-1 text-sm text-destructive" role="alert">
-                            <li v-for="(message, i) in imageErrors" :key="i">{{ message }}</li>
+                        <ul
+                            v-if="imageErrors.length > 0"
+                            class="text-destructive mt-3 space-y-1 text-sm"
+                            role="alert"
+                        >
+                            <li v-for="(message, i) in imageErrors" :key="i">
+                                {{ message }}
+                            </li>
                         </ul>
-                        <div v-if="form.processing && form.progress" class="mt-3">
-                            <div class="h-2 w-full overflow-hidden rounded bg-muted">
-                                <div class="h-full bg-primary transition-all" :style="{ width: `${form.progress.percentage}%` }" />
+                        <div
+                            v-if="form.processing && form.progress"
+                            class="mt-3"
+                        >
+                            <div
+                                class="bg-muted h-2 w-full overflow-hidden rounded"
+                            >
+                                <div
+                                    class="bg-primary h-full transition-all"
+                                    :style="{
+                                        width: `${form.progress.percentage}%`,
+                                    }"
+                                />
                             </div>
-                            <p class="mt-1 text-xs text-muted-foreground">Uploading… {{ form.progress.percentage }}%</p>
+                            <p class="text-muted-foreground mt-1 text-xs">
+                                Uploading… {{ form.progress.percentage }}%
+                            </p>
                         </div>
 
                         <!-- Previews of newly selected photos -->
                         <div v-if="newImagePreviews.length > 0" class="mt-4">
-                            <div class="text-xs font-semibold text-primary mb-2">
-                                Ready to upload: {{ newImagePreviews.length }} new {{ newImagePreviews.length === 1 ? 'photo' : 'photos' }} (click Save Changes to upload)
+                            <div
+                                class="text-primary mb-2 text-xs font-semibold"
+                            >
+                                Ready to upload:
+                                {{ newImagePreviews.length }} new
+                                {{
+                                    newImagePreviews.length === 1
+                                        ? 'photo'
+                                        : 'photos'
+                                }}
+                                (click Save Changes to upload)
                             </div>
-                            <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-3">
+                            <div
+                                class="grid grid-cols-2 gap-3 sm:grid-cols-4 md:grid-cols-6"
+                            >
                                 <div
                                     v-for="(preview, idx) in newImagePreviews"
                                     :key="idx"
-                                    class="group relative aspect-square rounded-md overflow-hidden border border-border bg-muted"
+                                    class="border-border bg-muted group relative aspect-square overflow-hidden rounded-md border"
                                 >
                                     <img
                                         :src="preview.url"
@@ -418,12 +509,14 @@ function handleCancel(): void {
                                     <button
                                         type="button"
                                         @click="removeNewImage(idx)"
-                                        class="absolute top-1 right-1 rounded-full bg-black/70 p-1 text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive"
+                                        class="hover:bg-destructive absolute right-1 top-1 rounded-full bg-black/70 p-1 text-white opacity-0 transition-opacity group-hover:opacity-100"
                                         title="Remove"
                                     >
                                         <X class="h-3.5 w-3.5" />
                                     </button>
-                                    <div class="absolute bottom-0 inset-x-0 bg-black/60 px-1 py-0.5 text-[10px] text-white truncate">
+                                    <div
+                                        class="absolute inset-x-0 bottom-0 truncate bg-black/60 px-1 py-0.5 text-[10px] text-white"
+                                    >
                                         {{ preview.file.name }}
                                     </div>
                                 </div>
@@ -440,7 +533,9 @@ function handleCancel(): void {
             >
                 <div class="space-y-6">
                     <div>
-                        <label class="mb-2 block text-sm font-medium text-foreground">
+                        <label
+                            class="text-foreground mb-2 block text-sm font-medium"
+                        >
                             Title <span class="text-destructive">*</span>
                         </label>
                         <input
@@ -449,13 +544,18 @@ function handleCancel(): void {
                             :class="fieldClass"
                             required
                         />
-                        <p v-if="form.errors.title" class="mt-1 text-xs text-destructive">
+                        <p
+                            v-if="form.errors.title"
+                            class="text-destructive mt-1 text-xs"
+                        >
                             {{ form.errors.title }}
                         </p>
                     </div>
 
                     <div>
-                        <label class="mb-2 block text-sm font-medium text-foreground">
+                        <label
+                            class="text-foreground mb-2 block text-sm font-medium"
+                        >
                             Slug
                         </label>
                         <input
@@ -463,16 +563,21 @@ function handleCancel(): void {
                             type="text"
                             :class="fieldClass"
                         />
-                        <p class="mt-1 text-xs text-muted-foreground">
+                        <p class="text-muted-foreground mt-1 text-xs">
                             Public URL identifier (/moments/{{ form.slug }})
                         </p>
-                        <p v-if="form.errors.slug" class="mt-1 text-xs text-destructive">
+                        <p
+                            v-if="form.errors.slug"
+                            class="text-destructive mt-1 text-xs"
+                        >
                             {{ form.errors.slug }}
                         </p>
                     </div>
 
                     <div>
-                        <label class="mb-2 block text-sm font-medium text-foreground">
+                        <label
+                            class="text-foreground mb-2 block text-sm font-medium"
+                        >
                             Description
                         </label>
                         <textarea
@@ -480,7 +585,10 @@ function handleCancel(): void {
                             :class="textareaClass"
                             rows="3"
                         />
-                        <p v-if="form.errors.description" class="mt-1 text-xs text-destructive">
+                        <p
+                            v-if="form.errors.description"
+                            class="text-destructive mt-1 text-xs"
+                        >
                             {{ form.errors.description }}
                         </p>
                     </div>
@@ -492,22 +600,29 @@ function handleCancel(): void {
                 title="Publishing Status"
                 description="Control visibility and featured status."
             >
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
                     <div>
-                        <label class="mb-2 block text-sm font-medium text-foreground">
+                        <label
+                            class="text-foreground mb-2 block text-sm font-medium"
+                        >
                             Status <span class="text-destructive">*</span>
                         </label>
                         <select v-model="form.status" :class="fieldClass">
                             <option value="draft">Draft</option>
                             <option value="published">Published</option>
                         </select>
-                        <p v-if="form.errors.status" class="mt-1 text-xs text-destructive">
+                        <p
+                            v-if="form.errors.status"
+                            class="text-destructive mt-1 text-xs"
+                        >
                             {{ form.errors.status }}
                         </p>
                     </div>
 
                     <div>
-                        <label class="mb-2 block text-sm font-medium text-foreground">
+                        <label
+                            class="text-foreground mb-2 block text-sm font-medium"
+                        >
                             Published Date & Time
                         </label>
                         <input
@@ -518,14 +633,15 @@ function handleCancel(): void {
                     </div>
 
                     <div class="sm:col-span-2">
-                        <label class="flex items-center gap-2 cursor-pointer">
+                        <label class="flex cursor-pointer items-center gap-2">
                             <input
                                 v-model="form.featured"
                                 type="checkbox"
-                                class="h-4 w-4 rounded border-input text-primary focus:ring-ring"
+                                class="border-input text-primary focus:ring-ring h-4 w-4 rounded"
                             />
-                            <span class="text-sm font-medium text-foreground">
-                                Feature this Moment on the Public Moments Hero Carousel
+                            <span class="text-foreground text-sm font-medium">
+                                Feature this Moment on the Public Moments Hero
+                                Carousel
                             </span>
                         </label>
                     </div>
@@ -541,24 +657,29 @@ function handleCancel(): void {
                     <div
                         v-for="(person, idx) in form.people"
                         :key="idx"
-                        class="p-4 rounded-md border border-border bg-card space-y-3"
+                        class="border-border bg-card space-y-3 rounded-md border p-4"
                     >
                         <div class="flex items-center justify-between">
-                            <span class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                            <span
+                                class="text-muted-foreground text-xs font-semibold uppercase tracking-wider"
+                            >
                                 Person #{{ idx + 1 }}
                             </span>
                             <button
                                 type="button"
                                 @click="removePerson(idx)"
-                                class="text-xs text-destructive hover:underline flex items-center gap-1"
+                                class="text-destructive flex items-center gap-1 text-xs hover:underline"
                             >
                                 <Trash2 class="h-3 w-3" />
                                 Remove
                             </button>
                         </div>
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
                             <div>
-                                <label class="block text-xs font-medium text-foreground mb-1">Name</label>
+                                <label
+                                    class="text-foreground mb-1 block text-xs font-medium"
+                                    >Name</label
+                                >
                                 <input
                                     v-model="person.name"
                                     type="text"
@@ -568,7 +689,10 @@ function handleCancel(): void {
                                 />
                             </div>
                             <div>
-                                <label class="block text-xs font-medium text-foreground mb-1">Role / Context</label>
+                                <label
+                                    class="text-foreground mb-1 block text-xs font-medium"
+                                    >Role / Context</label
+                                >
                                 <input
                                     v-model="person.role"
                                     type="text"
@@ -577,7 +701,10 @@ function handleCancel(): void {
                                 />
                             </div>
                             <div>
-                                <label class="block text-xs font-medium text-foreground mb-1">External Link (Optional)</label>
+                                <label
+                                    class="text-foreground mb-1 block text-xs font-medium"
+                                    >External Link (Optional)</label
+                                >
                                 <input
                                     v-model="person.url"
                                     type="url"
@@ -587,20 +714,27 @@ function handleCancel(): void {
                             </div>
                         </div>
                         <div class="pt-1">
-                            <label class="flex items-center gap-2 cursor-pointer">
+                            <label
+                                class="flex cursor-pointer items-center gap-2"
+                            >
                                 <input
                                     v-model="person.visible"
                                     type="checkbox"
-                                    class="h-3.5 w-3.5 rounded border-input text-primary focus:ring-ring"
+                                    class="border-input text-primary focus:ring-ring h-3.5 w-3.5 rounded"
                                 />
-                                <span class="text-xs text-muted-foreground">
+                                <span class="text-muted-foreground text-xs">
                                     Display publicly on the gallery page
                                 </span>
                             </label>
                         </div>
                     </div>
 
-                    <Button type="button" variant="outline" size="sm" @click="addPerson">
+                    <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        @click="addPerson"
+                    >
                         <Plus class="mr-1 h-3.5 w-3.5" />
                         Add Person
                     </Button>
@@ -612,14 +746,30 @@ function handleCancel(): void {
                 title="External Link (Optional)"
                 description="Link to external match fixture details or report."
             >
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
                     <div>
-                        <label class="mb-2 block text-sm font-medium text-foreground">Link URL</label>
-                        <input v-model="form.external_link" type="url" :class="fieldClass" placeholder="https://..." />
+                        <label
+                            class="text-foreground mb-2 block text-sm font-medium"
+                            >Link URL</label
+                        >
+                        <input
+                            v-model="form.external_link"
+                            type="url"
+                            :class="fieldClass"
+                            placeholder="https://..."
+                        />
                     </div>
                     <div>
-                        <label class="mb-2 block text-sm font-medium text-foreground">Button Label</label>
-                        <input v-model="form.external_link_label" type="text" :class="fieldClass" placeholder="e.g. Match Report" />
+                        <label
+                            class="text-foreground mb-2 block text-sm font-medium"
+                            >Button Label</label
+                        >
+                        <input
+                            v-model="form.external_link_label"
+                            type="text"
+                            :class="fieldClass"
+                            placeholder="e.g. Match Report"
+                        />
                     </div>
                 </div>
             </FormSection>
@@ -631,12 +781,28 @@ function handleCancel(): void {
             >
                 <div class="space-y-4">
                     <div>
-                        <label class="mb-1 block text-sm font-medium text-foreground">SEO Title</label>
-                        <input v-model="form.seo.title" type="text" :class="fieldClass" placeholder="Defaults to gallery title" />
+                        <label
+                            class="text-foreground mb-1 block text-sm font-medium"
+                            >SEO Title</label
+                        >
+                        <input
+                            v-model="form.seo.title"
+                            type="text"
+                            :class="fieldClass"
+                            placeholder="Defaults to gallery title"
+                        />
                     </div>
                     <div>
-                        <label class="mb-1 block text-sm font-medium text-foreground">SEO Description</label>
-                        <textarea v-model="form.seo.description" :class="textareaClass" rows="2" placeholder="Defaults to gallery description" />
+                        <label
+                            class="text-foreground mb-1 block text-sm font-medium"
+                            >SEO Description</label
+                        >
+                        <textarea
+                            v-model="form.seo.description"
+                            :class="textareaClass"
+                            rows="2"
+                            placeholder="Defaults to gallery description"
+                        />
                     </div>
                 </div>
             </FormSection>

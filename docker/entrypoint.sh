@@ -23,8 +23,6 @@ if php /var/www/html/artisan migrate --force --no-interaction; then
     echo "Database migrations completed successfully."
     echo "Synchronizing administrator accounts..."
     php /var/www/html/artisan db:seed --class=UserSeeder --force --no-interaction || echo "Warning: Admin account seeding failed. Run manually via terminal."
-    echo "Synchronizing canonical media storage assets..."
-    php /var/www/html/artisan media:sync-storage --no-interaction || echo "Warning: Media storage sync failed."
 else
     echo "Warning: Database migrations failed on startup. Please check DB credentials and run 'php artisan migrate --force' manually."
 fi

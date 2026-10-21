@@ -4,7 +4,11 @@
 
 <template>
     <div class="tg-pitchgrid-layer" aria-hidden="true">
-        <svg class="tg-pitchgrid-svg" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice">
+        <svg
+            class="tg-pitchgrid-svg"
+            viewBox="0 0 1440 900"
+            preserveAspectRatio="xMidYMid slice"
+        >
             <defs>
                 <!-- 72px Geometric Pitch Grid Pattern (No gradients, pure SVG strokes) -->
                 <pattern
@@ -20,7 +24,12 @@
                         stroke-width="1"
                     />
                     <!-- Micro crosshairs at grid intersections -->
-                    <circle cx="0" cy="0" r="1" fill="rgba(255, 255, 255, 0.12)" />
+                    <circle
+                        cx="0"
+                        cy="0"
+                        r="1"
+                        fill="rgba(255, 255, 255, 0.12)"
+                    />
                 </pattern>
             </defs>
 
@@ -28,7 +37,12 @@
             <rect width="100%" height="100%" fill="url(#tactical-pitch-grid)" />
 
             <!-- Pitch Markings (Authentic Youth / Grassroots Pitch Dimensions) -->
-            <g class="pitch-lines" stroke="rgba(255, 255, 255, 0.08)" stroke-width="1.2" fill="none">
+            <g
+                class="pitch-lines"
+                stroke="rgba(255, 255, 255, 0.08)"
+                stroke-width="1.2"
+                fill="none"
+            >
                 <!-- Boundary lines -->
                 <rect x="40" y="40" width="1360" height="820" />
 
@@ -37,19 +51,34 @@
 
                 <!-- Centre circle & spot -->
                 <circle cx="720" cy="450" r="90" />
-                <circle cx="720" cy="450" r="3" fill="rgba(255, 255, 255, 0.15)" />
+                <circle
+                    cx="720"
+                    cy="450"
+                    r="3"
+                    fill="rgba(255, 255, 255, 0.15)"
+                />
 
                 <!-- Left penalty area & box -->
                 <rect x="40" y="240" width="170" height="420" />
                 <rect x="40" y="340" width="60" height="220" />
                 <path d="M 210 370 A 90 90 0 0 1 210 530" />
-                <circle cx="150" cy="450" r="2.5" fill="rgba(255, 255, 255, 0.15)" />
+                <circle
+                    cx="150"
+                    cy="450"
+                    r="2.5"
+                    fill="rgba(255, 255, 255, 0.15)"
+                />
 
                 <!-- Right penalty area & box -->
                 <rect x="1230" y="240" width="170" height="420" />
                 <rect x="1340" y="340" width="60" height="220" />
                 <path d="M 1230 370 A 90 90 0 0 0 1230 530" />
-                <circle cx="1290" cy="450" r="2.5" fill="rgba(255, 255, 255, 0.15)" />
+                <circle
+                    cx="1290"
+                    cy="450"
+                    r="2.5"
+                    fill="rgba(255, 255, 255, 0.15)"
+                />
 
                 <!-- Corner Arcs -->
                 <path d="M 40 60 A 20 20 0 0 0 60 40" />

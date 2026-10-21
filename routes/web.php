@@ -58,14 +58,8 @@ Route::get('/bookings/{bookableItem:slug}', [PublicBookingController::class, 'sh
 Route::post('/bookings', [PublicBookingController::class, 'book'])->name('sessions.book');
 Route::get('/training', [PublicBookingController::class, 'training'])->name('training');
 
-// XML Sitemap (serves static file if generated, or dynamic cached response via SitemapService)
+// XML Sitemap (cached dynamic XML response via SitemapService)
 Route::get('/sitemap.xml', function (SitemapService $sitemapService) {
-    if (file_exists(public_path('sitemap.xml'))) {
-        return response(file_get_contents(public_path('sitemap.xml')), 200, [
-            'Content-Type' => 'text/xml; charset=UTF-8',
-        ]);
-    }
-
     $xml = Cache::remember('sitemap.xml', now()->addHours(12), function () use ($sitemapService) {
         return $sitemapService->render();
     });

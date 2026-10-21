@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use App\Models\Moment;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Validator;
 
@@ -46,9 +47,19 @@ class UpdateMomentRequest extends FormRequest
     public function withValidator(Validator $validator): void
     {
         $validator->after(function ($validator) {
+            if ($validator->errors()->has('images') || $validator->errors()->has('images.*')) {
+                return;
+            }
+
             $images = $this->file('images');
             if (is_array($images)) {
-                $totalSize = array_sum(array_map(fn ($file) => $file?->getSize() ?? 0, $images));
+                $totalSize = 0;
+                foreach ($images as $file) {
+                    if ($file instanceof UploadedFile && $file->isValid()) {
+                        $totalSize += $file->getSize();
+                    }
+                }
+
                 if ($totalSize > 50 * 1024 * 1024) {
                     $validator->errors()->add(
                         'images',
