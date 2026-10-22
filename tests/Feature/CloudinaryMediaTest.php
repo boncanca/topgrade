@@ -12,6 +12,17 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Testing\AssertableInertia as Assert;
 
+beforeEach(function () {
+    if (empty(config('filesystems.disks.cloudinary.cloud_name'))) {
+        config([
+            'filesystems.disks.cloudinary.cloud_name' => 'testing_cloud',
+            'filesystems.disks.cloudinary.api_key' => 'testing_key',
+            'filesystems.disks.cloudinary.api_secret' => 'testing_secret',
+        ]);
+        Storage::forgetDisk('cloudinary');
+    }
+});
+
 test('cloudinary disk is configured in filesystems', function () {
     $cloudinaryConfig = config('filesystems.disks.cloudinary');
 
