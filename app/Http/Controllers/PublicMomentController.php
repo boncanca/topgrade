@@ -35,7 +35,7 @@ class PublicMomentController extends Controller
                     'images_count' => count($gallery),
                     'cover_url' => $coverUrl,
                     'cover_mime' => $coverMedia?->mime_type,
-                    'is_video' => str_starts_with($coverMedia?->mime_type ?? '', 'video/'),
+                    'is_video' => $coverMedia ? str_starts_with($coverMedia->mime_type ?? '', 'video/') : false,
                     'images' => $gallery,
                 ];
             }
@@ -82,8 +82,8 @@ class PublicMomentController extends Controller
                 'url' => $item['url'],
                 'name' => $item['name'],
                 'is_cover' => $coverUrl !== null && $item['url'] === $coverUrl,
-                'mime_type' => $item['mime_type'] ?? null,
-                'is_video' => $item['is_video'] ?? false,
+                'mime_type' => $item['mime_type'],
+                'is_video' => $item['is_video'],
             ];
         }, $gallery);
 

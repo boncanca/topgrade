@@ -12,9 +12,12 @@ class UpdateMomentRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return $this->user()?->is_admin ?? false;
+        return (bool) $this->user()?->is_admin;
     }
 
+    /**
+     * @return array<string, array<int, mixed>|string>
+     */
     public function rules(): array
     {
         /** @var Moment|null $moment */

@@ -6,6 +6,7 @@ use App\Concerns\HasSeo;
 use App\Concerns\HasSlug;
 use App\Concerns\Publishable;
 use App\Concerns\ResolvesMediaUrl;
+use Database\Factories\MomentFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -17,6 +18,10 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class Moment extends Model implements HasMedia
 {
+    /**
+     * @use HasFactory<MomentFactory>
+     * @use Publishable<Moment>
+     */
     use HasFactory, HasSeo, HasSlug, InteractsWithMedia, Publishable, ResolvesMediaUrl;
 
     /**
@@ -78,6 +83,9 @@ class Moment extends Model implements HasMedia
         $this->addMediaCollection('gallery');
     }
 
+    /**
+     * @return BelongsTo<Media, $this>
+     */
     public function coverMedia(): BelongsTo
     {
         return $this->belongsTo(Media::class, 'cover_media_id');
@@ -106,6 +114,7 @@ class Moment extends Model implements HasMedia
                 return $matched;
             }
         } elseif ($this->cover_media_id) {
+            /** @var Media|null $cover */
             $cover = $this->coverMedia;
             if ($cover && (int) $cover->model_id === (int) $this->id && $cover->model_type === self::class && $cover->collection_name === 'gallery') {
                 return $cover;

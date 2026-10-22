@@ -13,7 +13,7 @@ Schedule::command('bookings:expire-pending')
     ->everyFiveMinutes()
     ->withoutOverlapping();
 
-// Daily sitemap regeneration to keep public/sitemap.xml refreshed
+// Daily sitemap cache refresh
 Schedule::command('sitemap:generate')
     ->daily()
     ->withoutOverlapping();

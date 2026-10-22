@@ -20,26 +20,25 @@ class GenerateSitemapCommand extends Command
      *
      * @var string
      */
-    protected $description = 'Generate the XML sitemap and write to public/sitemap.xml';
+    protected $description = 'Generate and warm the XML sitemap cache';
 
     /**
      * Execute the console command.
      */
     public function handle(SitemapService $sitemapService): int
     {
-        $this->info('Generating sitemap.xml...');
+        $this->info('Generating and caching sitemap.xml...');
+
+        $xml = $sitemapService->render();
+        Cache::put('sitemap.xml', $xml, now()->addHours(24));
 
         $customPath = $this->option('path');
-        $targetPath = is_string($customPath) && $customPath !== ''
-            ? $customPath
-            : public_path('sitemap.xml');
+        if (is_string($customPath) && $customPath !== '') {
+            $writtenPath = $sitemapService->writeToDisk($customPath);
+            $this->info("Sitemap file written to: {$writtenPath}");
+        }
 
-        $writtenPath = $sitemapService->writeToDisk($targetPath);
-
-        // Clear dynamic sitemap cache so any fallback routes re-read fresh data
-        Cache::forget('sitemap.xml');
-
-        $this->info("Sitemap successfully generated at: {$writtenPath}");
+        $this->info('Sitemap cache successfully refreshed.');
 
         return self::SUCCESS;
     }

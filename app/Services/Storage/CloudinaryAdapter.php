@@ -29,6 +29,8 @@ class CloudinaryAdapter extends FlysystemCloudinaryAdapter
      * (e.g. "folder/photo.png.png"). Cloudinary also normalizes "jpeg" to "jpg", so
      * "photo.jpeg" is served at "photo.jpeg.jpg". Without appending the format, the
      * plain URL returns HTTP 404 (verified live against the Cloudinary account).
+     *
+     * @param  string|array<string, mixed>  $path
      */
     public function getUrl(string|array $path): string|false
     {
