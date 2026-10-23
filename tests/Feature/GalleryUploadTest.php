@@ -157,10 +157,14 @@ test('album update does not commit metadata or change draft to published if an i
         'title' => 'Original Draft Album',
         'status' => 'draft',
     ]);
+    $existingPhoto = $moment->addMedia(UploadedFile::fake()->image('existing.jpg'))
+        ->toMediaCollection('gallery');
+    $moment->update(['cover_media_id' => $existingPhoto->id]);
+    $moment->seo()->create(['title' => 'Original SEO title']);
+    $originalFiles = Storage::disk('public')->allFiles();
 
-    // First image uploads fine, second image triggers exception during media persistence
     $uploadCount = 0;
-    Media::saving(function () use (&$uploadCount) {
+    Media::creating(function () use (&$uploadCount) {
         $uploadCount++;
         if ($uploadCount === 2) {
             throw new RuntimeException('Simulated storage upload failure on second photo.');
@@ -171,6 +175,7 @@ test('album update does not commit metadata or change draft to published if an i
         'title' => 'Should Not Be Published',
         'slug' => $moment->slug,
         'status' => 'published',
+        'seo' => ['title' => 'Should Not Be Saved'],
         'images' => [
             UploadedFile::fake()->image('first.jpg', 400, 300),
             UploadedFile::fake()->image('second.jpg', 400, 300),
@@ -183,8 +188,34 @@ test('album update does not commit metadata or change draft to published if an i
     $refreshed = $moment->fresh();
     expect($refreshed->status)->toBe('draft');
     expect($refreshed->title)->toBe('Original Draft Album');
-    expect($refreshed->getMedia('gallery'))->toHaveCount(0);
+    expect($uploadCount)->toBe(2);
+    expect($refreshed->cover_media_id)->toBe($existingPhoto->id);
+    expect($refreshed->seo->title)->toBe('Original SEO title');
+    expect($refreshed->getMedia('gallery')->modelKeys())->toBe([$existingPhoto->id]);
+    expect(Storage::disk('public')->allFiles())->toBe($originalFiles);
 });
+
+test('malformed image batches are rejected on create and update', function (string $operation, string $payloadType) {
+    Storage::fake('public');
+    $admin = User::factory()->create(['is_admin' => true]);
+    $images = match ($payloadType) {
+        'nested' => [['nested' => UploadedFile::fake()->image('nested.jpg')]],
+        'scalar' => ['not-a-file'],
+        'mixed' => [UploadedFile::fake()->image('valid.jpg'), 'not-a-file'],
+    };
+    $payload = ['title' => 'Invalid Batch', 'status' => 'draft', 'images' => $images];
+
+    if ($operation === 'create') {
+        $response = $this->actingAs($admin)->post('/dashboard/moments', $payload);
+    } else {
+        $moment = Moment::factory()->create(['title' => 'Original Album']);
+        $response = $this->actingAs($admin)->put("/dashboard/moments/{$moment->id}", $payload);
+        expect($moment->fresh()->title)->toBe('Original Album');
+    }
+
+    $response->assertRedirect()->assertSessionHasErrors();
+    expect(Media::count())->toBe(0);
+})->with(['create', 'update'])->with(['nested', 'scalar', 'mixed']);
 
 test('nested or invalid images payload returns validation error instead of 500 server error', function () {
     $admin = User::factory()->create(['is_admin' => true]);

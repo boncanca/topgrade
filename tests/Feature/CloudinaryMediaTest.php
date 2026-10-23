@@ -5,7 +5,9 @@ use App\Models\ContentType;
 use App\Models\User;
 use App\Services\Storage\CloudinaryAdapter;
 use Cloudinary\Api\Admin\AdminApi;
+use Cloudinary\Api\ApiResponse;
 use Cloudinary\Cloudinary;
+use CodebarAg\FlysystemCloudinary\CloudinaryDiskOptions;
 use CodebarAg\FlysystemCloudinary\FlysystemCloudinaryAdapter;
 use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Http\UploadedFile;
@@ -277,4 +279,29 @@ test('cloudinary adapter deleteDirectory ignores empty string path', function ()
     $adapter = new CloudinaryAdapter($cloudinary);
     $adapter->deleteDirectory('');
     $adapter->deleteDirectory('/');
+    $adapter->deleteDirectory('///');
+});
+
+test('cloudinary directory deletion preserves sibling assets within the configured folder', function () {
+    $assets = ['topgrade/1/photo.jpg', 'topgrade/10/photo.jpg', 'topgrade/11/photo.jpg'];
+    $cloudinary = Mockery::mock(Cloudinary::class);
+    $adminApi = Mockery::mock(AdminApi::class);
+    $cloudinary->shouldReceive('adminApi')->andReturn($adminApi);
+    $adminApi->shouldReceive('deleteAssetsByPrefix')->once()->with('topgrade/1/')
+        ->andReturnUsing(function (string $prefix) use (&$assets) {
+            $assets = array_values(array_filter($assets, fn (string $asset) => ! str_starts_with($asset, $prefix)));
+
+            return new ApiResponse([], []);
+        });
+    $adminApi->shouldReceive('deleteFolder')->once()->with('topgrade/1');
+
+    $adapter = new CloudinaryAdapter($cloudinary, new CloudinaryDiskOptions(
+        folder: 'topgrade',
+        uploadPreset: null,
+        globalUploadOptions: [],
+        preferSecureUrl: true,
+    ));
+    $adapter->deleteDirectory('1/');
+
+    expect($assets)->toBe(['topgrade/10/photo.jpg', 'topgrade/11/photo.jpg']);
 });

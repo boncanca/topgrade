@@ -7,11 +7,13 @@ use App\Models\Booking;
 use App\Models\Content;
 use App\Models\ContentType;
 use App\Models\Inquiry;
+use App\Models\Moment;
 use App\Models\Schedule;
 use App\Services\Mail\TransactionalMailService;
 use App\Services\PaymentService;
 use App\Services\SitemapService;
 use App\Services\StripePaymentService;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Mail;
 use Inertia\Testing\AssertableInertia as Assert;
 
@@ -289,6 +291,35 @@ test('sitemap generate artisan command writes valid sitemap file to disk', funct
     expect($content)->toContain('/about');
 
     unlink($tempPath);
+});
+
+test('sitemap uses configured canonical host for static and dynamic urls', function () {
+    config(['app.url' => 'https://topgradelondonfc.co.uk']);
+    Cache::forget('sitemap.xml');
+    $moment = Moment::factory()->create();
+
+    $response = $this->get('https://untrusted.example/sitemap.xml')->assertOk();
+    $xml = simplexml_load_string($response->getContent());
+    $locations = $xml->xpath('//*[local-name()="loc"]');
+
+    expect($locations)->not->toBeEmpty();
+    foreach ($locations as $location) {
+        expect((string) $location)->toStartWith('https://topgradelondonfc.co.uk/');
+    }
+    expect($response->getContent())
+        ->toContain('https://topgradelondonfc.co.uk/moments/'.$moment->slug)
+        ->not->toContain('untrusted.example')
+        ->not->toContain('topgrade.test');
+});
+
+test('sitemap generate refreshes cache without creating a static public sitemap', function () {
+    Cache::put('sitemap.xml', 'stale sitemap');
+
+    $this->artisan('sitemap:generate')->assertSuccessful();
+
+    expect(Cache::get('sitemap.xml'))->toContain('<urlset');
+    expect(is_file(public_path('sitemap.xml')))->toBeFalse();
+    expect($this->get('/sitemap.xml')->assertOk()->getContent())->toBe(Cache::get('sitemap.xml'));
 });
 
 test('robots txt file is valid under google robots exclusion protocol spec', function () {

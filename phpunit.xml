@@ -30,10 +30,10 @@
         <env name="QUEUE_CONNECTION" value="sync"/>
         <env name="SESSION_DRIVER" value="array"/>
         <env name="MEDIA_DISK" value="public"/>
-        <env name="CLOUDINARY_URL" value="cloudinary://testing_key:testing_secret@testing_cloud" force="true"/>
-        <env name="CLOUDINARY_CLOUD_NAME" value="testing_cloud" force="true"/>
-        <env name="CLOUDINARY_API_KEY" value="testing_key" force="true"/>
-        <env name="CLOUDINARY_API_SECRET" value="testing_secret" force="true"/>
+        <env name="CLOUDINARY_URL" value="cloudinary://testing_key:testing_secret@testing_cloud"/>
+        <env name="CLOUDINARY_CLOUD_NAME" value="testing_cloud"/>
+        <env name="CLOUDINARY_API_KEY" value="testing_key"/>
+        <env name="CLOUDINARY_API_SECRET" value="testing_secret"/>
         <env name="PULSE_ENABLED" value="false"/>
         <env name="TELESCOPE_ENABLED" value="false"/>
         <env name="NIGHTWATCH_ENABLED" value="false"/>
