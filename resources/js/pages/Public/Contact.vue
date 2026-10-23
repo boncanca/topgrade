@@ -76,7 +76,7 @@ function submit() {
             <div
                 class="absolute inset-0 bg-cover bg-center opacity-35"
                 style="
-                    background-image: url('/images/club/topgrade-london-fc-youth-squad-team.webp');
+                    background-image: url('/images/club/youth-squad-team-topgrade-london-fc.webp');
                 "
             />
             <div

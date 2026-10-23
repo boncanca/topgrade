@@ -49,7 +49,7 @@ defineOptions({
             <div
                 class="absolute inset-0 bg-cover bg-center opacity-35"
                 style="
-                    background-image: url('/images/club/topgrade-london-fc-floodlit-training-pitch.webp');
+                    background-image: url('/images/club/floodlit-training-pitch-topgrade-london-fc.webp');
                 "
             />
             <div

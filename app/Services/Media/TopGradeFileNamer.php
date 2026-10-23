@@ -9,13 +9,14 @@ use Spatie\MediaLibrary\Support\FileNamer\FileNamer;
 class TopGradeFileNamer extends FileNamer
 {
     /**
-     * Standard prefix for all TopGrade London FC public media assets.
+     * Standard club suffix for all TopGrade London FC public media assets,
+     * ensuring immediate identification in collapsed sidebars and narrow windows.
      */
-    public const CANONICAL_PREFIX = 'topgrade-london-fc';
+    public const CLUB_SUFFIX = 'topgrade-london-fc';
 
     /**
      * Generate a canonical, SEO-friendly file name adhering to the standard:
-     * topgrade-london-fc-{subject}-{context}.{extension}
+     * {subject}-{context}-topgrade-london-fc.{extension}
      */
     public function originalFileName(string $fileName): string
     {
@@ -28,18 +29,19 @@ class TopGradeFileNamer extends FileNamer
             $slug = 'media-asset';
         }
 
-        // Standardize prefix
-        if (str_starts_with($slug, self::CANONICAL_PREFIX.'-') || $slug === self::CANONICAL_PREFIX) {
+        // If old prefix was present, strip it so name comes first
+        if (str_starts_with($slug, self::CLUB_SUFFIX.'-')) {
+            $slug = substr($slug, strlen(self::CLUB_SUFFIX.'-'));
+        } elseif (str_starts_with($slug, 'topgrade-')) {
+            $slug = substr($slug, strlen('topgrade-'));
+        }
+
+        // If already ends with -topgrade-london-fc or is topgrade-london-fc
+        if (str_ends_with($slug, '-'.self::CLUB_SUFFIX) || $slug === self::CLUB_SUFFIX) {
             return $slug;
         }
 
-        if (str_starts_with($slug, 'topgrade-')) {
-            $remainder = substr($slug, strlen('topgrade-'));
-
-            return self::CANONICAL_PREFIX.'-'.$remainder;
-        }
-
-        return self::CANONICAL_PREFIX.'-'.$slug;
+        return $slug.'-'.self::CLUB_SUFFIX;
     }
 
     /**

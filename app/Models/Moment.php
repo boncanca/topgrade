@@ -32,26 +32,26 @@ class Moment extends Model implements HasMedia
      */
     public const SEEDED_MOMENTS = [
         'midweek-technical-training' => [
-            'cover' => '/images/club/topgrade-london-fc-youth-squad-team.webp',
+            'cover' => '/images/club/youth-squad-team-topgrade-london-fc.webp',
             'gallery' => [
-                '/images/club/topgrade-london-fc-youth-squad-team.webp',
-                '/images/club/topgrade-london-fc-u7-u8-squad-photo.webp',
-                '/images/club/topgrade-london-fc-training-agility-drills.webp',
+                '/images/club/youth-squad-team-topgrade-london-fc.webp',
+                '/images/club/u7-u8-squad-photo-topgrade-london-fc.webp',
+                '/images/club/training-agility-drills-topgrade-london-fc.webp',
             ],
         ],
         'matchday-saturday-league-fixture' => [
-            'cover' => '/images/club/topgrade-london-fc-u7-u8-squad-photo.webp',
+            'cover' => '/images/club/u7-u8-squad-photo-topgrade-london-fc.webp',
             'gallery' => [
-                '/images/club/topgrade-london-fc-u7-u8-squad-photo.webp',
-                '/images/club/topgrade-london-fc-foundation-phase-match-action.webp',
-                '/images/club/topgrade-london-fc-squad-celebration-trophy.webp',
+                '/images/club/u7-u8-squad-photo-topgrade-london-fc.webp',
+                '/images/club/foundation-phase-match-action-topgrade-london-fc.webp',
+                '/images/club/squad-celebration-trophy-topgrade-london-fc.webp',
             ],
         ],
         'squad-mentoring-tactical-coaching' => [
-            'cover' => '/images/club/topgrade-london-fc-tactical-coaching-briefing.webp',
+            'cover' => '/images/club/tactical-coaching-briefing-topgrade-london-fc.webp',
             'gallery' => [
-                '/images/club/topgrade-london-fc-tactical-coaching-briefing.webp',
-                '/images/club/topgrade-london-fc-player-match-action.webp',
+                '/images/club/tactical-coaching-briefing-topgrade-london-fc.webp',
+                '/images/club/player-match-action-topgrade-london-fc.webp',
             ],
         ],
     ];

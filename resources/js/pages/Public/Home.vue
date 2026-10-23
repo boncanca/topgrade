@@ -100,12 +100,12 @@ const videoFailed = ref(false);
 const prefersReducedMotion = ref(false);
 
 const heroVideoUrl = computed(
-    () => props.hero?.video_url || '/topgrade-london-fc-hero-training-loop.mp4',
+    () => props.hero?.video_url || '/hero-training-loop-topgrade-london-fc.mp4',
 );
 const heroPosterUrl = computed(
     () =>
         props.hero?.poster_url ||
-        '/images/club/topgrade-london-fc-hero-matchday.webp',
+        '/images/club/hero-matchday-topgrade-london-fc.webp',
 );
 const heroEyebrow = computed(() => props.hero?.eyebrow || 'More Than Football');
 const heroHeadline = computed(
@@ -358,7 +358,7 @@ const squads = computed(() => {
                 description: team.description,
                 image:
                     team.image_url ||
-                    '/images/club/topgrade-london-fc-foundation-phase-match-action.webp',
+                    '/images/club/foundation-phase-match-action-topgrade-london-fc.webp',
                 ...style,
             };
         });
@@ -370,7 +370,7 @@ const squads = computed(() => {
             stage: 'Foundation Phase',
             description:
                 'First touch, ball mastery, agility, balance, and introducing team play in a positive environment.',
-            image: '/images/club/topgrade-london-fc-u7-u8-squad-photo.webp',
+            image: '/images/club/u7-u8-squad-photo-topgrade-london-fc.webp',
             layoutClass: 'md:col-span-5',
             aspectClass: 'aspect-[4/3] md:aspect-[3/4]',
             cropPosition: 'object-center',
@@ -382,7 +382,7 @@ const squads = computed(() => {
             stage: 'Skill Acquisition',
             description:
                 '1v1 attacking and defending, spatial awareness, passing range, and instinctive game decisions.',
-            image: '/484192970_1108922961247045_3935375872642678849_n.jpg',
+            image: '/images/club/skill-acquisition-training-topgrade-london-fc.webp',
             layoutClass: 'md:col-span-7 md:pt-12',
             aspectClass: 'aspect-[16/10]',
             cropPosition: 'object-top',
@@ -394,7 +394,7 @@ const squads = computed(() => {
             stage: 'Game Development',
             description:
                 'Tactical positioning, transition play, set-pieces, spatial compactness, and match tempo management.',
-            image: '/485087659_1108923127913695_5031817050217357486_n.jpg',
+            image: '/images/club/game-development-match-action-topgrade-london-fc.webp',
             layoutClass: 'md:col-span-8',
             aspectClass: 'aspect-[16/9] md:aspect-[21/10]',
             cropPosition: 'object-center',
@@ -406,7 +406,7 @@ const squads = computed(() => {
             stage: 'Youth Progression',
             description:
                 'Tactical discipline, physical conditioning, competitive league fixtures, and structured pitch mentoring.',
-            image: '/images/club/topgrade-london-fc-tactical-coaching-briefing.webp',
+            image: '/images/club/tactical-coaching-briefing-topgrade-london-fc.webp',
             layoutClass: 'md:col-span-4 md:-mt-8',
             aspectClass: 'aspect-[3/4]',
             cropPosition: 'object-center',
@@ -418,7 +418,7 @@ const squads = computed(() => {
             stage: 'Youth Competition',
             description:
                 'Competitive match play, high-intensity game management, leadership, and senior club pathway preparation.',
-            image: '/images/club/topgrade-london-fc-youth-squad-team.webp',
+            image: '/images/club/squad-celebration-trophy-topgrade-london-fc.webp',
             layoutClass: 'md:col-span-12',
             aspectClass: 'aspect-[16/9] md:aspect-[2.4/1]',
             cropPosition: 'object-center',
@@ -478,7 +478,7 @@ const momentsRibbon = computed(() => {
                 title: m.title,
                 image:
                     m.image_url ||
-                    '/images/club/topgrade-london-fc-youth-squad-team.webp',
+                    '/images/club/youth-squad-team-topgrade-london-fc.webp',
                 ...style,
             };
         });
@@ -488,7 +488,7 @@ const momentsRibbon = computed(() => {
         {
             num: '01',
             title: 'TRAINING',
-            image: '/images/club/topgrade-london-fc-youth-squad-team.webp',
+            image: '/images/club/youth-squad-team-topgrade-london-fc.webp',
             aspect: 'aspect-[3/4]',
             offsetClass: 'lg:translate-y-0',
             floatY: '-4px',
@@ -497,7 +497,7 @@ const momentsRibbon = computed(() => {
         {
             num: '02',
             title: 'MATCHDAY',
-            image: '/484977737_1109608517845156_6730033439051003629_n.jpg',
+            image: '/images/club/matchday-fixture-action-topgrade-london-fc.webp',
             aspect: 'aspect-[4/5]',
             offsetClass: 'lg:translate-y-16',
             floatY: '-6px',
@@ -506,7 +506,7 @@ const momentsRibbon = computed(() => {
         {
             num: '03',
             title: 'TEAMWORK',
-            image: '/images/club/topgrade-london-fc-u7-u8-squad-photo.webp',
+            image: '/images/club/u7-u8-squad-photo-topgrade-london-fc.webp',
             aspect: 'aspect-[3/4]',
             offsetClass: 'lg:translate-y-6',
             floatY: '-5px',
@@ -515,7 +515,7 @@ const momentsRibbon = computed(() => {
         {
             num: '04',
             title: 'DEVELOPMENT',
-            image: '/484192970_1108922961247045_3935375872642678849_n.jpg',
+            image: '/images/club/skill-acquisition-training-topgrade-london-fc.webp',
             aspect: 'aspect-[4/5]',
             offsetClass: 'lg:translate-y-24',
             floatY: '-6px',
@@ -524,7 +524,7 @@ const momentsRibbon = computed(() => {
         {
             num: '05',
             title: 'COACHING',
-            image: '/images/club/topgrade-london-fc-tactical-coaching-briefing.webp',
+            image: '/images/club/tactical-coaching-briefing-topgrade-london-fc.webp',
             aspect: 'aspect-[3/4]',
             offsetClass: 'lg:translate-y-8',
             floatY: '-4px',
@@ -533,7 +533,7 @@ const momentsRibbon = computed(() => {
         {
             num: '06',
             title: 'FOOTBALL',
-            image: '/images/club/topgrade-london-fc-floodlit-match-action.webp',
+            image: '/images/club/floodlit-match-action-topgrade-london-fc.webp',
             aspect: 'aspect-[4/5]',
             offsetClass: 'lg:translate-y-20',
             floatY: '-5px',
@@ -1337,7 +1337,7 @@ onUnmounted(() => {
                             class="tg-slot tg-slot tall border-tg-border overflow-hidden rounded border shadow-lg"
                         >
                             <img
-                                src="/images/club/topgrade-london-fc-player-match-action.webp"
+                                src="/images/club/player-match-action-topgrade-london-fc.webp"
                                 alt="TopGrade London FC youth player in purple kit competing for possession during a league match"
                                 data-par="0.06"
                             />
@@ -1571,7 +1571,7 @@ onUnmounted(() => {
                         class="tg-slot tg-slot wide border-tg-border overflow-hidden rounded-sm border shadow-lg"
                     >
                         <img
-                            src="/images/club/topgrade-london-fc-floodlit-training-pitch.webp"
+                            src="/images/club/floodlit-training-pitch-topgrade-london-fc.webp"
                             alt="TopGrade London FC all-weather training pitch illuminated under evening floodlights"
                         />
                     </div>
@@ -1881,7 +1881,7 @@ onUnmounted(() => {
                             class="tg-slot tg-slot tall border-tg-border overflow-hidden rounded-sm border shadow-xl"
                         >
                             <img
-                                src="/484977737_1109608517845156_6730033439051003629_n.jpg"
+                                src="/images/club/matchday-fixture-action-topgrade-london-fc.webp"
                                 alt="TopGrade London FC matchday action"
                                 data-par="0.05"
                             />
@@ -1902,7 +1902,7 @@ onUnmounted(() => {
                 class="cta-frame bg-tg-bg-deep border-tg-border relative flex w-full max-w-5xl flex-col items-center justify-center overflow-hidden rounded-sm border p-10 text-white shadow-2xl sm:p-20"
             >
                 <img
-                    src="/images/club/topgrade-london-fc-floodlit-match-action.webp"
+                    src="/images/club/floodlit-match-action-topgrade-london-fc.webp"
                     alt=""
                     aria-hidden="true"
                     class="absolute inset-0 h-full w-full object-cover opacity-25"

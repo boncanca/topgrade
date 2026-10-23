@@ -201,8 +201,8 @@ test('homepage supplies canonical hero props when no runtime media is attached',
         ->assertInertia(fn (Assert $page) => $page
             ->component('Public/Home')
             ->has('hero')
-            ->where('hero.video_url', '/topgrade-london-fc-hero-training-loop.mp4')
-            ->where('hero.poster_url', '/images/club/topgrade-london-fc-hero-matchday.webp')
+            ->where('hero.video_url', '/hero-training-loop-topgrade-london-fc.mp4')
+            ->where('hero.poster_url', '/images/club/hero-matchday-topgrade-london-fc.webp')
         );
 });
 

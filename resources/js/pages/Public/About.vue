@@ -127,7 +127,7 @@ const facilities = computed(() => {
             <div
                 class="absolute inset-0 bg-cover bg-center opacity-35"
                 style="
-                    background-image: url('/images/club/topgrade-london-fc-tactical-coaching-briefing.webp');
+                    background-image: url('/images/club/tactical-coaching-briefing-topgrade-london-fc.webp');
                 "
             />
             <div
@@ -212,7 +212,7 @@ const facilities = computed(() => {
                         class="border-tg-border aspect-4/3 bg-tg-bg-deep overflow-hidden rounded-sm border"
                     >
                         <img
-                            src="/images/club/topgrade-london-fc-u7-u8-squad-photo.webp"
+                            src="/images/club/u7-u8-squad-photo-topgrade-london-fc.webp"
                             alt="TopGrade London FC Under-7 and Under-8 players with medals and coach"
                             class="h-full w-full object-cover"
                         />
@@ -221,7 +221,7 @@ const facilities = computed(() => {
                         class="border-tg-border aspect-4/3 bg-tg-bg-deep overflow-hidden rounded-sm border"
                     >
                         <img
-                            src="/images/club/topgrade-london-fc-coach-mentoring-session.webp"
+                            src="/images/club/coach-mentoring-session-topgrade-london-fc.webp"
                             alt="TopGrade coach mentoring a youth football player"
                             class="h-full w-full object-cover"
                         />
@@ -230,7 +230,7 @@ const facilities = computed(() => {
                         class="border-tg-border aspect-4/3 bg-tg-bg-deep overflow-hidden rounded-sm border"
                     >
                         <img
-                            src="/images/club/topgrade-london-fc-floodlit-training-pitch.webp"
+                            src="/images/club/floodlit-training-pitch-topgrade-london-fc.webp"
                             alt="TopGrade evening squad training under floodlights"
                             class="h-full w-full object-cover"
                         />
@@ -239,7 +239,7 @@ const facilities = computed(() => {
                         class="border-tg-border aspect-4/3 bg-tg-bg-deep overflow-hidden rounded-sm border"
                     >
                         <img
-                            src="/images/club/topgrade-london-fc-youth-squad-team.webp"
+                            src="/images/club/youth-squad-team-topgrade-london-fc.webp"
                             alt="TopGrade London FC youth squad posing together on the pitch"
                             class="h-full w-full object-cover"
                         />
@@ -359,7 +359,7 @@ const facilities = computed(() => {
         >
             <div
                 class="absolute inset-0 bg-cover bg-center opacity-25"
-                style="background-image: url('/images/club/topgrade-london-fc-squad-huddle-matchday.webp')"
+                style="background-image: url('/images/club/u7-u8-squad-photo-topgrade-london-fc.webp')"
             />
             <div class="absolute inset-0 bg-black/70" />
 

@@ -44,7 +44,7 @@ test('runtime media absent resolves to domain canonical asset', function () {
         'is_active' => true,
     ]);
 
-    expect($team->getResolvedMediaUrl('image'))->toBe('/images/club/topgrade-london-fc-u7-u8-squad-photo.webp');
+    expect($team->getResolvedMediaUrl('image'))->toBe('/images/club/u7-u8-squad-photo-topgrade-london-fc.webp');
 
     $staff = Staff::create([
         'name' => 'Richard Matey Opoku',
@@ -56,7 +56,7 @@ test('runtime media absent resolves to domain canonical asset', function () {
         'is_active' => true,
     ]);
 
-    expect($staff->getResolvedMediaUrl('photo'))->toBe('/images/club/topgrade-london-fc-coach-mentoring-session.webp');
+    expect($staff->getResolvedMediaUrl('photo'))->toBe('/images/club/coach-mentoring-session-topgrade-london-fc.webp');
 
     $pageType = ContentType::firstOrCreate(['slug' => 'page'], [
         'name' => 'Page',
@@ -76,8 +76,8 @@ test('runtime media absent resolves to domain canonical asset', function () {
         'published_at' => now(),
     ]);
 
-    expect($home->getResolvedMediaUrl('videos'))->toBe('/topgrade-london-fc-hero-training-loop.mp4')
-        ->and($home->getResolvedMediaUrl('images'))->toBe('/images/club/topgrade-london-fc-hero-matchday.webp');
+    expect($home->getResolvedMediaUrl('videos'))->toBe('/hero-training-loop-topgrade-london-fc.mp4')
+        ->and($home->getResolvedMediaUrl('images'))->toBe('/images/club/hero-matchday-topgrade-london-fc.webp');
 });
 
 test('runtime media record exists but physical file is missing logs warning and falls back cleanly', function () {
@@ -104,7 +104,7 @@ test('runtime media record exists but physical file is missing logs warning and 
     $resolvedUrl = $team->getResolvedMediaUrl('image');
 
     // Expect fallback to canonical asset
-    expect($resolvedUrl)->toBe('/images/club/topgrade-london-fc-u7-u8-squad-photo.webp');
+    expect($resolvedUrl)->toBe('/images/club/u7-u8-squad-photo-topgrade-london-fc.webp');
 
     // Expect log warning triggered for storage integrity issue
     Log::shouldHaveReceived('warning')
@@ -140,13 +140,13 @@ test('seeded Moment without runtime media resolves to canonical assets', functio
     ]);
 
     expect($moment->isSeeded())->toBeTrue()
-        ->and($moment->getResolvedCoverUrl())->toBe('/images/club/topgrade-london-fc-youth-squad-team.webp');
+        ->and($moment->getResolvedCoverUrl())->toBe('/images/club/youth-squad-team-topgrade-london-fc.webp');
 
     $gallery = $moment->getResolvedGallery();
     expect($gallery)->toHaveCount(3)
-        ->and($gallery[0]['url'])->toBe('/images/club/topgrade-london-fc-youth-squad-team.webp')
-        ->and($gallery[1]['url'])->toBe('/images/club/topgrade-london-fc-u7-u8-squad-photo.webp')
-        ->and($gallery[2]['url'])->toBe('/images/club/topgrade-london-fc-training-agility-drills.webp');
+        ->and($gallery[0]['url'])->toBe('/images/club/youth-squad-team-topgrade-london-fc.webp')
+        ->and($gallery[1]['url'])->toBe('/images/club/u7-u8-squad-photo-topgrade-london-fc.webp')
+        ->and($gallery[2]['url'])->toBe('/images/club/training-agility-drills-topgrade-london-fc.webp');
 });
 
 test('existing frontend response shape remains completely unchanged', function () {
@@ -213,13 +213,13 @@ test('existing frontend response shape remains completely unchanged', function (
         ->assertInertia(fn (Assert $page) => $page
             ->component('Public/Home')
             ->has('hero.video_url')
-            ->where('hero.video_url', '/topgrade-london-fc-hero-training-loop.mp4')
+            ->where('hero.video_url', '/hero-training-loop-topgrade-london-fc.mp4')
             ->has('hero.poster_url')
-            ->where('hero.poster_url', '/images/club/topgrade-london-fc-hero-matchday.webp')
+            ->where('hero.poster_url', '/images/club/hero-matchday-topgrade-london-fc.webp')
             ->has('squads.0.image_url')
-            ->where('squads.0.image_url', '/images/club/topgrade-london-fc-u7-u8-squad-photo.webp')
+            ->where('squads.0.image_url', '/images/club/u7-u8-squad-photo-topgrade-london-fc.webp')
             ->has('momentsRibbon.0.image_url')
-            ->where('momentsRibbon.0.image_url', '/images/club/topgrade-london-fc-youth-squad-team.webp')
+            ->where('momentsRibbon.0.image_url', '/images/club/youth-squad-team-topgrade-london-fc.webp')
         );
 
     // 2. About Page contract
@@ -228,7 +228,7 @@ test('existing frontend response shape remains completely unchanged', function (
         ->assertInertia(fn (Assert $page) => $page
             ->component('Public/About')
             ->has('staff.0.photo_url')
-            ->where('staff.0.photo_url', '/images/club/topgrade-london-fc-coach-mentoring-session.webp')
+            ->where('staff.0.photo_url', '/images/club/coach-mentoring-session-topgrade-london-fc.webp')
         );
 
     // 3. Moments Index contract
@@ -237,9 +237,9 @@ test('existing frontend response shape remains completely unchanged', function (
         ->assertInertia(fn (Assert $page) => $page
             ->component('Public/Moments/Index')
             ->has('featured')
-            ->where('featured.cover_url', '/images/club/topgrade-london-fc-youth-squad-team.webp')
+            ->where('featured.cover_url', '/images/club/youth-squad-team-topgrade-london-fc.webp')
             ->has('moments.0.cover_url')
-            ->where('moments.0.cover_url', '/images/club/topgrade-london-fc-youth-squad-team.webp')
+            ->where('moments.0.cover_url', '/images/club/youth-squad-team-topgrade-london-fc.webp')
         );
 
     // 4. Moments Show contract
@@ -248,9 +248,9 @@ test('existing frontend response shape remains completely unchanged', function (
         ->assertInertia(fn (Assert $page) => $page
             ->component('Public/Moments/Show')
             ->has('moment.cover_url')
-            ->where('moment.cover_url', '/images/club/topgrade-london-fc-youth-squad-team.webp')
+            ->where('moment.cover_url', '/images/club/youth-squad-team-topgrade-london-fc.webp')
             ->has('gallery.0.url')
-            ->where('gallery.0.url', '/images/club/topgrade-london-fc-youth-squad-team.webp')
+            ->where('gallery.0.url', '/images/club/youth-squad-team-topgrade-london-fc.webp')
             ->where('gallery.0.is_cover', true)
         );
 });
@@ -364,7 +364,7 @@ test('topgrade file namer automatically enforces canonical filename on media upl
     $media = $moment->addMedia(UploadedFile::fake()->image('IMG_9214.jpg'))
         ->toMediaCollection('gallery');
 
-    expect($media->file_name)->toBe('topgrade-london-fc-img-9214.jpg');
+    expect($media->file_name)->toBe('img-9214-topgrade-london-fc.jpg');
 
     $team = Team::create([
         'name' => 'First Team',
@@ -379,5 +379,5 @@ test('topgrade file namer automatically enforces canonical filename on media upl
     $teamMedia = $team->addMedia(UploadedFile::fake()->image('first team 2026 27.png'))
         ->toMediaCollection('image');
 
-    expect($teamMedia->file_name)->toBe('topgrade-london-fc-first-team-2026-27.png');
+    expect($teamMedia->file_name)->toBe('first-team-2026-27-topgrade-london-fc.png');
 });

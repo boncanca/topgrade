@@ -46,12 +46,12 @@ class Team extends Model implements HasMedia
     {
         return match ($collection) {
             'image' => match ($this->slug) {
-                'u7-u8' => '/images/club/topgrade-london-fc-u7-u8-squad-photo.webp',
-                'u9-u10' => '/484192970_1108922961247045_3935375872642678849_n.jpg',
-                'u11-u12' => '/485087659_1108923127913695_5031817050217357486_n.jpg',
-                'u13-u14' => '/images/club/topgrade-london-fc-tactical-coaching-briefing.webp',
-                'u15-u16' => '/images/club/topgrade-london-fc-youth-squad-team.webp',
-                default => '/images/club/topgrade-london-fc-foundation-phase-match-action.webp',
+                'u7-u8' => '/images/club/u7-u8-squad-photo-topgrade-london-fc.webp',
+                'u9-u10' => '/images/club/skill-acquisition-training-topgrade-london-fc.webp',
+                'u11-u12' => '/images/club/game-development-match-action-topgrade-london-fc.webp',
+                'u13-u14' => '/images/club/tactical-coaching-briefing-topgrade-london-fc.webp',
+                'u15-u16' => '/images/club/squad-celebration-trophy-topgrade-london-fc.webp',
+                default => '/images/club/foundation-phase-match-action-topgrade-london-fc.webp',
             },
             default => null,
         };
