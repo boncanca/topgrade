@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
-import { ArrowRight, MapPin, CheckCircle2 } from '@lucide/vue';
+import { ArrowRight, MapPin, CheckCircle2, Maximize2 } from '@lucide/vue';
 import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue';
 import BlockRenderer from '@/components/CMS/BlockRenderer.vue';
+import ImagePreviewModal from '@/components/Public/ImagePreviewModal.vue';
+import type { PreviewImageData } from '@/components/Public/ImagePreviewModal.vue';
 import JsonLd from '@/components/SEO/JsonLd.vue';
 import SeoHead from '@/components/SEO/SeoHead.vue';
 import PublicLayout from '@/layouts/PublicLayout.vue';
@@ -123,6 +125,14 @@ const heroPrimaryCta = computed(
             url: '/bookings/free-trial-session',
         },
 );
+
+const previewImage = ref<PreviewImageData | null>(null);
+const previewModalOpen = ref(false);
+
+function openImagePreview(data: PreviewImageData): void {
+    previewImage.value = data;
+    previewModalOpen.value = true;
+}
 
 const heroHeadlineParts = computed(() => {
     const text = heroHeadline.value;
@@ -301,7 +311,7 @@ const squadVariantStyles: Record<
 > = {
     foundation: {
         layoutClass: 'md:col-span-5',
-        aspectClass: 'aspect-[4/3] md:aspect-[3/4]',
+        aspectClass: 'aspect-[16/10] sm:aspect-[16/9]',
         cropPosition: 'object-center',
         floatY: '-4px',
         rotate: '-0.3deg',
@@ -322,7 +332,7 @@ const squadVariantStyles: Record<
     },
     progression: {
         layoutClass: 'md:col-span-4 md:-mt-8',
-        aspectClass: 'aspect-[3/4]',
+        aspectClass: 'aspect-[16/10] sm:aspect-[16/9]',
         cropPosition: 'object-center',
         floatY: '-6px',
         rotate: '0.35deg',
@@ -372,7 +382,7 @@ const squads = computed(() => {
                 'First touch, ball mastery, agility, balance, and introducing team play in a positive environment.',
             image: '/images/club/u7-u8-squad-photo-topgrade-london-fc.webp',
             layoutClass: 'md:col-span-5',
-            aspectClass: 'aspect-[4/3] md:aspect-[3/4]',
+            aspectClass: 'aspect-[16/10] sm:aspect-[16/9]',
             cropPosition: 'object-center',
             floatY: '-4px',
             rotate: '-0.3deg',
@@ -408,7 +418,7 @@ const squads = computed(() => {
                 'Tactical discipline, physical conditioning, competitive league fixtures, and structured pitch mentoring.',
             image: '/images/club/tactical-coaching-briefing-topgrade-london-fc.webp',
             layoutClass: 'md:col-span-4 md:-mt-8',
-            aspectClass: 'aspect-[3/4]',
+            aspectClass: 'aspect-[16/10] sm:aspect-[16/9]',
             cropPosition: 'object-center',
             floatY: '-6px',
             rotate: '0.35deg',
@@ -430,37 +440,37 @@ const squads = computed(() => {
 
 const momentsRibbonStyles = [
     {
-        aspect: 'aspect-[3/4]',
+        aspect: 'aspect-[16/11]',
         offsetClass: 'lg:translate-y-0',
         floatY: '-4px',
         rotate: '-0.35deg',
     },
     {
-        aspect: 'aspect-[4/5]',
-        offsetClass: 'lg:translate-y-16',
+        aspect: 'aspect-[16/11]',
+        offsetClass: 'lg:translate-y-12',
         floatY: '-6px',
         rotate: '0.3deg',
     },
     {
-        aspect: 'aspect-[3/4]',
-        offsetClass: 'lg:translate-y-6',
+        aspect: 'aspect-[16/11]',
+        offsetClass: 'lg:translate-y-4',
         floatY: '-5px',
         rotate: '-0.25deg',
     },
     {
-        aspect: 'aspect-[4/5]',
-        offsetClass: 'lg:translate-y-24',
+        aspect: 'aspect-[16/11]',
+        offsetClass: 'lg:translate-y-16',
         floatY: '-6px',
         rotate: '0.4deg',
     },
     {
-        aspect: 'aspect-[3/4]',
+        aspect: 'aspect-[16/11]',
         offsetClass: 'lg:translate-y-8',
         floatY: '-4px',
         rotate: '-0.3deg',
     },
     {
-        aspect: 'aspect-[4/5]',
+        aspect: 'aspect-[16/11]',
         offsetClass: 'lg:translate-y-20',
         floatY: '-5px',
         rotate: '0.25deg',
@@ -489,7 +499,7 @@ const momentsRibbon = computed(() => {
             num: '01',
             title: 'TRAINING',
             image: '/images/club/youth-squad-team-topgrade-london-fc.webp',
-            aspect: 'aspect-[3/4]',
+            aspect: 'aspect-[16/11]',
             offsetClass: 'lg:translate-y-0',
             floatY: '-4px',
             rotate: '-0.35deg',
@@ -498,8 +508,8 @@ const momentsRibbon = computed(() => {
             num: '02',
             title: 'MATCHDAY',
             image: '/images/club/matchday-fixture-action-topgrade-london-fc.webp',
-            aspect: 'aspect-[4/5]',
-            offsetClass: 'lg:translate-y-16',
+            aspect: 'aspect-[16/11]',
+            offsetClass: 'lg:translate-y-12',
             floatY: '-6px',
             rotate: '0.3deg',
         },
@@ -507,8 +517,8 @@ const momentsRibbon = computed(() => {
             num: '03',
             title: 'TEAMWORK',
             image: '/images/club/u7-u8-squad-photo-topgrade-london-fc.webp',
-            aspect: 'aspect-[3/4]',
-            offsetClass: 'lg:translate-y-6',
+            aspect: 'aspect-[16/11]',
+            offsetClass: 'lg:translate-y-4',
             floatY: '-5px',
             rotate: '-0.25deg',
         },
@@ -516,8 +526,8 @@ const momentsRibbon = computed(() => {
             num: '04',
             title: 'DEVELOPMENT',
             image: '/images/club/skill-acquisition-training-topgrade-london-fc.webp',
-            aspect: 'aspect-[4/5]',
-            offsetClass: 'lg:translate-y-24',
+            aspect: 'aspect-[16/11]',
+            offsetClass: 'lg:translate-y-16',
             floatY: '-6px',
             rotate: '0.4deg',
         },
@@ -525,7 +535,7 @@ const momentsRibbon = computed(() => {
             num: '05',
             title: 'COACHING',
             image: '/images/club/tactical-coaching-briefing-topgrade-london-fc.webp',
-            aspect: 'aspect-[3/4]',
+            aspect: 'aspect-[16/11]',
             offsetClass: 'lg:translate-y-8',
             floatY: '-4px',
             rotate: '-0.3deg',
@@ -534,7 +544,7 @@ const momentsRibbon = computed(() => {
             num: '06',
             title: 'FOOTBALL',
             image: '/images/club/floodlit-match-action-topgrade-london-fc.webp',
-            aspect: 'aspect-[4/5]',
+            aspect: 'aspect-[16/11]',
             offsetClass: 'lg:translate-y-20',
             floatY: '-5px',
             rotate: '0.25deg',
@@ -1334,13 +1344,54 @@ onUnmounted(() => {
                         style="--d: 120ms"
                     >
                         <div
-                            class="tg-slot tg-slot tall border-tg-border overflow-hidden rounded border shadow-lg"
+                            class="border-tg-border bg-tg-bg-deep group relative aspect-[4/3] cursor-pointer overflow-hidden rounded-xl border shadow-xl transition-all duration-300 hover:border-tg-accent/60"
+                            role="button"
+                            tabindex="0"
+                            aria-label="View full photo of youth player match action"
+                            @click="
+                                openImagePreview({
+                                    url: '/images/club/player-match-action-topgrade-london-fc.webp',
+                                    alt: 'TopGrade London FC youth player in purple kit competing for possession during a league match',
+                                    title: 'Player Match Action · Ball Possession',
+                                    subtitle:
+                                        'TopGrade youth player demonstrating ball mastery and positional composure under league matchday pressure.',
+                                })
+                            "
+                            @keydown.enter="
+                                openImagePreview({
+                                    url: '/images/club/player-match-action-topgrade-london-fc.webp',
+                                    alt: 'TopGrade London FC youth player in purple kit competing for possession during a league match',
+                                    title: 'Player Match Action · Ball Possession',
+                                    subtitle:
+                                        'TopGrade youth player demonstrating ball mastery and positional composure under league matchday pressure.',
+                                })
+                            "
                         >
                             <img
                                 src="/images/club/player-match-action-topgrade-london-fc.webp"
                                 alt="TopGrade London FC youth player in purple kit competing for possession during a league match"
-                                data-par="0.06"
+                                class="h-full w-full object-cover object-[35%_bottom] transition-transform duration-700 ease-out group-hover:scale-[1.03] sm:object-center"
+                                loading="lazy"
                             />
+                            <div
+                                class="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                            />
+                            <div
+                                class="absolute bottom-3 left-3 right-3 flex items-center justify-between text-xs text-white opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                            >
+                                <span class="text-tg-accent font-medium"
+                                    >Match Action · Ball Mastery</span
+                                >
+                            </div>
+                            <span
+                                class="absolute right-3 top-3 flex items-center gap-1.5 rounded-full border border-white/20 bg-black/75 px-3 py-1.5 text-xs text-white shadow-lg backdrop-blur-sm transition-all duration-200 group-hover:border-tg-accent group-hover:bg-black/90"
+                            >
+                                <Maximize2 class="text-tg-accent size-3.5" />
+                                <span
+                                    class="text-[11px] font-medium uppercase tracking-wider"
+                                    >Full View</span
+                                >
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -1568,12 +1619,44 @@ onUnmounted(() => {
                 <!-- Wide Training Pitch Photography -->
                 <div class="mt-14" data-reveal style="--d: 200ms">
                     <div
-                        class="tg-slot tg-slot wide border-tg-border overflow-hidden rounded-sm border shadow-lg"
+                        class="border-tg-border bg-tg-bg-deep group relative aspect-[16/9] cursor-pointer overflow-hidden rounded-xl border shadow-xl transition-all duration-300 hover:border-tg-accent/60 lg:aspect-[21/10]"
+                        role="button"
+                        tabindex="0"
+                        aria-label="View full photo of floodlit training pitch"
+                        @click="
+                            openImagePreview({
+                                url: '/images/club/floodlit-training-pitch-topgrade-london-fc.webp',
+                                alt: 'TopGrade London FC all-weather training pitch illuminated under evening floodlights',
+                                title: 'Training Facility · All-Weather Floodlit Pitch',
+                                subtitle:
+                                    'High-standard evening training environment illuminated under floodlights.',
+                            })
+                        "
+                        @keydown.enter="
+                            openImagePreview({
+                                url: '/images/club/floodlit-training-pitch-topgrade-london-fc.webp',
+                                alt: 'TopGrade London FC all-weather training pitch illuminated under evening floodlights',
+                                title: 'Training Facility · All-Weather Floodlit Pitch',
+                                subtitle:
+                                    'High-standard evening training environment illuminated under floodlights.',
+                            })
+                        "
                     >
                         <img
                             src="/images/club/floodlit-training-pitch-topgrade-london-fc.webp"
                             alt="TopGrade London FC all-weather training pitch illuminated under evening floodlights"
+                            class="h-full w-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-[1.02]"
+                            loading="lazy"
                         />
+                        <span
+                            class="absolute right-3 top-3 flex items-center gap-1.5 rounded-full border border-white/20 bg-black/75 px-3 py-1.5 text-xs text-white shadow-lg backdrop-blur-sm transition-all duration-200 group-hover:border-tg-accent group-hover:bg-black/90"
+                        >
+                            <Maximize2 class="text-tg-accent size-3.5" />
+                            <span
+                                class="text-[11px] font-medium uppercase tracking-wider"
+                                >Full View</span
+                            >
+                        </span>
                     </div>
                 </div>
             </div>
@@ -1632,12 +1715,31 @@ onUnmounted(() => {
                         <div
                             :class="[
                                 squad.aspectClass,
-                                'tg-float-card bg-tg-bg-deep border-tg-border relative w-full overflow-hidden rounded-sm border shadow-sm',
+                                'tg-float-card bg-tg-bg-deep border-tg-border relative w-full cursor-pointer overflow-hidden rounded-sm border shadow-sm',
                             ]"
                             :style="{
                                 '--float-y': squad.floatY,
                                 '--rotate': squad.rotate,
                             }"
+                            role="button"
+                            tabindex="0"
+                            :aria-label="`View full photo of ${squad.name} Squad`"
+                            @click="
+                                openImagePreview({
+                                    url: squad.image,
+                                    alt: `TopGrade London FC ${squad.name} Squad`,
+                                    title: `${squad.name} · ${squad.stage}`,
+                                    subtitle: squad.description,
+                                })
+                            "
+                            @keydown.enter="
+                                openImagePreview({
+                                    url: squad.image,
+                                    alt: `TopGrade London FC ${squad.name} Squad`,
+                                    title: `${squad.name} · ${squad.stage}`,
+                                    subtitle: squad.description,
+                                })
+                            "
                         >
                             <img
                                 :src="squad.image"
@@ -1650,6 +1752,14 @@ onUnmounted(() => {
                             <div
                                 class="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"
                             />
+
+                            <!-- Top-right Expand Button -->
+                            <span
+                                class="absolute right-3 top-3 flex items-center gap-1 rounded-full border border-white/20 bg-black/75 px-2.5 py-1 text-[10px] text-white opacity-0 backdrop-blur-sm transition-opacity duration-200 group-hover:opacity-100"
+                            >
+                                <Maximize2 class="text-tg-accent size-3" />
+                                <span class="hidden sm:inline">Full Photo</span>
+                            </span>
 
                             <!-- Bottom Tag inside Image -->
                             <div
@@ -1767,12 +1877,33 @@ onUnmounted(() => {
                         <div
                             :class="[
                                 moment.aspect,
-                                'tg-float-card bg-tg-bg-deep border-tg-border relative w-full overflow-hidden rounded-sm border shadow-md',
+                                'tg-float-card bg-tg-bg-deep border-tg-border relative w-full cursor-pointer overflow-hidden rounded-sm border shadow-md',
                             ]"
                             :style="{
                                 '--float-y': moment.floatY,
                                 '--rotate': moment.rotate,
                             }"
+                            role="button"
+                            tabindex="0"
+                            :aria-label="`View full photo of moment ${moment.num}: ${moment.title}`"
+                            @click="
+                                openImagePreview({
+                                    url: moment.image,
+                                    alt: moment.title,
+                                    title: `Moment ${moment.num} · ${moment.title}`,
+                                    subtitle:
+                                        'TopGrade London FC visual archive.',
+                                })
+                            "
+                            @keydown.enter="
+                                openImagePreview({
+                                    url: moment.image,
+                                    alt: moment.title,
+                                    title: `Moment ${moment.num} · ${moment.title}`,
+                                    subtitle:
+                                        'TopGrade London FC visual archive.',
+                                })
+                            "
                         >
                             <img
                                 :src="moment.image"
@@ -1782,6 +1913,13 @@ onUnmounted(() => {
                             <div
                                 class="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-transparent"
                             />
+
+                            <span
+                                class="absolute right-2.5 top-2.5 flex items-center gap-1 rounded-full border border-white/20 bg-black/75 px-2 py-0.5 text-[9px] text-white opacity-0 backdrop-blur-sm transition-opacity duration-200 group-hover:opacity-100"
+                            >
+                                <Maximize2 class="text-tg-accent size-2.5" />
+                                <span class="hidden sm:inline">View</span>
+                            </span>
 
                             <div
                                 class="pointer-events-none absolute bottom-4 left-4 right-4 flex items-center justify-between"
@@ -1878,13 +2016,47 @@ onUnmounted(() => {
                         style="--d: 150ms"
                     >
                         <div
-                            class="tg-slot tg-slot tall border-tg-border overflow-hidden rounded-sm border shadow-xl"
+                            class="border-tg-border bg-tg-bg-deep group relative aspect-[16/10] cursor-pointer overflow-hidden rounded-xl border shadow-xl transition-all duration-300 hover:border-tg-accent/60 sm:aspect-[16/9]"
+                            role="button"
+                            tabindex="0"
+                            aria-label="View full photo of matchday fixture action"
+                            @click="
+                                openImagePreview({
+                                    url: '/images/club/matchday-fixture-action-topgrade-london-fc.webp',
+                                    alt: 'TopGrade London FC matchday action',
+                                    title: 'Matchday Action · Competitive League Play',
+                                    subtitle:
+                                        'Competitive grassroots league fixture across London venues.',
+                                })
+                            "
+                            @keydown.enter="
+                                openImagePreview({
+                                    url: '/images/club/matchday-fixture-action-topgrade-london-fc.webp',
+                                    alt: 'TopGrade London FC matchday action',
+                                    title: 'Matchday Action · Competitive League Play',
+                                    subtitle:
+                                        'Competitive grassroots league fixture across London venues.',
+                                })
+                            "
                         >
                             <img
                                 src="/images/club/matchday-fixture-action-topgrade-london-fc.webp"
                                 alt="TopGrade London FC matchday action"
-                                data-par="0.05"
+                                class="h-full w-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+                                loading="lazy"
                             />
+                            <div
+                                class="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                            />
+                            <span
+                                class="absolute right-3 top-3 flex items-center gap-1.5 rounded-full border border-white/20 bg-black/75 px-3 py-1.5 text-xs text-white shadow-lg backdrop-blur-sm transition-all duration-200 group-hover:border-tg-accent group-hover:bg-black/90"
+                            >
+                                <Maximize2 class="text-tg-accent size-3.5" />
+                                <span
+                                    class="text-[11px] font-medium uppercase tracking-wider"
+                                    >Full View</span
+                                >
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -1959,6 +2131,11 @@ onUnmounted(() => {
         >
             <BlockRenderer :blocks="blocks" />
         </div>
+
+        <ImagePreviewModal
+            v-model:open="previewModalOpen"
+            :image="previewImage"
+        />
     </div>
 </template>
 

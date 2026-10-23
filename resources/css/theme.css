@@ -461,6 +461,13 @@
         height: 100%;
         object-fit: cover;
         display: block;
+        transition: transform 600ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+        .tg-slot:hover img {
+            transform: scale(1.02);
+        }
     }
 
     .tg-slot.wide {
@@ -471,6 +478,14 @@
     }
     .tg-slot.card {
         aspect-ratio: 3/4;
+    }
+    .tg-slot.standard,
+    .tg-slot.action {
+        aspect-ratio: 4/3;
+    }
+    .tg-slot.match,
+    .tg-slot.widescreen {
+        aspect-ratio: 16/9;
     }
 
     /* ─── Physical Floating Editorial Photography (Desktop Subtle Movement, No Glow) ─── */

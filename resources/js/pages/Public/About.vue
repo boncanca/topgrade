@@ -1,13 +1,23 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
-import { ArrowRight, Trophy, Users, Target, MapPin, Award } from '@lucide/vue';
-import { computed } from 'vue';
+import { ArrowRight, Trophy, Users, Target, MapPin, Award, Maximize2 } from '@lucide/vue';
+import { computed, ref } from 'vue';
+import ImagePreviewModal from '@/components/Public/ImagePreviewModal.vue';
+import type { PreviewImageData } from '@/components/Public/ImagePreviewModal.vue';
 import SeoHead from '@/components/SEO/SeoHead.vue';
 import PublicLayout from '@/layouts/PublicLayout.vue';
 
 defineOptions({
     layout: PublicLayout,
 });
+
+const previewImage = ref<PreviewImageData | null>(null);
+const previewModalOpen = ref(false);
+
+function openImagePreview(data: PreviewImageData): void {
+    previewImage.value = data;
+    previewModalOpen.value = true;
+}
 
 const props = defineProps<{
     values?: Array<{ title: string; description: string; icon?: string }>;
@@ -207,42 +217,154 @@ const facilities = computed(() => {
                     </div>
                 </div>
 
-                <div class="grid grid-cols-2 gap-3">
+                <div class="grid grid-cols-2 gap-3 sm:gap-4">
                     <div
-                        class="border-tg-border aspect-4/3 bg-tg-bg-deep overflow-hidden rounded-sm border"
+                        class="border-tg-border bg-tg-bg-deep group relative aspect-[16/10] cursor-pointer overflow-hidden rounded-lg border shadow-sm transition-all duration-300 hover:border-tg-accent/60 sm:aspect-[16/9]"
+                        role="button"
+                        tabindex="0"
+                        aria-label="View full photo of Under-7 and Under-8 squad with medals"
+                        @click="
+                            openImagePreview({
+                                url: '/images/club/u7-u8-squad-photo-topgrade-london-fc.webp',
+                                alt: 'TopGrade London FC Under-7 and Under-8 players with medals and coach',
+                                title: 'Foundation Phase · U7 – U8 Squad',
+                                subtitle:
+                                    'Under-7 and Under-8 squad celebrating tournament medals with their coach.',
+                            })
+                        "
+                        @keydown.enter="
+                            openImagePreview({
+                                url: '/images/club/u7-u8-squad-photo-topgrade-london-fc.webp',
+                                alt: 'TopGrade London FC Under-7 and Under-8 players with medals and coach',
+                                title: 'Foundation Phase · U7 – U8 Squad',
+                                subtitle:
+                                    'Under-7 and Under-8 squad celebrating tournament medals with their coach.',
+                            })
+                        "
                     >
                         <img
                             src="/images/club/u7-u8-squad-photo-topgrade-london-fc.webp"
                             alt="TopGrade London FC Under-7 and Under-8 players with medals and coach"
-                            class="h-full w-full object-cover"
+                            class="h-full w-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-105"
+                            loading="lazy"
                         />
+                        <span
+                            class="absolute right-2.5 top-2.5 flex items-center gap-1 rounded-full border border-white/20 bg-black/75 px-2 py-1 text-[10px] text-white opacity-0 backdrop-blur-sm transition-opacity duration-200 group-hover:opacity-100"
+                        >
+                            <Maximize2 class="text-tg-accent size-3" />
+                            <span class="hidden sm:inline">Full Photo</span>
+                        </span>
                     </div>
                     <div
-                        class="border-tg-border aspect-4/3 bg-tg-bg-deep overflow-hidden rounded-sm border"
+                        class="border-tg-border bg-tg-bg-deep group relative aspect-[16/10] cursor-pointer overflow-hidden rounded-lg border shadow-sm transition-all duration-300 hover:border-tg-accent/60 sm:aspect-[16/9]"
+                        role="button"
+                        tabindex="0"
+                        aria-label="View full photo of coach mentoring youth player"
+                        @click="
+                            openImagePreview({
+                                url: '/images/club/coach-mentoring-session-topgrade-london-fc.webp',
+                                alt: 'TopGrade coach mentoring a youth football player',
+                                title: 'Coaching Mentorship · Individual Focus',
+                                subtitle:
+                                    'One-on-one pitch briefing, building confidence and game intellect.',
+                            })
+                        "
+                        @keydown.enter="
+                            openImagePreview({
+                                url: '/images/club/coach-mentoring-session-topgrade-london-fc.webp',
+                                alt: 'TopGrade coach mentoring a youth football player',
+                                title: 'Coaching Mentorship · Individual Focus',
+                                subtitle:
+                                    'One-on-one pitch briefing, building confidence and game intellect.',
+                            })
+                        "
                     >
                         <img
                             src="/images/club/coach-mentoring-session-topgrade-london-fc.webp"
                             alt="TopGrade coach mentoring a youth football player"
-                            class="h-full w-full object-cover"
+                            class="h-full w-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-105"
+                            loading="lazy"
                         />
+                        <span
+                            class="absolute right-2.5 top-2.5 flex items-center gap-1 rounded-full border border-white/20 bg-black/75 px-2 py-1 text-[10px] text-white opacity-0 backdrop-blur-sm transition-opacity duration-200 group-hover:opacity-100"
+                        >
+                            <Maximize2 class="text-tg-accent size-3" />
+                            <span class="hidden sm:inline">Full Photo</span>
+                        </span>
                     </div>
                     <div
-                        class="border-tg-border aspect-4/3 bg-tg-bg-deep overflow-hidden rounded-sm border"
+                        class="border-tg-border bg-tg-bg-deep group relative aspect-[16/10] cursor-pointer overflow-hidden rounded-lg border shadow-sm transition-all duration-300 hover:border-tg-accent/60 sm:aspect-[16/9]"
+                        role="button"
+                        tabindex="0"
+                        aria-label="View full photo of evening floodlit training pitch"
+                        @click="
+                            openImagePreview({
+                                url: '/images/club/floodlit-training-pitch-topgrade-london-fc.webp',
+                                alt: 'TopGrade evening squad training under floodlights',
+                                title: 'Training Facility · All-Weather Floodlit Pitch',
+                                subtitle:
+                                    'Modern training ground ready for evening squad sessions year-round.',
+                            })
+                        "
+                        @keydown.enter="
+                            openImagePreview({
+                                url: '/images/club/floodlit-training-pitch-topgrade-london-fc.webp',
+                                alt: 'TopGrade evening squad training under floodlights',
+                                title: 'Training Facility · All-Weather Floodlit Pitch',
+                                subtitle:
+                                    'Modern training ground ready for evening squad sessions year-round.',
+                            })
+                        "
                     >
                         <img
                             src="/images/club/floodlit-training-pitch-topgrade-london-fc.webp"
                             alt="TopGrade evening squad training under floodlights"
-                            class="h-full w-full object-cover"
+                            class="h-full w-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-105"
+                            loading="lazy"
                         />
+                        <span
+                            class="absolute right-2.5 top-2.5 flex items-center gap-1 rounded-full border border-white/20 bg-black/75 px-2 py-1 text-[10px] text-white opacity-0 backdrop-blur-sm transition-opacity duration-200 group-hover:opacity-100"
+                        >
+                            <Maximize2 class="text-tg-accent size-3" />
+                            <span class="hidden sm:inline">Full Photo</span>
+                        </span>
                     </div>
                     <div
-                        class="border-tg-border aspect-4/3 bg-tg-bg-deep overflow-hidden rounded-sm border"
+                        class="border-tg-border bg-tg-bg-deep group relative aspect-[16/10] cursor-pointer overflow-hidden rounded-lg border shadow-sm transition-all duration-300 hover:border-tg-accent/60 sm:aspect-[16/9]"
+                        role="button"
+                        tabindex="0"
+                        aria-label="View full photo of youth squad team"
+                        @click="
+                            openImagePreview({
+                                url: '/images/club/youth-squad-team-topgrade-london-fc.webp',
+                                alt: 'TopGrade London FC youth squad posing together on the pitch',
+                                title: 'Matchday Squad · Team Unity',
+                                subtitle:
+                                    'Players lined up together on the pitch in official match kit.',
+                            })
+                        "
+                        @keydown.enter="
+                            openImagePreview({
+                                url: '/images/club/youth-squad-team-topgrade-london-fc.webp',
+                                alt: 'TopGrade London FC youth squad posing together on the pitch',
+                                title: 'Matchday Squad · Team Unity',
+                                subtitle:
+                                    'Players lined up together on the pitch in official match kit.',
+                            })
+                        "
                     >
                         <img
                             src="/images/club/youth-squad-team-topgrade-london-fc.webp"
                             alt="TopGrade London FC youth squad posing together on the pitch"
-                            class="h-full w-full object-cover"
+                            class="h-full w-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-105"
+                            loading="lazy"
                         />
+                        <span
+                            class="absolute right-2.5 top-2.5 flex items-center gap-1 rounded-full border border-white/20 bg-black/75 px-2 py-1 text-[10px] text-white opacity-0 backdrop-blur-sm transition-opacity duration-200 group-hover:opacity-100"
+                        >
+                            <Maximize2 class="text-tg-accent size-3" />
+                            <span class="hidden sm:inline">Full Photo</span>
+                        </span>
                     </div>
                 </div>
             </div>
@@ -387,5 +509,10 @@ const facilities = computed(() => {
                 </div>
             </div>
         </section>
+
+        <ImagePreviewModal
+            v-model:open="previewModalOpen"
+            :image="previewImage"
+        />
     </div>
 </template>
