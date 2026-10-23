@@ -32,25 +32,26 @@ class Moment extends Model implements HasMedia
      */
     public const SEEDED_MOMENTS = [
         'midweek-technical-training' => [
-            'cover' => '/images/club/club-training-london.jpg',
+            'cover' => '/images/club/topgrade-london-fc-youth-squad-team.webp',
             'gallery' => [
-                '/images/club/club-training-london.jpg',
-                '/images/club/training-agility-drills.jpg',
+                '/images/club/topgrade-london-fc-youth-squad-team.webp',
+                '/images/club/topgrade-london-fc-u7-u8-squad-photo.webp',
+                '/images/club/topgrade-london-fc-training-agility-drills.webp',
             ],
         ],
         'matchday-saturday-league-fixture' => [
-            'cover' => '/484977737_1109608517845156_6730033439051003629_n.jpg',
+            'cover' => '/images/club/topgrade-london-fc-u7-u8-squad-photo.webp',
             'gallery' => [
-                '/484977737_1109608517845156_6730033439051003629_n.jpg',
-                '/images/club/youth_match_action.jpg',
-                '/images/club/squad_celebration.jpg',
+                '/images/club/topgrade-london-fc-u7-u8-squad-photo.webp',
+                '/images/club/topgrade-london-fc-foundation-phase-match-action.webp',
+                '/images/club/topgrade-london-fc-squad-celebration-trophy.webp',
             ],
         ],
         'squad-mentoring-tactical-coaching' => [
-            'cover' => '/images/club/tactical_coaching.jpg',
+            'cover' => '/images/club/topgrade-london-fc-tactical-coaching-briefing.webp',
             'gallery' => [
-                '/images/club/tactical_coaching.jpg',
-                '/484192970_1108922961247045_3935375872642678849_n.jpg',
+                '/images/club/topgrade-london-fc-tactical-coaching-briefing.webp',
+                '/images/club/topgrade-london-fc-player-match-action.webp',
             ],
         ],
     ];

@@ -100,10 +100,12 @@ const videoFailed = ref(false);
 const prefersReducedMotion = ref(false);
 
 const heroVideoUrl = computed(
-    () => props.hero?.video_url || '/topgrade-video.mp4',
+    () => props.hero?.video_url || '/topgrade-london-fc-hero-training-loop.mp4',
 );
 const heroPosterUrl = computed(
-    () => props.hero?.poster_url || '/images/club/hero-football.jpg',
+    () =>
+        props.hero?.poster_url ||
+        '/images/club/topgrade-london-fc-hero-matchday.webp',
 );
 const heroEyebrow = computed(() => props.hero?.eyebrow || 'More Than Football');
 const heroHeadline = computed(
@@ -354,7 +356,9 @@ const squads = computed(() => {
                 name: team.name,
                 stage: team.stage,
                 description: team.description,
-                image: team.image_url || '/images/club/youth_match_action.jpg',
+                image:
+                    team.image_url ||
+                    '/images/club/topgrade-london-fc-foundation-phase-match-action.webp',
                 ...style,
             };
         });
@@ -366,7 +370,7 @@ const squads = computed(() => {
             stage: 'Foundation Phase',
             description:
                 'First touch, ball mastery, agility, balance, and introducing team play in a positive environment.',
-            image: '/images/club/youth_match_action.jpg',
+            image: '/images/club/topgrade-london-fc-u7-u8-squad-photo.webp',
             layoutClass: 'md:col-span-5',
             aspectClass: 'aspect-[4/3] md:aspect-[3/4]',
             cropPosition: 'object-center',
@@ -402,7 +406,7 @@ const squads = computed(() => {
             stage: 'Youth Progression',
             description:
                 'Tactical discipline, physical conditioning, competitive league fixtures, and structured pitch mentoring.',
-            image: '/images/club/tactical_coaching.jpg',
+            image: '/images/club/topgrade-london-fc-tactical-coaching-briefing.webp',
             layoutClass: 'md:col-span-4 md:-mt-8',
             aspectClass: 'aspect-[3/4]',
             cropPosition: 'object-center',
@@ -414,7 +418,7 @@ const squads = computed(() => {
             stage: 'Youth Competition',
             description:
                 'Competitive match play, high-intensity game management, leadership, and senior club pathway preparation.',
-            image: '/images/club/squad_celebration.jpg',
+            image: '/images/club/topgrade-london-fc-youth-squad-team.webp',
             layoutClass: 'md:col-span-12',
             aspectClass: 'aspect-[16/9] md:aspect-[2.4/1]',
             cropPosition: 'object-center',
@@ -472,7 +476,9 @@ const momentsRibbon = computed(() => {
             return {
                 num: m.num,
                 title: m.title,
-                image: m.image_url || '/images/club/club-training-london.jpg',
+                image:
+                    m.image_url ||
+                    '/images/club/topgrade-london-fc-youth-squad-team.webp',
                 ...style,
             };
         });
@@ -482,7 +488,7 @@ const momentsRibbon = computed(() => {
         {
             num: '01',
             title: 'TRAINING',
-            image: '/images/club/club-training-london.jpg',
+            image: '/images/club/topgrade-london-fc-youth-squad-team.webp',
             aspect: 'aspect-[3/4]',
             offsetClass: 'lg:translate-y-0',
             floatY: '-4px',
@@ -500,7 +506,7 @@ const momentsRibbon = computed(() => {
         {
             num: '03',
             title: 'TEAMWORK',
-            image: '/images/club/squad_celebration.jpg',
+            image: '/images/club/topgrade-london-fc-u7-u8-squad-photo.webp',
             aspect: 'aspect-[3/4]',
             offsetClass: 'lg:translate-y-6',
             floatY: '-5px',
@@ -518,7 +524,7 @@ const momentsRibbon = computed(() => {
         {
             num: '05',
             title: 'COACHING',
-            image: '/images/club/tactical_coaching.jpg',
+            image: '/images/club/topgrade-london-fc-tactical-coaching-briefing.webp',
             aspect: 'aspect-[3/4]',
             offsetClass: 'lg:translate-y-8',
             floatY: '-4px',
@@ -527,7 +533,7 @@ const momentsRibbon = computed(() => {
         {
             num: '06',
             title: 'FOOTBALL',
-            image: '/images/club/floodlit-match.png',
+            image: '/images/club/topgrade-london-fc-floodlit-match-action.webp',
             aspect: 'aspect-[4/5]',
             offsetClass: 'lg:translate-y-20',
             floatY: '-5px',
@@ -1331,8 +1337,8 @@ onUnmounted(() => {
                             class="tg-slot tg-slot tall border-tg-border overflow-hidden rounded border shadow-lg"
                         >
                             <img
-                                src="/images/club/player-match-action.jpg"
-                                alt="TopGrade player in match training action"
+                                src="/images/club/topgrade-london-fc-player-match-action.webp"
+                                alt="TopGrade London FC youth player in purple kit competing for possession during a league match"
                                 data-par="0.06"
                             />
                         </div>
@@ -1565,8 +1571,8 @@ onUnmounted(() => {
                         class="tg-slot tg-slot wide border-tg-border overflow-hidden rounded-sm border shadow-lg"
                     >
                         <img
-                            src="/images/club/training_pitch_evening.jpg"
-                            alt="TopGrade evening squad training pitch"
+                            src="/images/club/topgrade-london-fc-floodlit-training-pitch.webp"
+                            alt="TopGrade London FC all-weather training pitch illuminated under evening floodlights"
                         />
                     </div>
                 </div>
@@ -1896,8 +1902,9 @@ onUnmounted(() => {
                 class="cta-frame bg-tg-bg-deep border-tg-border relative flex w-full max-w-5xl flex-col items-center justify-center overflow-hidden rounded-sm border p-10 text-white shadow-2xl sm:p-20"
             >
                 <img
-                    src="/images/club/floodlit-match.png"
-                    alt="TopGrade football pitch floodlights"
+                    src="/images/club/topgrade-london-fc-floodlit-match-action.webp"
+                    alt=""
+                    aria-hidden="true"
                     class="absolute inset-0 h-full w-full object-cover opacity-25"
                 />
                 <div class="absolute inset-0 bg-black/60" />

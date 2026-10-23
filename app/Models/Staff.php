@@ -46,7 +46,7 @@ class Staff extends Model implements HasMedia
     public function getDefaultMediaUrl(string $collection = 'default'): ?string
     {
         return match ($collection) {
-            'photo' => '/images/club/club-coach-mentoring.jpg',
+            'photo' => '/images/club/topgrade-london-fc-coach-mentoring-session.webp',
             default => null,
         };
     }

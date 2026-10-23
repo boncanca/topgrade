@@ -40,8 +40,8 @@ class PublicPageController
             ?? [];
         $quickStats = $heroBlock['stats'] ?? $pageContent?->blocks->firstWhere('type', 'quick_stats')?->payload['items'] ?? [];
 
-        $heroVideoUrl = $pageContent?->getResolvedMediaUrl('videos') ?? '/topgrade-video.mp4';
-        $heroPosterUrl = $pageContent?->getResolvedMediaUrl('images') ?? '/images/club/hero-football.jpg';
+        $heroVideoUrl = $pageContent?->getResolvedMediaUrl('videos') ?? '/topgrade-london-fc-hero-training-loop.mp4';
+        $heroPosterUrl = $pageContent?->getResolvedMediaUrl('images') ?? '/images/club/topgrade-london-fc-hero-matchday.webp';
 
         // Dynamic club squads from Team domain model
         $squads = Team::active()

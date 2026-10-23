@@ -78,7 +78,7 @@ const weeklySchedule = computed(() => {
             <div
                 class="absolute inset-0 bg-cover bg-center opacity-35"
                 style="
-                    background-image: url('/images/club/training-agility-drills.jpg');
+                    background-image: url('/images/club/topgrade-london-fc-training-agility-drills.webp');
                 "
             />
             <div

@@ -43,7 +43,7 @@ defineOptions({
             <div
                 class="absolute inset-0 bg-cover bg-center opacity-35"
                 style="
-                    background-image: url('/images/club/club-training-london.jpg');
+                    background-image: url('/images/club/topgrade-london-fc-youth-squad-team.webp');
                 "
             />
             <div

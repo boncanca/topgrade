@@ -177,18 +177,28 @@ class SyncMediaStorageCommand extends Command
                 continue;
             }
 
+            $namer = app(config('media-library.file_namer'));
+            $expectedBase = $namer->originalFileName($asset['file_name']);
+            $expectedExt = pathinfo($asset['file_name'], PATHINFO_EXTENSION);
+            $expectedFileName = $expectedExt ? "{$expectedBase}.{$expectedExt}" : $expectedBase;
+            $sourceBaseName = pathinfo($asset['source'], PATHINFO_BASENAME);
+
             // Find existing Media record matching this collection and filename
             /** @var Media|null $media */
             $media = $model->media()
                 ->where('collection_name', $asset['collection'])
-                ->where('file_name', $asset['file_name'])
+                ->where(function ($query) use ($asset, $expectedFileName, $sourceBaseName) {
+                    $query->where('file_name', $asset['file_name'])
+                        ->orWhere('file_name', $expectedFileName)
+                        ->orWhere('file_name', $sourceBaseName);
+                })
                 ->first();
 
             if ($media) {
                 $targetPath = $media->getPath();
 
                 if (! $force && file_exists($targetPath)) {
-                    $this->line(" [OK] Media #{$media->id} ({$asset['file_name']}) already exists at {$targetPath}");
+                    $this->line(" [OK] Media #{$media->id} ({$media->file_name}) already exists at {$targetPath}");
                     $alreadyPresentCount++;
 
                     continue;
@@ -204,7 +214,7 @@ class SyncMediaStorageCommand extends Command
                     continue;
                 }
 
-                $this->info(" [RESTORED] Media #{$media->id} ({$asset['file_name']}) restored to {$targetPath}");
+                $this->info(" [RESTORED] Media #{$media->id} ({$media->file_name}) restored to {$targetPath}");
                 $restoredCount++;
             } else {
                 // Media record does not exist yet; attach using MediaLibrary
@@ -212,6 +222,7 @@ class SyncMediaStorageCommand extends Command
                     /** @var Media $newMedia */
                     $newMedia = $model->addMedia($sourcePath)
                         ->preservingOriginal()
+                        ->usingFileName($asset['file_name'])
                         ->toMediaCollection($asset['collection']);
 
                     if (! file_exists($newMedia->getPath())) {

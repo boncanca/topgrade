@@ -124,8 +124,9 @@ function clearFilters(): void {
                     class="pointer-events-none absolute inset-0 overflow-hidden"
                 >
                     <img
-                        src="/images/club/team-huddle.jpg"
+                        src="/images/club/topgrade-london-fc-squad-huddle-matchday.webp"
                         alt=""
+                        aria-hidden="true"
                         class="h-full w-full scale-[1.02] select-none object-cover object-right opacity-20 md:object-center"
                         loading="lazy"
                     />

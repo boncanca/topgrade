@@ -139,7 +139,7 @@ function formatScheduleTime(startsAt: string, endsAt: string): string {
             <div
                 class="absolute inset-0 bg-cover bg-center opacity-35"
                 style="
-                    background-image: url('/images/club/training_pitch_evening.jpg');
+                    background-image: url('/images/club/topgrade-london-fc-floodlit-training-pitch.webp');
                 "
             />
             <div

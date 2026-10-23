@@ -85,8 +85,8 @@ class Content extends Model implements HasMedia
     {
         if ($this->slug === 'home') {
             return match ($collection) {
-                'videos' => '/topgrade-video.mp4',
-                'images' => '/images/club/hero-football.jpg',
+                'videos' => '/topgrade-london-fc-hero-training-loop.mp4',
+                'images' => '/images/club/topgrade-london-fc-hero-matchday.webp',
                 default => null,
             };
         }
