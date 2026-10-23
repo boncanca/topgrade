@@ -2,6 +2,7 @@
 
 namespace App\Services\Storage;
 
+use Cloudinary\Api\Exception\NotFound;
 use CodebarAg\FlysystemCloudinary\FlysystemCloudinaryAdapter;
 use League\Flysystem\Config;
 
@@ -22,8 +23,27 @@ class CloudinaryAdapter extends FlysystemCloudinaryAdapter
     ];
 
     /**
+     * Video extensions supported for direct video delivery URL generation.
+     *
+     * @var array<int, string>
+     */
+    private const VIDEO_EXTENSIONS = [
+        'mp4',
+        'webm',
+        'mov',
+        'm4v',
+        'ogv',
+        'ogg',
+        'avi',
+        'mkv',
+        'flv',
+        'wmv',
+    ];
+
+    /**
      * Resolve delivery URL from Cloudinary.
      *
+     * Videos are served from Cloudinary's video delivery endpoint ("/video/upload/...").
      * Files are uploaded with their extension kept as part of the public_id
      * (e.g. "folder/photo.png"), and Cloudinary serves them at "{public_id}.{format}"
      * (e.g. "folder/photo.png.png"). Cloudinary also normalizes "jpeg" to "jpg", so
@@ -35,13 +55,27 @@ class CloudinaryAdapter extends FlysystemCloudinaryAdapter
     public function getUrl(string|array $path): string|false
     {
         $rawPath = is_array($path) ? (string) ($path['path'] ?? '') : (string) $path;
+        $extension = strtolower(pathinfo($rawPath, PATHINFO_EXTENSION));
+
+        if (in_array($extension, self::VIDEO_EXTENSIONS, true)) {
+            $options = is_array($path) ? ($path['options'] ?? []) : [];
+            $prefixed = $this->pathsForMetadata()->prefixed(trim($rawPath, '/'));
+
+            try {
+                $optionString = is_array($options) ? implode(',', $options) : (string) $options;
+
+                return (string) $this->cloudinary->video($prefixed)->toUrl($optionString);
+            } catch (NotFound) {
+                return false;
+            }
+        }
+
         $url = parent::getUrl($path);
 
         if (! is_string($url)) {
             return false;
         }
 
-        $extension = strtolower(pathinfo($rawPath, PATHINFO_EXTENSION));
         $format = self::IMAGE_FORMATS[$extension] ?? null;
 
         if ($format === null) {

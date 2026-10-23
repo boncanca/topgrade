@@ -66,6 +66,38 @@ test('cloudinary adapter does not double-append the format', function () {
     expect($adapter->getUrl('a/b.png.png'))->not->toContain('.png.png.png');
 });
 
+test('cloudinary adapter generates video delivery urls for video extensions', function () {
+    $disk = Storage::disk('cloudinary');
+
+    $mp4Url = $disk->url('10/hero-loop.mp4');
+    expect($mp4Url)->toBeString()
+        ->and($mp4Url)->toContain('/video/upload/')
+        ->and($mp4Url)->not->toContain('/image/upload/')
+        ->and($mp4Url)->toContain('hero-loop.mp4');
+
+    $webmUrl = $disk->url('10/clip.webm');
+    expect($webmUrl)->toContain('/video/upload/')
+        ->and($webmUrl)->not->toContain('/image/upload/');
+
+    $movUrl = $disk->url('10/action.MOV');
+    expect($movUrl)->toContain('/video/upload/')
+        ->and($movUrl)->not->toContain('/image/upload/');
+});
+
+test('cloudinary adapter supports transformation options for video delivery urls', function () {
+    $adapter = Storage::disk('cloudinary')->getAdapter();
+
+    $url = $adapter->getUrl([
+        'path' => '10/hero-loop.mp4',
+        'options' => ['vc_auto', 'q_auto'],
+    ]);
+
+    expect($url)->toBeString()
+        ->and($url)->toContain('/video/upload/')
+        ->and($url)->toContain('vc_auto,q_auto')
+        ->and($url)->toContain('hero-loop.mp4');
+});
+
 test('media library disk defaults to MEDIA_DISK or public', function () {
     $expectedDisk = env('MEDIA_DISK', 'public');
     expect(config('media-library.disk_name'))->toBe($expectedDisk);

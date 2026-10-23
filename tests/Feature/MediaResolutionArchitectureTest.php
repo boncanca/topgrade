@@ -253,3 +253,105 @@ test('existing frontend response shape remains completely unchanged', function (
             ->where('gallery.0.is_cover', true)
         );
 });
+
+test('media stored on remote disk resolves to media url without checking local file existence', function () {
+    Log::spy();
+
+    $team = Team::create([
+        'name' => 'U12 Academy',
+        'slug' => 'u12-academy',
+        'age_group' => 'U12',
+        'stage' => 'Youth Development',
+        'description' => 'Test description',
+        'visual_variant' => 'development',
+        'sort_order' => 1,
+        'is_active' => true,
+    ]);
+
+    $media = $team->media()->create([
+        'collection_name' => 'image',
+        'name' => 'remote-team-photo',
+        'file_name' => 'remote-team-photo.jpg',
+        'mime_type' => 'image/jpeg',
+        'disk' => 'cloudinary',
+        'size' => 12345,
+        'manipulations' => [],
+        'custom_properties' => [],
+        'generated_conversions' => [],
+        'responsive_images' => [],
+    ]);
+
+    expect(file_exists($media->getPath()))->toBeFalse();
+
+    $resolvedUrl = $team->getResolvedMediaUrl('image');
+
+    expect($resolvedUrl)->toBe($media->getUrl())
+        ->and($resolvedUrl)->toContain('remote-team-photo.jpg');
+
+    Log::shouldNotHaveReceived('warning');
+});
+
+test('staff and content models resolve remote media without local file existence', function () {
+    Log::spy();
+
+    $staff = Staff::create([
+        'name' => 'Alex Ferguson',
+        'slug' => 'alex-ferguson',
+        'role' => 'Manager',
+        'bio' => 'Legendary manager',
+        'sort_order' => 1,
+        'is_active' => true,
+    ]);
+
+    $staffMedia = $staff->media()->create([
+        'collection_name' => 'photo',
+        'name' => 'alex-photo',
+        'file_name' => 'alex-photo.jpg',
+        'mime_type' => 'image/jpeg',
+        'disk' => 'cloudinary',
+        'size' => 12345,
+        'manipulations' => [],
+        'custom_properties' => [],
+        'generated_conversions' => [],
+        'responsive_images' => [],
+    ]);
+
+    expect(file_exists($staffMedia->getPath()))->toBeFalse()
+        ->and($staff->getResolvedMediaUrl('photo'))->toBe($staffMedia->getUrl());
+
+    $pageType = ContentType::firstOrCreate(['slug' => 'page'], [
+        'name' => 'Page',
+        'kind' => 'collection',
+        'template' => 'default',
+        'is_system' => true,
+        'is_active' => true,
+    ]);
+
+    $content = Content::create([
+        'content_type_id' => $pageType->id,
+        'title' => 'Home Page Remote',
+        'slug' => 'home-remote',
+        'excerpt' => 'Excerpt',
+        'content' => 'Content',
+        'status' => 'published',
+        'published_at' => now(),
+    ]);
+
+    $videoMedia = $content->media()->create([
+        'collection_name' => 'videos',
+        'name' => 'hero-video',
+        'file_name' => 'hero-video.mp4',
+        'mime_type' => 'video/mp4',
+        'disk' => 'cloudinary',
+        'size' => 99999,
+        'manipulations' => [],
+        'custom_properties' => [],
+        'generated_conversions' => [],
+        'responsive_images' => [],
+    ]);
+
+    expect(file_exists($videoMedia->getPath()))->toBeFalse()
+        ->and($content->getResolvedMediaUrl('videos'))->toBe($videoMedia->getUrl());
+
+    Log::shouldNotHaveReceived('warning');
+});

@@ -17,10 +17,12 @@ trait ResolvesMediaUrl
         $media = $this->getFirstMedia($collection);
 
         if ($media !== null) {
+            $isRemote = ! in_array($media->disk, ['public', 'local'], true)
+                || config("filesystems.disks.{$media->disk}.driver", 'local') !== 'local';
             $path = $media->getPath();
 
-            // If path is specified and file exists on disk, serve runtime media
-            if (empty($path) || file_exists($path)) {
+            // If remote disk, empty path, or physical file exists on local disk, serve runtime media
+            if ($isRemote || empty($path) || file_exists($path)) {
                 return $media->getUrl();
             }
 
