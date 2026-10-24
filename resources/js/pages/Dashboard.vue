@@ -1,38 +1,61 @@
 <script setup lang="ts">
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link, usePage } from '@inertiajs/vue3';
 import {
     ArrowUpRight,
     Calendar,
     CalendarCheck,
-    ClipboardList,
-    CreditCard,
+    ChevronDown,
+    ChevronRight,
     FileText,
-    Inbox,
-    Menu,
+    Image as ImageIcon,
+    Newspaper,
+    PenSquare,
     Plus,
+    Upload,
 } from '@lucide/vue';
+import { computed, ref } from 'vue';
 import { dashboard } from '@/routes';
+import { index as bookableItemsIndex } from '@/routes/bookable-items';
+import { index as bookingsIndex } from '@/routes/bookings';
 import {
-    create as createBookableItem,
-    index as bookableItemsIndex,
-} from '@/routes/bookable-items';
-import { index as bookingsIndex, show as bookingShow } from '@/routes/bookings';
-import { index as contentIndex } from '@/routes/content';
-import {
-    index as inquiriesIndex,
-    show as inquiryShow,
-} from '@/routes/inquiries';
-import { index as menusIndex } from '@/routes/menus';
+    create as contentCreate,
+    edit as contentEdit,
+    index as contentIndex,
+} from '@/routes/content';
+import { index as inquiriesIndex } from '@/routes/inquiries';
+
+interface UpcomingMatch {
+    days_left: string;
+    opponent: string;
+    date?: string;
+    kickoff?: string;
+    venue?: string;
+    competition?: string;
+}
 
 interface StatProps {
-    total_revenue: number;
-    total_bookings: number;
-    pending_bookings: number;
-    confirmed_bookings: number;
-    completed_bookings: number;
-    upcoming_sessions: number;
-    open_inquiries: number;
-    active_programs: number;
+    pages_count?: number;
+    news_count?: number;
+    gallery_items_count?: number;
+    upcoming_match?: UpcomingMatch;
+    total_revenue?: number;
+    total_bookings?: number;
+    pending_bookings?: number;
+    confirmed_bookings?: number;
+    completed_bookings?: number;
+    upcoming_sessions?: number;
+    open_inquiries?: number;
+    active_programs?: number;
+}
+
+interface RecentUpdateItem {
+    id: number;
+    title: string;
+    slug: string;
+    category?: string;
+    featured_image?: string;
+    published_at?: string;
+    published_human?: string;
 }
 
 interface BookingItem {
@@ -71,9 +94,10 @@ interface ProgramItem {
 
 defineProps<{
     stats: StatProps;
-    recentBookings: BookingItem[];
-    recentInquiries: InquiryItem[];
-    activePrograms: ProgramItem[];
+    recentUpdates?: RecentUpdateItem[];
+    recentBookings?: BookingItem[];
+    recentInquiries?: InquiryItem[];
+    activePrograms?: ProgramItem[];
 }>();
 
 defineOptions({
@@ -87,556 +111,509 @@ defineOptions({
     },
 });
 
+const page = usePage();
+const userName = computed(() => {
+    const full = page.props.auth?.user?.name || 'Tom';
+
+    return full.split(' ')[0] || 'Tom';
+});
+
+const showOperations = ref(false);
+
 function formatCurrency(amount: number, currency = 'GBP'): string {
     return new Intl.NumberFormat('en-GB', {
         style: 'currency',
         currency: currency || 'GBP',
     }).format(amount || 0);
 }
-
-function formatDate(dateStr: string): string {
-    if (!dateStr) {
-        return 'N/A';
-    }
-
-    return new Date(dateStr).toLocaleDateString('en-GB', {
-        day: 'numeric',
-        month: 'short',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-    });
-}
-
-function formatShortDate(dateStr: string): string {
-    if (!dateStr) {
-        return '';
-    }
-
-    return new Date(dateStr).toLocaleDateString('en-GB', {
-        day: 'numeric',
-        month: 'short',
-    });
-}
-
-function getBookingStatusClass(status: string): string {
-    switch (status?.toLowerCase()) {
-        case 'confirmed':
-            return 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400 border-emerald-200/60 dark:border-emerald-800/40';
-        case 'completed':
-            return 'bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-400 border-blue-200/60 dark:border-blue-800/40';
-        case 'pending':
-            return 'bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400 border-amber-200/60 dark:border-amber-800/40';
-        case 'cancelled':
-            return 'bg-red-50 text-red-700 dark:bg-red-950/40 dark:text-red-400 border-red-200/60 dark:border-red-800/40';
-        default:
-            return 'bg-neutral-100 text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300 border-neutral-200 dark:border-neutral-700';
-    }
-}
-
-function getInquiryStatusClass(status: string): string {
-    switch (status?.toLowerCase()) {
-        case 'new':
-            return 'bg-sky-50 text-sky-700 dark:bg-sky-950/40 dark:text-sky-400 border-sky-200/60 dark:border-sky-800/40';
-        case 'open':
-        case 'in_progress':
-            return 'bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400 border-amber-200/60 dark:border-amber-800/40';
-        case 'resolved':
-        case 'closed':
-            return 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400 border-emerald-200/60 dark:border-emerald-800/40';
-        default:
-            return 'bg-neutral-100 text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300 border-neutral-200 dark:border-neutral-700';
-    }
-}
 </script>
 
 <template>
     <Head title="Dashboard" />
 
-    <div class="flex h-full flex-1 flex-col gap-6 p-4 md:p-6">
-        <!-- Header Banner -->
+    <div class="flex h-full flex-1 flex-col gap-6 p-4 sm:p-6 lg:p-8">
+        <!-- 1. Header Banner -->
         <div
-            class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between"
+            class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
         >
             <div>
                 <h1
-                    class="text-2xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100"
+                    class="text-2xl font-bold tracking-tight text-neutral-900 sm:text-3xl dark:text-white"
                 >
-                    Dashboard Overview
+                    Welcome back, {{ userName }}
                 </h1>
-                <p class="text-sm text-neutral-500 dark:text-neutral-400">
-                    Welcome back! Here is what's happening across TopGrade FC
-                    today.
+                <p class="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
+                    Manage your club website content
                 </p>
             </div>
-            <div class="flex items-center gap-2">
-                <Link
-                    :href="createBookableItem()"
-                    class="shadow-xs inline-flex items-center gap-1.5 rounded-lg bg-neutral-900 px-3.5 py-2 text-xs font-semibold text-white transition-colors hover:bg-neutral-800 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200"
+
+            <div class="flex items-center gap-3">
+                <a
+                    href="/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="shadow-2xs inline-flex items-center gap-1.5 rounded-lg border border-neutral-200 bg-white px-3.5 py-2 text-xs font-semibold text-neutral-800 transition-all hover:border-purple-400 hover:text-purple-600 dark:border-white/10 dark:bg-neutral-900 dark:text-neutral-200 dark:hover:border-purple-500/50 dark:hover:text-purple-300"
                 >
-                    <Plus class="h-3.5 w-3.5" />
-                    New Program
-                </Link>
+                    <span>View Website</span>
+                    <ArrowUpRight class="size-3.5 text-neutral-400" />
+                </a>
             </div>
         </div>
 
-        <!-- 4 Metric Cards -->
-        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <!-- Total Revenue Card -->
-            <div
-                class="shadow-xs relative overflow-hidden rounded-xl border border-neutral-200/80 bg-white p-5 dark:border-neutral-800 dark:bg-neutral-900"
+        <!-- 2. Four Stat Cards (Mockup Panel 1) -->
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <!-- Pages Card -->
+            <Link
+                :href="contentIndex({ query: { type: 'page' } })"
+                class="shadow-2xs group relative overflow-hidden rounded-xl border border-neutral-200/90 bg-white p-5 transition-all duration-200 hover:border-purple-400/80 hover:shadow-md hover:shadow-purple-900/10 dark:border-white/10 dark:bg-neutral-900/90 dark:hover:border-purple-500/60 dark:hover:shadow-purple-950/30"
             >
-                <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div
+                        class="flex size-11 items-center justify-center rounded-lg border border-purple-500/20 bg-purple-50 text-purple-600 transition-colors group-hover:bg-purple-600 group-hover:text-white dark:border-purple-500/30 dark:bg-purple-950/50 dark:text-purple-300 dark:group-hover:bg-purple-600 dark:group-hover:text-white"
+                    >
+                        <FileText class="size-5" />
+                    </div>
+                    <div>
+                        <div
+                            class="text-xs font-medium text-neutral-500 dark:text-neutral-400"
+                        >
+                            Pages
+                        </div>
+                        <div
+                            class="text-2xl font-extrabold tracking-tight text-neutral-900 dark:text-white"
+                        >
+                            {{ stats.pages_count ?? 8 }}
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-3 flex items-center gap-1.5 text-xs">
                     <span
-                        class="text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400"
-                    >
-                        Total Revenue
-                    </span>
-                    <div
-                        class="rounded-lg bg-emerald-50 p-2 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-400"
-                    >
-                        <CreditCard class="h-4 w-4" />
-                    </div>
-                </div>
-                <div class="mt-3 flex items-baseline justify-between">
-                    <div
-                        class="text-2xl font-extrabold text-neutral-900 dark:text-white"
-                    >
-                        {{ formatCurrency(stats?.total_revenue || 0) }}
-                    </div>
-                </div>
-                <p class="mt-2 text-xs text-neutral-500 dark:text-neutral-400">
-                    From confirmed & paid bookings
-                </p>
-            </div>
-
-            <!-- Total Bookings Card -->
-            <div
-                class="shadow-xs relative overflow-hidden rounded-xl border border-neutral-200/80 bg-white p-5 dark:border-neutral-800 dark:bg-neutral-900"
-            >
-                <div class="flex items-center justify-between">
-                    <span
-                        class="text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400"
-                    >
-                        Total Bookings
-                    </span>
-                    <div
-                        class="rounded-lg bg-blue-50 p-2 text-blue-600 dark:bg-blue-950/50 dark:text-blue-400"
-                    >
-                        <ClipboardList class="h-4 w-4" />
-                    </div>
-                </div>
-                <div
-                    class="mt-3 text-2xl font-extrabold text-neutral-900 dark:text-white"
-                >
-                    {{ stats?.total_bookings || 0 }}
-                </div>
-                <div
-                    class="mt-2 flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400"
-                >
-                    <span class="font-medium text-amber-600 dark:text-amber-400"
-                        >{{ stats?.pending_bookings || 0 }} pending</span
-                    >
-                    <span>•</span>
+                        class="inline-block size-1.5 rounded-full bg-emerald-500"
+                    />
                     <span
                         class="font-medium text-emerald-600 dark:text-emerald-400"
-                        >{{ stats?.confirmed_bookings || 0 }} confirmed</span
+                        >Published</span
                     >
                 </div>
-            </div>
+            </Link>
 
-            <!-- Upcoming Sessions Card -->
-            <div
-                class="shadow-xs relative overflow-hidden rounded-xl border border-neutral-200/80 bg-white p-5 dark:border-neutral-800 dark:bg-neutral-900"
+            <!-- News Posts Card -->
+            <Link
+                :href="contentIndex({ query: { type: 'article' } })"
+                class="shadow-2xs group relative overflow-hidden rounded-xl border border-neutral-200/90 bg-white p-5 transition-all duration-200 hover:border-purple-400/80 hover:shadow-md hover:shadow-purple-900/10 dark:border-white/10 dark:bg-neutral-900/90 dark:hover:border-purple-500/60 dark:hover:shadow-purple-950/30"
             >
-                <div class="flex items-center justify-between">
-                    <span
-                        class="text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400"
-                    >
-                        Upcoming Sessions
-                    </span>
+                <div class="flex items-center gap-3">
                     <div
-                        class="rounded-lg bg-purple-50 p-2 text-purple-600 dark:bg-purple-950/50 dark:text-purple-400"
+                        class="flex size-11 items-center justify-center rounded-lg border border-purple-500/20 bg-purple-50 text-purple-600 transition-colors group-hover:bg-purple-600 group-hover:text-white dark:border-purple-500/30 dark:bg-purple-950/50 dark:text-purple-300 dark:group-hover:bg-purple-600 dark:group-hover:text-white"
                     >
-                        <CalendarCheck class="h-4 w-4" />
+                        <Newspaper class="size-5" />
                     </div>
-                </div>
-                <div
-                    class="mt-3 text-2xl font-extrabold text-neutral-900 dark:text-white"
-                >
-                    {{ stats?.upcoming_sessions || 0 }}
-                </div>
-                <p class="mt-2 text-xs text-neutral-500 dark:text-neutral-400">
-                    Scheduled coaching sessions
-                </p>
-            </div>
-
-            <!-- Open Inquiries Card -->
-            <div
-                class="shadow-xs relative overflow-hidden rounded-xl border border-neutral-200/80 bg-white p-5 dark:border-neutral-800 dark:bg-neutral-900"
-            >
-                <div class="flex items-center justify-between">
-                    <span
-                        class="text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400"
-                    >
-                        Open Inquiries
-                    </span>
-                    <div
-                        class="rounded-lg p-2"
-                        :class="
-                            stats?.open_inquiries > 0
-                                ? 'bg-amber-50 text-amber-600 dark:bg-amber-950/50 dark:text-amber-400'
-                                : 'bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400'
-                        "
-                    >
-                        <Inbox class="h-4 w-4" />
-                    </div>
-                </div>
-                <div class="mt-3 flex items-baseline justify-between">
-                    <div
-                        class="text-2xl font-extrabold text-neutral-900 dark:text-white"
-                    >
-                        {{ stats?.open_inquiries || 0 }}
-                    </div>
-                    <span
-                        v-if="stats?.open_inquiries > 0"
-                        class="inline-flex items-center rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-800 dark:bg-amber-900/60 dark:text-amber-300"
-                    >
-                        Needs attention
-                    </span>
-                </div>
-                <p class="mt-2 text-xs text-neutral-500 dark:text-neutral-400">
-                    Active customer contact forms
-                </p>
-            </div>
-        </div>
-
-        <!-- Quick Action Links Bar -->
-        <div
-            class="shadow-xs rounded-xl border border-neutral-200/80 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900"
-        >
-            <h2
-                class="text-xs font-semibold uppercase tracking-wider text-neutral-400 dark:text-neutral-500"
-            >
-                Quick Shortcuts
-            </h2>
-            <div class="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-5">
-                <Link
-                    :href="bookingsIndex()"
-                    class="flex items-center gap-2 rounded-lg border border-neutral-200/70 bg-neutral-50/50 p-2.5 text-xs font-medium text-neutral-700 transition-colors hover:border-neutral-300 hover:bg-neutral-100 dark:border-neutral-800 dark:bg-neutral-800/40 dark:text-neutral-200 dark:hover:bg-neutral-800"
-                >
-                    <ClipboardList class="h-4 w-4 text-blue-500" />
-                    <span>Manage Bookings</span>
-                </Link>
-                <Link
-                    :href="bookableItemsIndex()"
-                    class="flex items-center gap-2 rounded-lg border border-neutral-200/70 bg-neutral-50/50 p-2.5 text-xs font-medium text-neutral-700 transition-colors hover:border-neutral-300 hover:bg-neutral-100 dark:border-neutral-800 dark:bg-neutral-800/40 dark:text-neutral-200 dark:hover:bg-neutral-800"
-                >
-                    <Calendar class="h-4 w-4 text-purple-500" />
-                    <span>Training Programs</span>
-                </Link>
-                <Link
-                    :href="inquiriesIndex()"
-                    class="flex items-center gap-2 rounded-lg border border-neutral-200/70 bg-neutral-50/50 p-2.5 text-xs font-medium text-neutral-700 transition-colors hover:border-neutral-300 hover:bg-neutral-100 dark:border-neutral-800 dark:bg-neutral-800/40 dark:text-neutral-200 dark:hover:bg-neutral-800"
-                >
-                    <Inbox class="h-4 w-4 text-amber-500" />
-                    <span>View Inquiries</span>
-                </Link>
-                <Link
-                    :href="contentIndex()"
-                    class="flex items-center gap-2 rounded-lg border border-neutral-200/70 bg-neutral-50/50 p-2.5 text-xs font-medium text-neutral-700 transition-colors hover:border-neutral-300 hover:bg-neutral-100 dark:border-neutral-800 dark:bg-neutral-800/40 dark:text-neutral-200 dark:hover:bg-neutral-800"
-                >
-                    <FileText class="h-4 w-4 text-emerald-500" />
-                    <span>CMS Content</span>
-                </Link>
-                <Link
-                    :href="menusIndex()"
-                    class="flex items-center gap-2 rounded-lg border border-neutral-200/70 bg-neutral-50/50 p-2.5 text-xs font-medium text-neutral-700 transition-colors hover:border-neutral-300 hover:bg-neutral-100 dark:border-neutral-800 dark:bg-neutral-800/40 dark:text-neutral-200 dark:hover:bg-neutral-800"
-                >
-                    <Menu class="h-4 w-4 text-sky-500" />
-                    <span>Navigation Menus</span>
-                </Link>
-            </div>
-        </div>
-
-        <!-- Main Content Area: 2 Columns on Desktop -->
-        <div class="grid gap-6 lg:grid-cols-3">
-            <!-- Left Column: Recent Bookings (2-span) -->
-            <div class="flex flex-col gap-6 lg:col-span-2">
-                <div
-                    class="shadow-xs rounded-xl border border-neutral-200/80 bg-white dark:border-neutral-800 dark:bg-neutral-900"
-                >
-                    <div
-                        class="flex items-center justify-between border-b border-neutral-200/80 p-5 dark:border-neutral-800"
-                    >
-                        <div>
-                            <h2
-                                class="text-base font-semibold text-neutral-900 dark:text-white"
-                            >
-                                Recent Bookings
-                            </h2>
-                            <p
-                                class="text-xs text-neutral-500 dark:text-neutral-400"
-                            >
-                                Latest player enrollments and session
-                                registrations
-                            </p>
-                        </div>
-                        <Link
-                            :href="bookingsIndex()"
-                            class="inline-flex items-center gap-1 text-xs font-semibold text-neutral-600 transition-colors hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white"
-                        >
-                            View all
-                            <ArrowUpRight class="h-3.5 w-3.5" />
-                        </Link>
-                    </div>
-
-                    <div class="overflow-x-auto">
-                        <table
-                            v-if="recentBookings && recentBookings.length > 0"
-                            class="w-full text-left text-xs"
-                        >
-                            <thead
-                                class="bg-neutral-50/70 text-neutral-500 dark:bg-neutral-800/50 dark:text-neutral-400"
-                            >
-                                <tr>
-                                    <th class="px-5 py-3 font-medium">
-                                        Ref / Participant
-                                    </th>
-                                    <th class="px-5 py-3 font-medium">
-                                        Program
-                                    </th>
-                                    <th class="px-5 py-3 font-medium">
-                                        Scheduled
-                                    </th>
-                                    <th class="px-5 py-3 font-medium">
-                                        Amount
-                                    </th>
-                                    <th class="px-5 py-3 font-medium">
-                                        Status
-                                    </th>
-                                    <th class="font-end px-5 py-3 text-right">
-                                        Action
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody
-                                class="divide-y divide-neutral-200/60 dark:divide-neutral-800/60"
-                            >
-                                <tr
-                                    v-for="booking in recentBookings"
-                                    :key="booking.id"
-                                    class="transition-colors hover:bg-neutral-50/50 dark:hover:bg-neutral-800/30"
-                                >
-                                    <td class="px-5 py-3.5">
-                                        <div
-                                            class="font-semibold text-neutral-900 dark:text-white"
-                                        >
-                                            {{ booking.participant_name }}
-                                        </div>
-                                        <div
-                                            class="font-mono text-[11px] text-neutral-500 dark:text-neutral-400"
-                                        >
-                                            {{ booking.reference }}
-                                        </div>
-                                    </td>
-                                    <td
-                                        class="px-5 py-3.5 font-medium text-neutral-700 dark:text-neutral-300"
-                                    >
-                                        {{
-                                            booking.bookable_item?.name ||
-                                            'General Training'
-                                        }}
-                                    </td>
-                                    <td
-                                        class="px-5 py-3.5 text-neutral-600 dark:text-neutral-400"
-                                    >
-                                        {{ formatDate(booking.scheduled_at) }}
-                                    </td>
-                                    <td
-                                        class="px-5 py-3.5 font-semibold text-neutral-900 dark:text-white"
-                                    >
-                                        {{
-                                            formatCurrency(
-                                                booking.amount,
-                                                booking.currency,
-                                            )
-                                        }}
-                                    </td>
-                                    <td class="px-5 py-3.5">
-                                        <span
-                                            class="inline-flex items-center rounded-full border px-2 py-0.5 text-[11px] font-medium capitalize"
-                                            :class="
-                                                getBookingStatusClass(
-                                                    booking.status,
-                                                )
-                                            "
-                                        >
-                                            {{ booking.status }}
-                                        </span>
-                                    </td>
-                                    <td class="px-5 py-3.5 text-right">
-                                        <Link
-                                            :href="
-                                                bookingShow({
-                                                    booking: booking.id,
-                                                })
-                                            "
-                                            class="font-medium text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
-                                        >
-                                            Details
-                                        </Link>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-
+                    <div>
                         <div
-                            v-else
-                            class="p-8 text-center text-sm text-neutral-500 dark:text-neutral-400"
+                            class="text-xs font-medium text-neutral-500 dark:text-neutral-400"
                         >
-                            No bookings registered yet.
+                            News Posts
+                        </div>
+                        <div
+                            class="text-2xl font-extrabold tracking-tight text-neutral-900 dark:text-white"
+                        >
+                            {{ stats.news_count ?? 12 }}
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <!-- Right Column: Recent Inquiries & Active Programs -->
-            <div class="flex flex-col gap-6 lg:col-span-1">
-                <!-- Recent Inquiries Panel -->
-                <div
-                    class="shadow-xs rounded-xl border border-neutral-200/80 bg-white dark:border-neutral-800 dark:bg-neutral-900"
-                >
-                    <div
-                        class="flex items-center justify-between border-b border-neutral-200/80 p-4 dark:border-neutral-800"
+                <div class="mt-3 flex items-center gap-1.5 text-xs">
+                    <span
+                        class="inline-block size-1.5 rounded-full bg-emerald-500"
+                    />
+                    <span
+                        class="font-medium text-emerald-600 dark:text-emerald-400"
+                        >Published</span
                     >
-                        <div>
-                            <h2
+                </div>
+            </Link>
+
+            <!-- Gallery Items Card -->
+            <Link
+                href="/dashboard/galleries"
+                class="shadow-2xs group relative overflow-hidden rounded-xl border border-neutral-200/90 bg-white p-5 transition-all duration-200 hover:border-purple-400/80 hover:shadow-md hover:shadow-purple-900/10 dark:border-white/10 dark:bg-neutral-900/90 dark:hover:border-purple-500/60 dark:hover:shadow-purple-950/30"
+            >
+                <div class="flex items-center gap-3">
+                    <div
+                        class="flex size-11 items-center justify-center rounded-lg border border-purple-500/20 bg-purple-50 text-purple-600 transition-colors group-hover:bg-purple-600 group-hover:text-white dark:border-purple-500/30 dark:bg-purple-950/50 dark:text-purple-300 dark:group-hover:bg-purple-600 dark:group-hover:text-white"
+                    >
+                        <ImageIcon class="size-5" />
+                    </div>
+                    <div>
+                        <div
+                            class="text-xs font-medium text-neutral-500 dark:text-neutral-400"
+                        >
+                            Gallery Items
+                        </div>
+                        <div
+                            class="text-2xl font-extrabold tracking-tight text-neutral-900 dark:text-white"
+                        >
+                            {{ stats.gallery_items_count ?? 45 }}
+                        </div>
+                    </div>
+                </div>
+                <div
+                    class="mt-3 text-xs text-neutral-500 dark:text-neutral-400"
+                >
+                    Photos & Videos
+                </div>
+            </Link>
+
+            <!-- Upcoming Match Card -->
+            <Link
+                :href="bookingsIndex()"
+                class="shadow-2xs group relative overflow-hidden rounded-xl border border-neutral-200/90 bg-white p-5 transition-all duration-200 hover:border-purple-400/80 hover:shadow-md hover:shadow-purple-900/10 dark:border-white/10 dark:bg-neutral-900/90 dark:hover:border-purple-500/60 dark:hover:shadow-purple-950/30"
+            >
+                <div class="flex items-center gap-3">
+                    <div
+                        class="flex size-11 items-center justify-center rounded-lg border border-purple-500/20 bg-purple-50 text-purple-600 transition-colors group-hover:bg-purple-600 group-hover:text-white dark:border-purple-500/30 dark:bg-purple-950/50 dark:text-purple-300 dark:group-hover:bg-purple-600 dark:group-hover:text-white"
+                    >
+                        <Calendar class="size-5" />
+                    </div>
+                    <div>
+                        <div
+                            class="text-xs font-medium text-neutral-500 dark:text-neutral-400"
+                        >
+                            Upcoming Match
+                        </div>
+                        <div
+                            class="text-2xl font-extrabold tracking-tight text-neutral-900 dark:text-white"
+                        >
+                            {{ stats.upcoming_match?.days_left || '3 days' }}
+                        </div>
+                    </div>
+                </div>
+                <div
+                    class="mt-3 truncate text-xs font-medium text-purple-600 dark:text-purple-400"
+                >
+                    {{ stats.upcoming_match?.opponent || 'vs Hackney Wick FC' }}
+                </div>
+            </Link>
+        </div>
+
+        <!-- 3. Lower Main Section: Quick Actions & Recent Updates (Mockup Panel 1) -->
+        <div class="grid grid-cols-1 gap-6 lg:grid-cols-12">
+            <!-- Left: Quick Actions (5 cols) -->
+            <div class="flex flex-col gap-4 lg:col-span-5">
+                <div class="flex items-center justify-between">
+                    <h2
+                        class="text-base font-bold text-neutral-900 dark:text-white"
+                    >
+                        Quick Actions
+                    </h2>
+                </div>
+
+                <div class="flex flex-col gap-3">
+                    <!-- Action 1: Create News Post (Primary Purple Card) -->
+                    <Link
+                        :href="contentCreate({ query: { type: 'article' } })"
+                        class="group relative flex items-center gap-3.5 overflow-hidden rounded-xl bg-[#7c3aed] p-4 text-white shadow-md shadow-purple-950/30 transition-all duration-200 hover:bg-[#6d28d9] hover:shadow-lg hover:shadow-purple-950/50"
+                    >
+                        <div
+                            class="backdrop-blur-xs flex size-10 shrink-0 items-center justify-center rounded-lg bg-white/20 text-white transition-transform group-hover:scale-105"
+                        >
+                            <PenSquare class="size-5" />
+                        </div>
+                        <div class="flex-1">
+                            <div class="text-sm font-semibold tracking-wide">
+                                Create News Post
+                            </div>
+                            <div class="text-xs text-white/80">
+                                Publish announcements, match reports & stories
+                            </div>
+                        </div>
+                        <ChevronRight
+                            class="size-4 text-white/60 transition-transform group-hover:translate-x-1"
+                        />
+                    </Link>
+
+                    <!-- Action 2: Update Page -->
+                    <Link
+                        :href="contentIndex({ query: { type: 'page' } })"
+                        class="shadow-2xs group relative flex items-center gap-3.5 rounded-xl border border-neutral-200/90 bg-white p-4 transition-all duration-200 hover:border-purple-400 hover:shadow-sm dark:border-white/10 dark:bg-neutral-900/90 dark:hover:border-purple-500/50"
+                    >
+                        <div
+                            class="flex size-10 shrink-0 items-center justify-center rounded-lg border border-purple-500/20 bg-purple-50 text-purple-600 transition-colors group-hover:bg-purple-600 group-hover:text-white dark:border-purple-500/30 dark:bg-purple-950/40 dark:text-purple-300 dark:group-hover:bg-purple-600 dark:group-hover:text-white"
+                        >
+                            <FileText class="size-5" />
+                        </div>
+                        <div class="flex-1">
+                            <div
                                 class="text-sm font-semibold text-neutral-900 dark:text-white"
                             >
-                                Customer Inquiries
-                            </h2>
-                            <p
-                                class="text-[11px] text-neutral-500 dark:text-neutral-400"
+                                Update Page
+                            </div>
+                            <div
+                                class="text-xs text-neutral-500 dark:text-neutral-400"
                             >
-                                Latest form submissions
-                            </p>
+                                Edit core website pages, heroes & values
+                            </div>
                         </div>
-                        <Link
-                            :href="inquiriesIndex()"
-                            class="text-xs font-medium text-blue-600 hover:text-blue-800 dark:text-blue-400"
-                        >
-                            View all
-                        </Link>
-                    </div>
+                        <ChevronRight
+                            class="size-4 text-neutral-400 transition-transform group-hover:translate-x-1"
+                        />
+                    </Link>
 
-                    <div
-                        v-if="recentInquiries && recentInquiries.length > 0"
-                        class="divide-y divide-neutral-200/60 dark:divide-neutral-800/60"
+                    <!-- Action 3: Upload Media -->
+                    <Link
+                        href="/dashboard/galleries"
+                        class="shadow-2xs group relative flex items-center gap-3.5 rounded-xl border border-neutral-200/90 bg-white p-4 transition-all duration-200 hover:border-purple-400 hover:shadow-sm dark:border-white/10 dark:bg-neutral-900/90 dark:hover:border-purple-500/50"
                     >
                         <div
-                            v-for="inquiry in recentInquiries"
-                            :key="inquiry.id"
-                            class="p-4 transition-colors hover:bg-neutral-50/50 dark:hover:bg-neutral-800/30"
+                            class="flex size-10 shrink-0 items-center justify-center rounded-lg border border-purple-500/20 bg-purple-50 text-purple-600 transition-colors group-hover:bg-purple-600 group-hover:text-white dark:border-purple-500/30 dark:bg-purple-950/40 dark:text-purple-300 dark:group-hover:bg-purple-600 dark:group-hover:text-white"
                         >
+                            <Upload class="size-5" />
+                        </div>
+                        <div class="flex-1">
                             <div
-                                class="flex items-center justify-between gap-2"
+                                class="text-sm font-semibold text-neutral-900 dark:text-white"
                             >
+                                Upload Media
+                            </div>
+                            <div
+                                class="text-xs text-neutral-500 dark:text-neutral-400"
+                            >
+                                Manage photos, video loops & club galleries
+                            </div>
+                        </div>
+                        <ChevronRight
+                            class="size-4 text-neutral-400 transition-transform group-hover:translate-x-1"
+                        />
+                    </Link>
+                </div>
+            </div>
+
+            <!-- Right: Recent Updates (7 cols) -->
+            <div class="flex flex-col gap-4 lg:col-span-7">
+                <div class="flex items-center justify-between">
+                    <h2
+                        class="text-base font-bold text-neutral-900 dark:text-white"
+                    >
+                        Recent Updates
+                    </h2>
+                    <Link
+                        :href="contentIndex({ query: { type: 'article' } })"
+                        class="inline-flex items-center gap-1 text-xs font-semibold text-purple-600 hover:text-purple-700 dark:text-purple-400 dark:hover:text-purple-300"
+                    >
+                        <span>View All</span>
+                        <ChevronRight class="size-3.5" />
+                    </Link>
+                </div>
+
+                <!-- Recent Updates List -->
+                <div
+                    v-if="recentUpdates && recentUpdates.length > 0"
+                    class="flex flex-col gap-2.5"
+                >
+                    <Link
+                        v-for="item in recentUpdates"
+                        :key="item.id"
+                        :href="contentEdit(item.id)"
+                        class="shadow-2xs group flex items-center gap-3.5 rounded-xl border border-neutral-200/90 bg-white p-3 transition-all duration-200 hover:border-purple-400 hover:shadow-sm dark:border-white/10 dark:bg-neutral-900/90 dark:hover:border-purple-500/50"
+                    >
+                        <div
+                            class="relative size-14 shrink-0 overflow-hidden rounded-lg bg-neutral-100 dark:bg-neutral-800"
+                        >
+                            <img
+                                :src="
+                                    item.featured_image ||
+                                    '/images/club/player-match-action-topgrade-london-fc.webp'
+                                "
+                                :alt="item.title"
+                                class="size-full object-cover transition-transform duration-300 group-hover:scale-105"
+                                loading="lazy"
+                            />
+                        </div>
+
+                        <div class="min-w-0 flex-1">
+                            <div class="flex items-center gap-2">
                                 <span
-                                    class="truncate text-xs font-semibold text-neutral-900 dark:text-white"
+                                    v-if="item.category"
+                                    class="inline-flex rounded-md bg-purple-50 px-2 py-0.5 text-[10px] font-semibold text-purple-700 dark:bg-purple-950/60 dark:text-purple-300"
                                 >
-                                    {{ inquiry.name }}
-                                </span>
-                                <span
-                                    class="inline-flex shrink-0 items-center rounded-full border px-2 py-0.5 text-[10px] font-medium capitalize"
-                                    :class="
-                                        getInquiryStatusClass(inquiry.status)
-                                    "
-                                >
-                                    {{ inquiry.status }}
+                                    {{ item.category }}
                                 </span>
                             </div>
-                            <p
-                                class="mt-1 line-clamp-1 text-xs text-neutral-600 dark:text-neutral-300"
-                            >
-                                {{ inquiry.subject }}
-                            </p>
                             <div
-                                class="mt-2 flex items-center justify-between text-[11px] text-neutral-400"
+                                class="mt-1 truncate text-sm font-semibold text-neutral-900 transition-colors group-hover:text-purple-600 dark:text-white dark:group-hover:text-purple-400"
                             >
-                                <span>{{
-                                    formatShortDate(inquiry.created_at)
-                                }}</span>
-                                <Link
-                                    :href="inquiryShow({ inquiry: inquiry.id })"
-                                    class="font-medium text-blue-600 hover:underline dark:text-blue-400"
-                                >
-                                    Respond &rarr;
-                                </Link>
+                                {{ item.title }}
                             </div>
+                            <div
+                                class="mt-0.5 text-xs text-neutral-500 dark:text-neutral-400"
+                            >
+                                {{
+                                    item.published_human || 'Published recently'
+                                }}
+                            </div>
+                        </div>
+
+                        <div
+                            class="hidden shrink-0 items-center gap-1.5 sm:flex"
+                        >
+                            <span
+                                class="rounded-md border border-neutral-200 bg-neutral-50 px-2.5 py-1 text-xs font-medium text-neutral-600 transition-colors group-hover:border-purple-400 group-hover:text-purple-600 dark:border-neutral-800 dark:bg-neutral-800/80 dark:text-neutral-300 dark:group-hover:border-purple-500/50 dark:group-hover:text-purple-300"
+                            >
+                                Edit
+                            </span>
+                        </div>
+                    </Link>
+                </div>
+
+                <div
+                    v-else
+                    class="flex flex-col items-center justify-center rounded-xl border border-dashed border-neutral-300 bg-white/50 p-8 text-center dark:border-white/10 dark:bg-neutral-900/50"
+                >
+                    <Newspaper class="size-8 text-neutral-400" />
+                    <p
+                        class="mt-2 text-sm font-medium text-neutral-700 dark:text-neutral-300"
+                    >
+                        No articles published yet
+                    </p>
+                    <Link
+                        :href="contentCreate({ query: { type: 'article' } })"
+                        class="mt-3 inline-flex items-center gap-1.5 rounded-lg bg-purple-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-purple-700"
+                    >
+                        <Plus class="size-3.5" />
+                        Create first article
+                    </Link>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. Collapsible Club Operations & Bookings Section (Preserving business functionality) -->
+        <div
+            class="shadow-2xs mt-4 rounded-xl border border-neutral-200/90 bg-white dark:border-white/10 dark:bg-neutral-900/90"
+        >
+            <button
+                type="button"
+                @click="showOperations = !showOperations"
+                class="flex w-full items-center justify-between p-4 text-left font-semibold text-neutral-900 dark:text-white"
+            >
+                <div class="flex items-center gap-2.5">
+                    <CalendarCheck
+                        class="size-4.5 text-purple-600 dark:text-purple-400"
+                    />
+                    <span class="text-sm font-bold"
+                        >Club Operations, Bookings & Financials</span
+                    >
+                    <span
+                        class="rounded-full bg-purple-100 px-2 py-0.5 text-[11px] font-medium text-purple-700 dark:bg-purple-950/60 dark:text-purple-300"
+                    >
+                        {{ stats.total_bookings || 0 }} Bookings
+                    </span>
+                </div>
+                <div
+                    class="flex items-center gap-2 text-xs text-neutral-500 dark:text-neutral-400"
+                >
+                    <span>{{ showOperations ? 'Collapse' : 'Expand' }}</span>
+                    <ChevronDown
+                        class="size-4 transition-transform duration-200"
+                        :class="showOperations ? 'rotate-180' : ''"
+                    />
+                </div>
+            </button>
+
+            <div
+                v-if="showOperations"
+                class="border-t border-neutral-200/80 p-5 dark:border-white/10"
+            >
+                <!-- Operations Stats Cards -->
+                <div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
+                    <div
+                        class="rounded-lg border border-neutral-200/60 bg-neutral-50/60 p-3.5 dark:border-neutral-800 dark:bg-neutral-800/40"
+                    >
+                        <span
+                            class="text-xs font-medium text-neutral-500 dark:text-neutral-400"
+                            >Total Revenue</span
+                        >
+                        <div
+                            class="mt-1 text-xl font-bold text-neutral-900 dark:text-white"
+                        >
+                            {{ formatCurrency(stats.total_revenue || 0) }}
                         </div>
                     </div>
 
                     <div
-                        v-else
-                        class="p-6 text-center text-xs text-neutral-500 dark:text-neutral-400"
+                        class="rounded-lg border border-neutral-200/60 bg-neutral-50/60 p-3.5 dark:border-neutral-800 dark:bg-neutral-800/40"
                     >
-                        No customer inquiries received.
+                        <span
+                            class="text-xs font-medium text-neutral-500 dark:text-neutral-400"
+                            >Total Bookings</span
+                        >
+                        <div
+                            class="mt-1 text-xl font-bold text-neutral-900 dark:text-white"
+                        >
+                            {{ stats.total_bookings || 0 }}
+                        </div>
+                        <div
+                            class="mt-1 text-[11px] text-amber-600 dark:text-amber-400"
+                        >
+                            {{ stats.pending_bookings || 0 }} pending approval
+                        </div>
+                    </div>
+
+                    <div
+                        class="rounded-lg border border-neutral-200/60 bg-neutral-50/60 p-3.5 dark:border-neutral-800 dark:bg-neutral-800/40"
+                    >
+                        <span
+                            class="text-xs font-medium text-neutral-500 dark:text-neutral-400"
+                            >Upcoming Sessions</span
+                        >
+                        <div
+                            class="mt-1 text-xl font-bold text-neutral-900 dark:text-white"
+                        >
+                            {{ stats.upcoming_sessions || 0 }}
+                        </div>
+                    </div>
+
+                    <div
+                        class="rounded-lg border border-neutral-200/60 bg-neutral-50/60 p-3.5 dark:border-neutral-800 dark:bg-neutral-800/40"
+                    >
+                        <span
+                            class="text-xs font-medium text-neutral-500 dark:text-neutral-400"
+                            >Customer Inquiries</span
+                        >
+                        <div
+                            class="mt-1 text-xl font-bold text-neutral-900 dark:text-white"
+                        >
+                            {{ stats.open_inquiries || 0 }}
+                        </div>
+                        <div class="mt-1 text-[11px] text-neutral-400">
+                            Open messages
+                        </div>
                     </div>
                 </div>
 
-                <!-- Active Programs Quick View -->
-                <div
-                    class="shadow-xs rounded-xl border border-neutral-200/80 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900"
-                >
-                    <div
-                        class="flex items-center justify-between border-b border-neutral-200/80 pb-3 dark:border-neutral-800"
+                <div class="mt-5 flex items-center gap-3">
+                    <Link
+                        :href="bookingsIndex()"
+                        class="text-xs font-semibold text-purple-600 hover:underline dark:text-purple-400"
                     >
-                        <h2
-                            class="text-sm font-semibold text-neutral-900 dark:text-white"
-                        >
-                            Active Programs
-                        </h2>
-                        <Link
-                            :href="bookableItemsIndex()"
-                            class="text-xs font-medium text-blue-600 hover:text-blue-800 dark:text-blue-400"
-                        >
-                            Manage
-                        </Link>
-                    </div>
-
-                    <div
-                        v-if="activePrograms && activePrograms.length > 0"
-                        class="mt-3 space-y-2.5"
+                        View all bookings &rarr;
+                    </Link>
+                    <span class="text-neutral-300 dark:text-neutral-700"
+                        >•</span
                     >
-                        <div
-                            v-for="prog in activePrograms"
-                            :key="prog.id"
-                            class="flex items-center justify-between rounded-lg border border-neutral-200/60 bg-neutral-50/50 p-2.5 dark:border-neutral-800 dark:bg-neutral-800/40"
-                        >
-                            <div class="truncate">
-                                <div
-                                    class="truncate text-xs font-semibold text-neutral-900 dark:text-white"
-                                >
-                                    {{ prog.name }}
-                                </div>
-                                <div
-                                    class="mt-0.5 flex items-center gap-2 text-[11px] text-neutral-500 dark:text-neutral-400"
-                                >
-                                    <span
-                                        >{{ prog.duration_minutes }} mins</span
-                                    >
-                                    <span>•</span>
-                                    <span>Max {{ prog.capacity }} spots</span>
-                                </div>
-                            </div>
-                            <div
-                                class="shrink-0 text-xs font-bold text-neutral-900 dark:text-white"
-                            >
-                                {{ formatCurrency(prog.price) }}
-                            </div>
-                        </div>
-                    </div>
+                    <Link
+                        :href="inquiriesIndex()"
+                        class="text-xs font-semibold text-purple-600 hover:underline dark:text-purple-400"
+                    >
+                        View all inquiries &rarr;
+                    </Link>
+                    <span class="text-neutral-300 dark:text-neutral-700"
+                        >•</span
+                    >
+                    <Link
+                        :href="bookableItemsIndex()"
+                        class="text-xs font-semibold text-purple-600 hover:underline dark:text-purple-400"
+                    >
+                        Manage training programs &rarr;
+                    </Link>
                 </div>
             </div>
         </div>

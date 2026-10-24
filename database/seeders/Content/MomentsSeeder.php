@@ -19,9 +19,9 @@ class MomentsSeeder extends Seeder
                 'featured' => true,
                 'sort_order' => 1,
                 'images' => [
-                    'images/club/youth-squad-team-topgrade-london-fc.jpg',
-                    'images/club/u7-u8-squad-photo-topgrade-london-fc.jpg',
-                    'images/club/training-agility-drills-topgrade-london-fc.jpg',
+                    'images/club/youth-squad-team-topgrade-london-fc.webp',
+                    'images/club/u7-u8-squad-photo-topgrade-london-fc.webp',
+                    'images/club/training-agility-drills-topgrade-london-fc.webp',
                 ],
             ],
             [
@@ -33,9 +33,9 @@ class MomentsSeeder extends Seeder
                 'featured' => true,
                 'sort_order' => 2,
                 'images' => [
-                    'images/club/matchday-fixture-action-topgrade-london-fc.jpg',
-                    'images/club/foundation-phase-match-action-topgrade-london-fc.jpg',
-                    'images/club/squad-celebration-trophy-topgrade-london-fc.jpg',
+                    'images/club/matchday-fixture-action-topgrade-london-fc.webp',
+                    'images/club/foundation-phase-match-action-topgrade-london-fc.webp',
+                    'images/club/squad-celebration-trophy-topgrade-london-fc.webp',
                 ],
             ],
             [
@@ -47,19 +47,37 @@ class MomentsSeeder extends Seeder
                 'featured' => true,
                 'sort_order' => 3,
                 'images' => [
-                    'images/club/tactical-coaching-briefing-topgrade-london-fc.jpg',
-                    'images/club/player-match-action-topgrade-london-fc.jpg',
+                    'images/club/tactical-coaching-briefing-topgrade-london-fc.webp',
+                    'images/club/player-match-action-topgrade-london-fc.webp',
                 ],
             ],
         ];
 
         foreach ($momentsData as $data) {
+            $images = $data['images'] ?? [];
             unset($data['images']);
 
-            Moment::firstOrCreate(
+            $moment = Moment::firstOrCreate(
                 ['slug' => $data['slug']],
                 $data
             );
+
+            // Populate media collection from shipped canonical assets if gallery is empty
+            if ($moment->getMedia('gallery')->isEmpty()) {
+                foreach ($images as $relativePath) {
+                    $fullPath = public_path($relativePath);
+                    if (file_exists($fullPath)) {
+                        $moment->addMedia($fullPath)
+                            ->preservingOriginal()
+                            ->toMediaCollection('gallery');
+                    }
+                }
+
+                $firstMedia = $moment->getFirstMedia('gallery');
+                if ($firstMedia && ! $moment->cover_media_id) {
+                    $moment->update(['cover_media_id' => $firstMedia->id]);
+                }
+            }
         }
     }
 }

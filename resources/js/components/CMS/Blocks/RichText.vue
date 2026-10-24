@@ -1,6 +1,7 @@
 <script setup lang="ts">
 interface Payload {
-    content: string;
+    content?: string;
+    body?: string;
 }
 
 interface Settings {
@@ -16,12 +17,12 @@ const props = defineProps<{
 <template>
     <div class="py-12">
         <div class="mx-auto max-w-3xl px-6 lg:px-8">
+            <!-- eslint-disable-next-line vue/no-v-html -->
             <div
                 class="prose dark:prose-invert text-foreground max-w-none leading-7"
                 :class="props.settings?.prose_class ?? 'text-base'"
-            >
-                {{ props.payload.content }}
-            </div>
+                v-html="props.payload.body || props.payload.content || ''"
+            />
         </div>
     </div>
 </template>

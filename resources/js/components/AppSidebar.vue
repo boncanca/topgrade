@@ -1,13 +1,12 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
 import {
-    BookOpen,
     CalendarCheck,
     Camera,
-    ClipboardList,
     FileText,
+    Image,
     LayoutGrid,
-    MessageSquare,
+    Newspaper,
     Settings,
     Users,
 } from '@lucide/vue';
@@ -26,9 +25,7 @@ import {
 import { dashboard } from '@/routes';
 import { index as bookableItemsIndex } from '@/routes/bookable-items';
 import { index as bookingsIndex } from '@/routes/bookings';
-import { index as contactsIndex } from '@/routes/contacts';
 import { index as contentIndex } from '@/routes/content';
-import { index as inquiriesIndex } from '@/routes/inquiries';
 import { edit as profileEdit } from '@/routes/profile';
 import type { NavGroup } from '@/types';
 
@@ -42,38 +39,33 @@ const navGroups: NavGroup[] = [
                 exact: true,
             },
             {
-                title: 'Activities',
-                href: bookableItemsIndex(),
-                icon: ClipboardList,
-            },
-            {
-                title: 'Bookings',
-                href: bookingsIndex(),
-                icon: CalendarCheck,
-            },
-            {
-                title: 'Contacts',
-                href: contactsIndex(),
-                icon: Users,
-            },
-            {
-                title: 'Messages',
-                href: inquiriesIndex(),
-                icon: MessageSquare,
-            },
-            {
                 title: 'Pages',
                 href: contentIndex({ query: { type: 'page' } }),
                 icon: FileText,
             },
             {
-                title: 'Articles',
+                title: 'News & Updates',
                 href: contentIndex({ query: { type: 'article' } }),
-                icon: BookOpen,
+                icon: Newspaper,
             },
             {
-                title: 'Galleries',
+                title: 'Media',
                 href: '/dashboard/galleries',
+                icon: Image,
+            },
+            {
+                title: 'Team',
+                href: bookableItemsIndex(),
+                icon: Users,
+            },
+            {
+                title: 'Fixtures & Results',
+                href: bookingsIndex(),
+                icon: CalendarCheck,
+            },
+            {
+                title: 'Gallery',
+                href: '/dashboard/moments',
                 icon: Camera,
             },
             {

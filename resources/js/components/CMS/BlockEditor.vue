@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import draggable from 'vuedraggable';
+import { generateUUID } from '@/lib/utils';
 import { blockSchemas } from './blockSchemas';
 import type { BlockFieldDefinition } from './blockSchemas';
 import BlockTypePickerModal from './BlockTypePickerModal.vue';
@@ -37,7 +38,7 @@ function addBlock(type: string) {
     }
 
     const newBlock: Block = {
-        uuid: crypto.randomUUID(),
+        uuid: generateUUID(),
         type,
         payload: { ...schema.defaultPayload },
         settings: { ...(schema.defaultSettings ?? {}) },

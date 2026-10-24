@@ -2,6 +2,7 @@
 import { router, useForm } from '@inertiajs/vue3';
 import BlockEditor from '@/components/CMS/BlockEditor.vue';
 import type { Block } from '@/components/CMS/BlockEditor.vue';
+import TiptapEditor from '@/components/CMS/TiptapEditor.vue';
 import FormPage from '@/components/FormPage.vue';
 import FormSection from '@/components/FormSection.vue';
 import PageActions from '@/components/PageActions.vue';
@@ -186,6 +187,24 @@ function handleDelete(): void {
                             class="text-destructive mt-1 text-sm"
                         >
                             {{ form.errors.excerpt }}
+                        </p>
+                    </div>
+
+                    <div>
+                        <label
+                            class="text-foreground mb-2 block text-sm font-medium"
+                        >
+                            Body Content <span class="text-destructive">*</span>
+                        </label>
+                        <TiptapEditor
+                            v-model="form.content"
+                            placeholder="Write the main page content here…"
+                        />
+                        <p
+                            v-if="form.errors.content"
+                            class="text-destructive mt-1 text-sm"
+                        >
+                            {{ form.errors.content }}
                         </p>
                     </div>
                 </div>

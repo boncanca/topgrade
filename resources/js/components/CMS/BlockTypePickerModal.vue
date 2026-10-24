@@ -9,6 +9,11 @@ const emit = defineEmits<{
     close: [];
     select: [type: string];
 }>();
+
+function selectBlock(type: string): void {
+    emit('select', type);
+    emit('close');
+}
 </script>
 
 <template>
@@ -43,7 +48,7 @@ const emit = defineEmits<{
                     </div>
                     <button
                         type="button"
-                        class="text-muted-foreground hover:bg-accent hover:text-foreground rounded-md p-1.5 transition-colors"
+                        class="text-muted-foreground hover:bg-accent hover:text-foreground cursor-pointer rounded-md p-1.5 transition-colors"
                         aria-label="Close"
                         @click="emit('close')"
                     >
@@ -57,11 +62,8 @@ const emit = defineEmits<{
                         :key="block.type"
                         type="button"
                         :id="`block-type-${block.type}`"
-                        class="border-border hover:bg-accent hover:border-primary focus-visible:ring-ring flex items-start gap-3 rounded-lg border p-3 text-left transition-colors focus-visible:outline-none focus-visible:ring-2"
-                        @click="
-                            emit('select', block.type);
-                            emit('close');
-                        "
+                        class="border-border hover:bg-accent hover:border-primary focus-visible:ring-ring flex cursor-pointer items-start gap-3 rounded-lg border p-3 text-left transition-colors focus-visible:outline-none focus-visible:ring-2"
+                        @click.prevent.stop="selectBlock(block.type)"
                     >
                         <span
                             class="mt-0.5 text-2xl leading-none"

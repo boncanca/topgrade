@@ -1,17 +1,27 @@
-<script setup lang="ts">
-import AppLogoIcon from '@/components/AppLogoIcon.vue';
-</script>
+<script setup lang="ts"></script>
 
 <template>
-    <div
-        class="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-md"
-    >
-        <AppLogoIcon class="size-5 fill-current text-white dark:text-black" />
-    </div>
-    <div class="ml-1 grid flex-1 text-left text-sm">
-        <span class="truncate font-semibold leading-tight">Volara</span>
-        <span class="text-muted-foreground truncate text-xs leading-tight">
-            TopGrade FC
-        </span>
+    <div class="flex items-center gap-2.5">
+        <div
+            class="flex aspect-square size-9 items-center justify-center rounded-lg bg-neutral-900/5 p-1 dark:bg-white/5"
+        >
+            <img
+                src="/logo.png"
+                alt="TopGrade London FC Crest"
+                class="size-7 object-contain"
+            />
+        </div>
+        <div class="flex flex-col text-left leading-tight">
+            <span
+                class="text-xs font-bold uppercase tracking-wider text-neutral-900 dark:text-white"
+            >
+                TOPGRADE
+            </span>
+            <span
+                class="text-[10px] font-medium uppercase tracking-widest text-purple-600 dark:text-purple-400"
+            >
+                LONDON FC
+            </span>
+        </div>
     </div>
 </template>

@@ -3,6 +3,7 @@ import { Head, router, useForm } from '@inertiajs/vue3';
 import {
     ArrowLeft,
     ArrowRight,
+    ChevronDown,
     Eye,
     Plus,
     Star,
@@ -207,7 +208,6 @@ function moveImage(fromIdx: number, toIdx: number): void {
     const item = localGallery.value.splice(fromIdx, 1)[0];
     localGallery.value.splice(toIdx, 0, item);
 
-    // Send new order to server
     isReordering.value = true;
     router.post(
         `/dashboard/moments/${props.moment.id}/media/reorder`,
@@ -224,7 +224,7 @@ function moveImage(fromIdx: number, toIdx: number): void {
 }
 
 function deleteMedia(item: GalleryItem): void {
-    if (!confirm('Remove this photo from the moment gallery?')) {
+    if (!confirm('Remove this photo from the gallery?')) {
         return;
     }
 
@@ -264,7 +264,7 @@ function handleCancel(): void {
 
     <FormPage
         :title="`Edit ${moment.title}`"
-        description="Update gallery details, select cover photo, reorder images, or add new photos."
+        description="Update gallery photos, set cover photo, and manage details."
     >
         <template #actions>
             <Button
@@ -284,41 +284,91 @@ function handleCancel(): void {
             </Button>
         </template>
 
-        <form @submit.prevent="handleSubmit" class="space-y-10">
-            <!-- Gallery Images Management -->
+        <form @submit.prevent="handleSubmit" class="space-y-8">
+            <!-- 1. Basic Details -->
             <FormSection
-                title="Gallery Media & Cover Photo"
-                description="Manage existing photos, set the cover image, and arrange the presentation order."
+                title="Basic Information"
+                description="Title and description for this gallery."
             >
-                <div class="space-y-6">
-                    <!-- Existing Gallery Grid -->
+                <div class="space-y-4">
+                    <div>
+                        <label
+                            class="text-foreground mb-1.5 block text-sm font-medium"
+                        >
+                            Title <span class="text-destructive">*</span>
+                        </label>
+                        <input
+                            v-model="form.title"
+                            type="text"
+                            :class="fieldClass"
+                            placeholder="e.g. Saturday League Match vs Hackney"
+                            required
+                        />
+                        <p
+                            v-if="form.errors.title"
+                            class="text-destructive mt-1 text-xs"
+                        >
+                            {{ form.errors.title }}
+                        </p>
+                    </div>
+
+                    <div>
+                        <label
+                            class="text-foreground mb-1.5 block text-sm font-medium"
+                        >
+                            Description
+                        </label>
+                        <textarea
+                            v-model="form.description"
+                            :class="textareaClass"
+                            rows="2"
+                            placeholder="Brief description of the match or training session..."
+                        />
+                        <p
+                            v-if="form.errors.description"
+                            class="text-destructive mt-1 text-xs"
+                        >
+                            {{ form.errors.description }}
+                        </p>
+                    </div>
+                </div>
+            </FormSection>
+
+            <!-- 2. Gallery Photos & Cover Selection -->
+            <FormSection
+                title="Gallery Photos"
+                description="Upload images, choose the cover photo, and adjust display order."
+            >
+                <div class="space-y-5">
+                    <!-- Current Gallery Grid -->
                     <div v-if="localGallery.length > 0">
                         <div
                             class="text-muted-foreground mb-3 flex items-center justify-between text-xs font-semibold uppercase tracking-wider"
                         >
                             <span>
-                                Current Gallery ({{ localGallery.length }}
+                                {{ localGallery.length }}
                                 {{
                                     localGallery.length === 1
-                                        ? 'photo'
-                                        : 'photos'
-                                }})
+                                        ? 'Photo'
+                                        : 'Photos'
+                                }}
+                                in Gallery
                             </span>
                             <span
                                 v-if="isReordering"
                                 class="text-primary animate-pulse text-xs"
                             >
-                                Updating order...
+                                Saving order...
                             </span>
                         </div>
 
                         <div
-                            class="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"
+                            class="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"
                         >
                             <div
                                 v-for="(item, idx) in localGallery"
                                 :key="item.id"
-                                class="border-border bg-card shadow-xs group relative flex flex-col overflow-hidden rounded-lg border"
+                                class="border-border bg-card shadow-xs group relative flex flex-col overflow-hidden rounded-lg border transition-[box-shadow,border-color]"
                                 :class="
                                     item.is_cover ||
                                     form.cover_media_id === item.id
@@ -335,17 +385,29 @@ function handleCancel(): void {
                                         class="h-full w-full object-cover"
                                     />
 
-                                    <!-- Cover Badge -->
-                                    <div
+                                    <!-- Cover Badge or Make Cover Action -->
+                                    <button
                                         v-if="
                                             item.is_cover ||
                                             form.cover_media_id === item.id
                                         "
+                                        type="button"
                                         class="bg-primary text-primary-foreground absolute left-2 top-2 flex items-center gap-1 rounded px-2 py-0.5 text-[10px] font-bold shadow-sm"
+                                        title="Current Cover"
                                     >
                                         <Star class="h-3 w-3 fill-current" />
                                         COVER
-                                    </div>
+                                    </button>
+                                    <button
+                                        v-else
+                                        type="button"
+                                        @click="setCover(item)"
+                                        class="hover:bg-primary absolute left-2 top-2 flex items-center gap-1 rounded bg-black/70 px-2 py-0.5 text-[10px] font-medium text-white opacity-0 shadow-sm transition-opacity group-hover:opacity-100"
+                                        title="Set as Cover Photo"
+                                    >
+                                        <Star class="h-3 w-3" />
+                                        Make Cover
+                                    </button>
 
                                     <!-- Delete Button -->
                                     <button
@@ -358,54 +420,33 @@ function handleCancel(): void {
                                     </button>
                                 </div>
 
-                                <!-- Card Footer: Reorder & Set Cover -->
+                                <!-- Card Footer: Quick Reorder -->
                                 <div
-                                    class="border-border bg-muted/30 flex items-center justify-between gap-1 border-t p-2.5 text-xs"
+                                    class="border-border bg-muted/30 flex items-center justify-between border-t px-2.5 py-1.5 text-xs"
                                 >
-                                    <!-- Cover Button -->
-                                    <button
-                                        type="button"
-                                        @click="setCover(item)"
-                                        class="rounded px-2 py-1 text-[11px] font-medium transition-colors"
-                                        :class="
-                                            item.is_cover ||
-                                            form.cover_media_id === item.id
-                                                ? 'bg-primary/10 text-primary font-bold'
-                                                : 'text-muted-foreground hover:bg-muted hover:text-foreground'
-                                        "
+                                    <span
+                                        class="text-muted-foreground font-mono text-[10px]"
                                     >
-                                        {{
-                                            item.is_cover ||
-                                            form.cover_media_id === item.id
-                                                ? 'Cover'
-                                                : 'Make Cover'
-                                        }}
-                                    </button>
-
-                                    <!-- Reorder Controls -->
+                                        #{{ idx + 1 }}
+                                    </span>
                                     <div class="flex items-center gap-1">
                                         <button
                                             type="button"
                                             :disabled="idx === 0"
                                             @click="moveImage(idx, idx - 1)"
-                                            class="text-muted-foreground hover:bg-muted hover:text-foreground rounded p-1 disabled:opacity-20"
-                                            title="Move left"
+                                            class="text-muted-foreground hover:bg-muted hover:text-foreground cursor-pointer rounded p-1 disabled:opacity-20"
+                                            title="Move earlier"
                                         >
                                             <ArrowLeft class="h-3.5 w-3.5" />
                                         </button>
-                                        <span
-                                            class="text-muted-foreground px-1 font-mono text-[10px]"
-                                        >
-                                            #{{ idx + 1 }}
-                                        </span>
                                         <button
                                             type="button"
                                             :disabled="
                                                 idx === localGallery.length - 1
                                             "
                                             @click="moveImage(idx, idx + 1)"
-                                            class="text-muted-foreground hover:bg-muted hover:text-foreground rounded p-1 disabled:opacity-20"
-                                            title="Move right"
+                                            class="text-muted-foreground hover:bg-muted hover:text-foreground cursor-pointer rounded p-1 disabled:opacity-20"
+                                            title="Move later"
                                         >
                                             <ArrowRight class="h-3.5 w-3.5" />
                                         </button>
@@ -415,29 +456,16 @@ function handleCancel(): void {
                         </div>
                     </div>
 
-                    <div
-                        v-else
-                        class="border-border text-muted-foreground rounded-lg border border-dashed p-6 text-center text-sm"
-                    >
-                        No photos currently in this gallery. Upload photos
-                        below.
-                    </div>
-
-                    <!-- Upload More Photos -->
-                    <div class="border-border border-t pt-4">
+                    <!-- Upload More Photos Dropzone -->
+                    <div>
                         <label
-                            class="text-muted-foreground mb-2 block text-xs font-semibold uppercase tracking-wider"
-                        >
-                            Add More Photos
-                        </label>
-                        <label
-                            class="border-border hover:border-primary/50 hover:bg-muted/30 flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed p-6 text-center transition-colors"
+                            class="border-border hover:border-primary hover:bg-muted/30 flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed p-6 text-center transition-colors"
                         >
                             <Upload
-                                class="text-muted-foreground mb-1 h-6 w-6"
+                                class="text-muted-foreground mb-1.5 h-6 w-6"
                             />
                             <span class="text-foreground text-sm font-medium"
-                                >Click to select photos to append</span
+                                >Click to select photos or drag & drop</span
                             >
                             <span class="text-muted-foreground mt-0.5 text-xs"
                                 >JPG, PNG, or WebP (up to 15MB each)</span
@@ -460,38 +488,20 @@ function handleCancel(): void {
                                 {{ message }}
                             </li>
                         </ul>
-                        <div
-                            v-if="form.processing && form.progress"
-                            class="mt-3"
-                        >
-                            <div
-                                class="bg-muted h-2 w-full overflow-hidden rounded"
-                            >
-                                <div
-                                    class="bg-primary h-full transition-all"
-                                    :style="{
-                                        width: `${form.progress.percentage}%`,
-                                    }"
-                                />
-                            </div>
-                            <p class="text-muted-foreground mt-1 text-xs">
-                                Uploading… {{ form.progress.percentage }}%
-                            </p>
-                        </div>
 
-                        <!-- Previews of newly selected photos -->
+                        <!-- New image staged previews -->
                         <div v-if="newImagePreviews.length > 0" class="mt-4">
                             <div
                                 class="text-primary mb-2 text-xs font-semibold"
                             >
-                                Ready to upload:
-                                {{ newImagePreviews.length }} new
+                                Staged for upload ({{ newImagePreviews.length }}
+                                new
                                 {{
                                     newImagePreviews.length === 1
                                         ? 'photo'
                                         : 'photos'
                                 }}
-                                (click Save Changes to upload)
+                                - will upload when saving):
                             </div>
                             <div
                                 class="grid grid-cols-2 gap-3 sm:grid-cols-4 md:grid-cols-6"
@@ -514,11 +524,6 @@ function handleCancel(): void {
                                     >
                                         <X class="h-3.5 w-3.5" />
                                     </button>
-                                    <div
-                                        class="absolute inset-x-0 bottom-0 truncate bg-black/60 px-1 py-0.5 text-[10px] text-white"
-                                    >
-                                        {{ preview.file.name }}
-                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -526,84 +531,15 @@ function handleCancel(): void {
                 </div>
             </FormSection>
 
-            <!-- Basic Details -->
+            <!-- 3. Publishing & Visibility -->
             <FormSection
-                title="Basic Information"
-                description="Title, slug, and description."
+                title="Publishing"
+                description="Set visibility and featured placement."
             >
-                <div class="space-y-6">
+                <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
                     <div>
                         <label
-                            class="text-foreground mb-2 block text-sm font-medium"
-                        >
-                            Title <span class="text-destructive">*</span>
-                        </label>
-                        <input
-                            v-model="form.title"
-                            type="text"
-                            :class="fieldClass"
-                            required
-                        />
-                        <p
-                            v-if="form.errors.title"
-                            class="text-destructive mt-1 text-xs"
-                        >
-                            {{ form.errors.title }}
-                        </p>
-                    </div>
-
-                    <div>
-                        <label
-                            class="text-foreground mb-2 block text-sm font-medium"
-                        >
-                            Slug
-                        </label>
-                        <input
-                            v-model="form.slug"
-                            type="text"
-                            :class="fieldClass"
-                        />
-                        <p class="text-muted-foreground mt-1 text-xs">
-                            Public URL identifier (/moments/{{ form.slug }})
-                        </p>
-                        <p
-                            v-if="form.errors.slug"
-                            class="text-destructive mt-1 text-xs"
-                        >
-                            {{ form.errors.slug }}
-                        </p>
-                    </div>
-
-                    <div>
-                        <label
-                            class="text-foreground mb-2 block text-sm font-medium"
-                        >
-                            Description
-                        </label>
-                        <textarea
-                            v-model="form.description"
-                            :class="textareaClass"
-                            rows="3"
-                        />
-                        <p
-                            v-if="form.errors.description"
-                            class="text-destructive mt-1 text-xs"
-                        >
-                            {{ form.errors.description }}
-                        </p>
-                    </div>
-                </div>
-            </FormSection>
-
-            <!-- Publishing & Status -->
-            <FormSection
-                title="Publishing Status"
-                description="Control visibility and featured status."
-            >
-                <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                    <div>
-                        <label
-                            class="text-foreground mb-2 block text-sm font-medium"
+                            class="text-foreground mb-1.5 block text-sm font-medium"
                         >
                             Status <span class="text-destructive">*</span>
                         </label>
@@ -611,19 +547,13 @@ function handleCancel(): void {
                             <option value="draft">Draft</option>
                             <option value="published">Published</option>
                         </select>
-                        <p
-                            v-if="form.errors.status"
-                            class="text-destructive mt-1 text-xs"
-                        >
-                            {{ form.errors.status }}
-                        </p>
                     </div>
 
                     <div>
                         <label
-                            class="text-foreground mb-2 block text-sm font-medium"
+                            class="text-foreground mb-1.5 block text-sm font-medium"
                         >
-                            Published Date & Time
+                            Publish Date
                         </label>
                         <input
                             v-model="form.published_at"
@@ -632,7 +562,7 @@ function handleCancel(): void {
                         />
                     </div>
 
-                    <div class="sm:col-span-2">
+                    <div class="flex items-end pb-1">
                         <label class="flex cursor-pointer items-center gap-2">
                             <input
                                 v-model="form.featured"
@@ -640,172 +570,169 @@ function handleCancel(): void {
                                 class="border-input text-primary focus:ring-ring h-4 w-4 rounded"
                             />
                             <span class="text-foreground text-sm font-medium">
-                                Feature this Moment on the Public Moments Hero
-                                Carousel
+                                Feature on Homepage
                             </span>
                         </label>
                     </div>
                 </div>
             </FormSection>
 
-            <!-- People / Tags -->
-            <FormSection
-                title="People & Staff Tagging"
-                description="Associate coaches, team members, or staff. Control whether their names are displayed publicly."
+            <!-- 4. Advanced Options (Collapsible) -->
+            <details
+                class="border-border bg-card group rounded-lg border p-4 transition-colors"
             >
-                <div class="space-y-4">
-                    <div
-                        v-for="(person, idx) in form.people"
-                        :key="idx"
-                        class="border-border bg-card space-y-3 rounded-md border p-4"
+                <summary
+                    class="text-foreground flex cursor-pointer select-none items-center justify-between text-sm font-medium"
+                >
+                    <span
+                        >Advanced Options (Slug, External Link, Tagging,
+                        SEO)</span
                     >
-                        <div class="flex items-center justify-between">
-                            <span
-                                class="text-muted-foreground text-xs font-semibold uppercase tracking-wider"
-                            >
-                                Person #{{ idx + 1 }}
-                            </span>
-                            <button
-                                type="button"
-                                @click="removePerson(idx)"
-                                class="text-destructive flex items-center gap-1 text-xs hover:underline"
-                            >
-                                <Trash2 class="h-3 w-3" />
-                                Remove
-                            </button>
-                        </div>
-                        <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
-                            <div>
-                                <label
-                                    class="text-foreground mb-1 block text-xs font-medium"
-                                    >Name</label
-                                >
-                                <input
-                                    v-model="person.name"
-                                    type="text"
-                                    :class="fieldClass"
-                                    placeholder="e.g. Coach Michael"
-                                    required
-                                />
-                            </div>
-                            <div>
-                                <label
-                                    class="text-foreground mb-1 block text-xs font-medium"
-                                    >Role / Context</label
-                                >
-                                <input
-                                    v-model="person.role"
-                                    type="text"
-                                    :class="fieldClass"
-                                    placeholder="e.g. Head Coach / U12 Squad"
-                                />
-                            </div>
-                            <div>
-                                <label
-                                    class="text-foreground mb-1 block text-xs font-medium"
-                                    >External Link (Optional)</label
-                                >
-                                <input
-                                    v-model="person.url"
-                                    type="url"
-                                    :class="fieldClass"
-                                    placeholder="https://..."
-                                />
-                            </div>
-                        </div>
-                        <div class="pt-1">
+                    <ChevronDown
+                        class="text-muted-foreground h-4 w-4 transition-transform group-open:rotate-180"
+                    />
+                </summary>
+
+                <div class="border-border mt-6 space-y-6 border-t pt-6">
+                    <!-- URL Slug -->
+                    <div>
+                        <label
+                            class="text-foreground mb-1.5 block text-xs font-semibold uppercase tracking-wider"
+                        >
+                            URL Slug
+                        </label>
+                        <input
+                            v-model="form.slug"
+                            type="text"
+                            :class="fieldClass"
+                            placeholder="auto-generated-slug"
+                        />
+                        <p class="text-muted-foreground mt-1 text-xs">
+                            Public URL: /moments/{{ form.slug }}
+                        </p>
+                    </div>
+
+                    <!-- External Link -->
+                    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                        <div>
                             <label
-                                class="flex cursor-pointer items-center gap-2"
+                                class="text-foreground mb-1.5 block text-xs font-semibold uppercase tracking-wider"
                             >
-                                <input
-                                    v-model="person.visible"
-                                    type="checkbox"
-                                    class="border-input text-primary focus:ring-ring h-3.5 w-3.5 rounded"
-                                />
-                                <span class="text-muted-foreground text-xs">
-                                    Display publicly on the Moment page
-                                </span>
+                                External Link URL (Optional)
                             </label>
+                            <input
+                                v-model="form.external_link"
+                                type="url"
+                                :class="fieldClass"
+                                placeholder="https://..."
+                            />
+                        </div>
+                        <div>
+                            <label
+                                class="text-foreground mb-1.5 block text-xs font-semibold uppercase tracking-wider"
+                            >
+                                Link Label
+                            </label>
+                            <input
+                                v-model="form.external_link_label"
+                                type="text"
+                                :class="fieldClass"
+                                placeholder="e.g. Match Report"
+                            />
                         </div>
                     </div>
 
-                    <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        @click="addPerson"
-                    >
-                        <Plus class="mr-1 h-3.5 w-3.5" />
-                        Add Person
-                    </Button>
-                </div>
-            </FormSection>
+                    <!-- SEO -->
+                    <div class="space-y-3">
+                        <label
+                            class="text-foreground block text-xs font-semibold uppercase tracking-wider"
+                        >
+                            Search Engine Optimization
+                        </label>
+                        <div>
+                            <input
+                                v-model="form.seo.title"
+                                type="text"
+                                :class="fieldClass"
+                                placeholder="SEO Title (defaults to moment title)"
+                            />
+                        </div>
+                        <div>
+                            <textarea
+                                v-model="form.seo.description"
+                                :class="textareaClass"
+                                rows="2"
+                                placeholder="SEO Description (defaults to moment description)"
+                            />
+                        </div>
+                    </div>
 
-            <!-- External Link -->
-            <FormSection
-                title="External Link (Optional)"
-                description="Link to external match fixture details or report."
-            >
-                <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                    <div>
-                        <label
-                            class="text-foreground mb-2 block text-sm font-medium"
-                            >Link URL</label
-                        >
-                        <input
-                            v-model="form.external_link"
-                            type="url"
-                            :class="fieldClass"
-                            placeholder="https://..."
-                        />
-                    </div>
-                    <div>
-                        <label
-                            class="text-foreground mb-2 block text-sm font-medium"
-                            >Button Label</label
-                        >
-                        <input
-                            v-model="form.external_link_label"
-                            type="text"
-                            :class="fieldClass"
-                            placeholder="e.g. Match Report"
-                        />
-                    </div>
-                </div>
-            </FormSection>
+                    <!-- People & Staff Tagging -->
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between">
+                            <label
+                                class="text-foreground block text-xs font-semibold uppercase tracking-wider"
+                            >
+                                Tag People or Staff (Optional)
+                            </label>
+                            <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                @click="addPerson"
+                            >
+                                <Plus class="mr-1 h-3.5 w-3.5" />
+                                Add Person
+                            </Button>
+                        </div>
 
-            <!-- SEO Metadata -->
-            <FormSection
-                title="Search Engine Optimization"
-                description="Custom title and description for search engines."
-            >
-                <div class="space-y-4">
-                    <div>
-                        <label
-                            class="text-foreground mb-1 block text-sm font-medium"
-                            >SEO Title</label
-                        >
-                        <input
-                            v-model="form.seo.title"
-                            type="text"
-                            :class="fieldClass"
-                            placeholder="Defaults to moment title"
-                        />
-                    </div>
-                    <div>
-                        <label
-                            class="text-foreground mb-1 block text-sm font-medium"
-                            >SEO Description</label
-                        >
-                        <textarea
-                            v-model="form.seo.description"
-                            :class="textareaClass"
-                            rows="2"
-                            placeholder="Defaults to moment description"
-                        />
+                        <div v-if="form.people.length > 0" class="space-y-3">
+                            <div
+                                v-for="(person, idx) in form.people"
+                                :key="idx"
+                                class="border-border bg-muted/40 space-y-2 rounded-md border p-3"
+                            >
+                                <div class="flex items-center justify-between">
+                                    <span
+                                        class="text-muted-foreground text-xs font-medium"
+                                        >Person #{{ idx + 1 }}</span
+                                    >
+                                    <button
+                                        type="button"
+                                        @click="removePerson(idx)"
+                                        class="text-destructive flex cursor-pointer items-center gap-1 text-xs hover:underline"
+                                    >
+                                        <Trash2 class="h-3 w-3" />
+                                        Remove
+                                    </button>
+                                </div>
+                                <div
+                                    class="grid grid-cols-1 gap-2 sm:grid-cols-3"
+                                >
+                                    <input
+                                        v-model="person.name"
+                                        type="text"
+                                        :class="fieldClass"
+                                        placeholder="Name (e.g. Coach Michael)"
+                                    />
+                                    <input
+                                        v-model="person.role"
+                                        type="text"
+                                        :class="fieldClass"
+                                        placeholder="Role (e.g. Head Coach)"
+                                    />
+                                    <input
+                                        v-model="person.url"
+                                        type="url"
+                                        :class="fieldClass"
+                                        placeholder="Link (optional)"
+                                    />
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </FormSection>
+            </details>
 
             <!-- Page Actions -->
             <PageActions>
@@ -813,7 +740,7 @@ function handleCancel(): void {
                     Cancel
                 </Button>
                 <Button type="submit" :disabled="form.processing">
-                    {{ form.processing ? 'Saving...' : 'Save Changes' }}
+                    {{ form.processing ? 'Saving...' : 'Save Gallery' }}
                 </Button>
             </PageActions>
         </form>

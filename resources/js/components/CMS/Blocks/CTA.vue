@@ -2,8 +2,10 @@
 interface Payload {
     title: string;
     description?: string;
-    link_text: string;
-    link_url: string;
+    link_text?: string;
+    link_url?: string;
+    button_text?: string;
+    button_url?: string;
 }
 
 interface Settings {
@@ -39,16 +41,25 @@ const props = defineProps<{
                 >
                     {{ props.payload.description }}
                 </p>
-                <div class="mt-10 flex items-center justify-center gap-x-6">
+                <div
+                    v-if="props.payload.button_text || props.payload.link_text"
+                    class="mt-10 flex items-center justify-center gap-x-6"
+                >
                     <a
-                        :href="props.payload.link_url"
+                        :href="
+                            props.payload.button_url ||
+                            props.payload.link_url ||
+                            '#'
+                        "
                         class="rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-gray-900 shadow-sm hover:bg-gray-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
                         :class="{
                             'bg-primary text-primary-foreground hover:bg-primary/95':
                                 props.settings?.theme === 'default',
                         }"
                     >
-                        {{ props.payload.link_text }}
+                        {{
+                            props.payload.button_text || props.payload.link_text
+                        }}
                     </a>
                 </div>
             </div>
