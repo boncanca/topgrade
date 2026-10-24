@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
-import PublicLayout from '@/layouts/PublicLayout.vue';
-import SeoHead from '@/components/SEO/SeoHead.vue';
 import { Newspaper } from '@lucide/vue';
+import SeoHead from '@/components/SEO/SeoHead.vue';
+import PublicLayout from '@/layouts/PublicLayout.vue';
 
 interface Article {
     id: number;
@@ -35,60 +35,87 @@ defineOptions({
         path="/articles"
     />
 
-    <div class="min-h-screen bg-tg-bg text-tg-text">
+    <div class="bg-tg-bg text-tg-text min-h-screen">
         <!-- Hero Section -->
-        <section class="relative min-h-[36vh] sm:min-h-[40vh] flex items-end overflow-hidden pb-12 pt-24 sm:pt-28 border-b border-tg-border">
+        <section
+            class="border-tg-border relative flex min-h-[36vh] items-end overflow-hidden border-b pb-12 pt-24 sm:min-h-[40vh] sm:pt-28"
+        >
             <div
                 class="absolute inset-0 bg-cover bg-center opacity-35"
-                style="background-image: url('/images/club/club-training-london.jpg')"
+                style="
+                    background-image: url('/images/club/youth-squad-team-topgrade-london-fc.webp');
+                "
             />
-            <div class="absolute inset-0 bg-gradient-to-t from-tg-bg via-tg-bg/85 to-transparent" />
+            <div
+                class="from-tg-bg via-tg-bg/85 absolute inset-0 bg-gradient-to-t to-transparent"
+            />
 
-            <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full space-y-3">
-                <span class="inline-block px-3 py-1 rounded-xs bg-tg-bg-deep border border-tg-border text-tg-accent text-xs font-bold tracking-widest uppercase">
+            <div
+                class="relative z-10 mx-auto w-full max-w-7xl space-y-3 px-4 sm:px-6 lg:px-8"
+            >
+                <span
+                    class="rounded-xs bg-tg-bg-deep border-tg-border text-tg-accent inline-block border px-3 py-1 text-xs font-bold uppercase tracking-widest"
+                >
                     Club Editorial
                 </span>
 
                 <h1
-                    class="text-3xl sm:text-5xl font-normal uppercase tracking-tight text-tg-text-strong"
-                    style="font-family: var(--tg-display);"
+                    class="text-tg-text-strong text-3xl font-normal uppercase tracking-tight sm:text-5xl"
+                    style="font-family: var(--tg-display)"
                 >
                     Club News &amp; Articles
                 </h1>
-                <p class="text-tg-text text-sm sm:text-base max-w-xl">
-                    Official announcements, squad reports, and matchday stories from TopGrade London FC.
+                <p class="text-tg-text max-w-xl text-sm sm:text-base">
+                    Official announcements, squad reports, and matchday stories
+                    from TopGrade London FC.
                 </p>
             </div>
         </section>
 
         <!-- Main Content -->
-        <section class="py-14 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+        <section class="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
             <!-- Articles Grid -->
-            <div v-if="articles?.data && articles.data.length > 0" class="grid gap-6 md:grid-cols-3">
+            <div
+                v-if="articles?.data && articles.data.length > 0"
+                class="grid gap-6 md:grid-cols-3"
+            >
                 <article
                     v-for="article in articles.data"
                     :key="article.id"
-                    class="rounded-xs border border-tg-border bg-tg-bg-deep/80 hover:border-tg-border-strong p-6 flex flex-col justify-between space-y-5 transition-colors"
+                    class="rounded-xs border-tg-border bg-tg-bg-deep/80 hover:border-tg-border-strong flex flex-col justify-between space-y-5 border p-6 transition-colors"
                 >
                     <div class="space-y-3">
-                        <span v-if="article.published_at" class="text-xs text-tg-accent font-mono block">
-                            {{ new Date(article.published_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) }}
+                        <span
+                            v-if="article.published_at"
+                            class="text-tg-accent block font-mono text-xs"
+                        >
+                            {{
+                                new Date(
+                                    article.published_at,
+                                ).toLocaleDateString('en-GB', {
+                                    day: 'numeric',
+                                    month: 'short',
+                                    year: 'numeric',
+                                })
+                            }}
                         </span>
                         <h2
-                            class="text-xl font-normal uppercase text-tg-text-strong leading-snug"
-                            style="font-family: var(--tg-display);"
+                            class="text-tg-text-strong text-xl font-normal uppercase leading-snug"
+                            style="font-family: var(--tg-display)"
                         >
                             {{ article.title }}
                         </h2>
-                        <p class="text-tg-text-muted text-sm line-clamp-3 leading-relaxed">
+                        <p
+                            class="text-tg-text-muted line-clamp-3 text-sm leading-relaxed"
+                        >
                             {{ article.excerpt }}
                         </p>
                     </div>
 
-                    <div class="pt-4 border-t border-tg-border/50">
+                    <div class="border-tg-border/50 border-t pt-4">
                         <Link
                             :href="`/articles/${article.slug}`"
-                            class="tg-link inline-flex items-center gap-1.5 text-xs text-tg-accent hover:text-tg-accent-hover"
+                            class="tg-link text-tg-accent hover:text-tg-accent-hover inline-flex items-center gap-1.5 text-xs"
                         >
                             <span>Read Full Story</span>
                             <span>→</span>
@@ -98,21 +125,27 @@ defineOptions({
             </div>
 
             <!-- Empty State -->
-            <div v-else class="text-center py-16 bg-tg-bg-deep/80 rounded-xs border border-tg-border p-8 sm:p-12 space-y-4 max-w-xl mx-auto">
-                <div class="w-12 h-12 rounded-full bg-tg-accent/15 border border-tg-accent/30 flex items-center justify-center mx-auto">
-                    <Newspaper class="w-6 h-6 text-tg-accent" />
+            <div
+                v-else
+                class="bg-tg-bg-deep/80 rounded-xs border-tg-border mx-auto max-w-xl space-y-4 border p-8 py-16 text-center sm:p-12"
+            >
+                <div
+                    class="bg-tg-accent/15 border-tg-accent/30 mx-auto flex h-12 w-12 items-center justify-center rounded-full border"
+                >
+                    <Newspaper class="text-tg-accent h-6 w-6" />
                 </div>
                 <h3
-                    class="text-2xl font-normal uppercase text-tg-text-strong"
-                    style="font-family: var(--tg-display);"
+                    class="text-tg-text-strong text-2xl font-normal uppercase"
+                    style="font-family: var(--tg-display)"
                 >
                     No Articles Published Yet
                 </h3>
                 <p class="text-tg-text-muted text-sm leading-relaxed">
-                    Check back soon for upcoming club announcements, squad fixtures, and club news.
+                    Check back soon for upcoming club announcements, squad
+                    fixtures, and club news.
                 </p>
                 <div class="pt-2">
-                    <Link href="/" class="tg-btn ghost text-xs py-2 px-4">
+                    <Link href="/" class="tg-btn ghost px-4 py-2 text-xs">
                         ← Return to Home
                     </Link>
                 </div>

@@ -1,5 +1,5 @@
-import { computed } from 'vue';
 import { usePage } from '@inertiajs/vue3';
+import { computed } from 'vue';
 
 export interface SeoOptions {
     title: string;
@@ -15,29 +15,39 @@ const DEFAULT_OG_IMAGE = '/images/og/topgrade-london-fc.jpg';
 
 export function useSeo(options: SeoOptions) {
     let page: any = null;
+
     try {
         page = usePage();
     } catch {
         // outside Inertia component context
     }
 
-    const siteUrl = computed(() => page?.props?.siteSettings?.site_url || DEFAULT_SITE_URL);
-    const siteName = computed(() => page?.props?.siteSettings?.site_name || 'TopGrade London FC');
+    const siteUrl = computed(
+        () => page?.props?.siteSettings?.site_url || DEFAULT_SITE_URL,
+    );
+    const siteName = computed(
+        () => page?.props?.siteSettings?.site_name || 'TopGrade London FC',
+    );
 
     const canonicalUrl = computed(() => {
         const base = siteUrl.value;
+
         if (!options.path || options.path === '/' || options.path === '') {
             return base;
         }
+
         return `${base}${options.path.startsWith('/') ? options.path : `/${options.path}`}`;
     });
 
     const ogImageUrl = computed(() => {
-        const defaultImg = page?.props?.siteSettings?.default_og_image || DEFAULT_OG_IMAGE;
+        const defaultImg =
+            page?.props?.siteSettings?.default_og_image || DEFAULT_OG_IMAGE;
         const img = options.image || defaultImg;
+
         if (img.startsWith('http://') || img.startsWith('https://')) {
             return img;
         }
+
         return `${siteUrl.value}${img.startsWith('/') ? img : `/${img}`}`;
     });
 

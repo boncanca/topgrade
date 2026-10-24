@@ -270,6 +270,8 @@ test('public moments show renders gallery and only visible people tags', functio
             ->component('Public/Moments/Show')
             ->where('moment.title', 'Behind The Scenes')
             ->has('gallery', 2)
+            ->where('gallery.0.mime_type', 'image/jpeg')
+            ->where('gallery.0.is_video', false)
             ->has('moment.people', 1)
             ->where('moment.people.0.name', 'Coach Dan')
         );
@@ -360,5 +362,30 @@ test('public moments index renders safely when featured moment has no images', f
             ->component('Public/Moments/Index')
             ->where('featured', null)
             ->has('moments', 1)
+        );
+});
+
+test('public album keeps video metadata and only lists published related albums', function () {
+    $moment = Moment::factory()->create(['slug' => 'matchday-film', 'status' => 'published']);
+    $moment->addMedia(UploadedFile::fake()->createWithContent('matchday.mp4', "\x00\x00\x00\x18ftypmp42\x00\x00\x00\x00mp42isom"))
+        ->toMediaCollection('gallery');
+
+    $related = Moment::factory()->create([
+        'title' => 'Training together',
+        'status' => 'published',
+        'published_at' => now()->subDay(),
+    ]);
+    Moment::factory()->draft()->create();
+
+    $this->get('/moments/matchday-film')
+        ->assertOk()
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('Public/Moments/Show')
+            ->has('gallery', 1)
+            ->where('gallery.0.mime_type', 'video/mp4')
+            ->where('gallery.0.is_video', true)
+            ->has('related', 1)
+            ->where('related.0.id', $related->id)
+            ->where('related.0.published_at', $related->published_at->format('d M Y'))
         );
 });

@@ -86,60 +86,62 @@ function deleteMenu(menu: Menu): void {
 
         <div
             v-if="props.menus.data.length > 0"
-            class="overflow-hidden rounded-lg border border-border bg-background"
+            class="border-border bg-background overflow-hidden rounded-lg border"
         >
             <div class="overflow-x-auto">
                 <table class="w-full min-w-[760px] table-auto">
-                    <thead class="border-b border-border bg-muted/40">
+                    <thead class="border-border bg-muted/40 border-b">
                         <tr>
                             <th
-                                class="px-4 py-3 text-left text-xs font-medium tracking-wide text-muted-foreground uppercase"
+                                class="text-muted-foreground px-4 py-3 text-left text-xs font-medium uppercase tracking-wide"
                             >
                                 Name
                             </th>
                             <th
-                                class="px-4 py-3 text-left text-xs font-medium tracking-wide text-muted-foreground uppercase"
+                                class="text-muted-foreground px-4 py-3 text-left text-xs font-medium uppercase tracking-wide"
                             >
                                 Slug
                             </th>
                             <th
-                                class="px-4 py-3 text-left text-xs font-medium tracking-wide text-muted-foreground uppercase"
+                                class="text-muted-foreground px-4 py-3 text-left text-xs font-medium uppercase tracking-wide"
                             >
                                 Location
                             </th>
                             <th
-                                class="px-4 py-3 text-left text-xs font-medium tracking-wide text-muted-foreground uppercase"
+                                class="text-muted-foreground px-4 py-3 text-left text-xs font-medium uppercase tracking-wide"
                             >
                                 Items Count
                             </th>
                             <th
-                                class="px-4 py-3 text-right text-xs font-medium tracking-wide text-muted-foreground uppercase"
+                                class="text-muted-foreground px-4 py-3 text-right text-xs font-medium uppercase tracking-wide"
                             >
                                 Actions
                             </th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-border">
+                    <tbody class="divide-border divide-y">
                         <tr
                             v-for="menu in props.menus.data"
                             :key="menu.id"
-                            class="transition-colors hover:bg-muted/40"
+                            class="hover:bg-muted/40 transition-colors"
                         >
                             <td class="px-4 py-4">
                                 <Link
                                     :href="menuShow(menu.id)"
-                                    class="text-sm font-medium text-foreground underline-offset-4 hover:underline"
+                                    class="text-foreground text-sm font-medium underline-offset-4 hover:underline"
                                 >
                                     {{ menu.name }}
                                 </Link>
                             </td>
-                            <td class="px-4 py-4 text-sm text-muted-foreground">
+                            <td class="text-muted-foreground px-4 py-4 text-sm">
                                 {{ menu.slug }}
                             </td>
-                            <td class="px-4 py-4 text-sm text-muted-foreground capitalize">
+                            <td
+                                class="text-muted-foreground px-4 py-4 text-sm capitalize"
+                            >
                                 {{ menu.location }}
                             </td>
-                            <td class="px-4 py-4 text-sm text-muted-foreground">
+                            <td class="text-muted-foreground px-4 py-4 text-sm">
                                 {{ menu.items?.length ?? 0 }}
                             </td>
                             <td class="px-4 py-4">
@@ -165,11 +167,11 @@ function deleteMenu(menu: Menu): void {
             </div>
 
             <div
-                class="flex flex-col gap-4 border-t border-border px-4 py-3 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between"
+                class="border-border text-muted-foreground flex flex-col gap-4 border-t px-4 py-3 text-sm sm:flex-row sm:items-center sm:justify-between"
             >
                 <p>
-                    Showing {{ props.menus.from }} to
-                    {{ props.menus.to }} of {{ props.menus.total }}
+                    Showing {{ props.menus.from }} to {{ props.menus.to }} of
+                    {{ props.menus.total }}
                     menus
                 </p>
 

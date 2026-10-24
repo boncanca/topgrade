@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
 import { Link } from '@inertiajs/vue3';
-import PublicLayout from '@/layouts/PublicLayout.vue';
-import SeoHead from '@/components/SEO/SeoHead.vue';
+import { ArrowRight } from '@lucide/vue';
+import { ref, computed } from 'vue';
 import FeaturedMoment from '@/components/Public/Moments/FeaturedMoment.vue';
 import MomentFilters from '@/components/Public/Moments/MomentFilters.vue';
 import MomentGallery from '@/components/Public/Moments/MomentGallery.vue';
-import { ArrowRight } from '@lucide/vue';
+import SeoHead from '@/components/SEO/SeoHead.vue';
+import PublicLayout from '@/layouts/PublicLayout.vue';
 
 interface MomentImage {
     id: number;
@@ -54,18 +54,35 @@ defineOptions({
 
 /* ─── Search Filter Logic ─── */
 const searchQuery = ref('');
+const mediaFilter = ref<'all' | 'photos' | 'videos'>('all');
 
 const filteredMoments = computed(() => {
-    if (!searchQuery.value.trim()) {
-        return props.moments;
-    }
-    const q = searchQuery.value.toLowerCase().trim();
+    const query = searchQuery.value.toLowerCase().trim();
+
     return props.moments.filter((item) => {
-        const titleMatch = item.title.toLowerCase().includes(q);
-        const descMatch = item.description?.toLowerCase().includes(q);
-        return titleMatch || descMatch;
+        const matchesSearch =
+            !query ||
+            item.title.toLowerCase().includes(query) ||
+            item.description?.toLowerCase().includes(query);
+        const hasVideo =
+            item.media?.some((media) => media.is_video) ||
+            item.is_video ||
+            item.cover_mime?.startsWith('video/');
+        const hasPhoto = item.media?.length
+            ? item.media.some((media) => !media.is_video)
+            : Boolean(item.cover_url && !hasVideo);
+
+        return (
+            matchesSearch &&
+            (mediaFilter.value === 'all' ||
+                (mediaFilter.value === 'videos' ? hasVideo : hasPhoto))
+        );
     });
 });
+function clearFilters(): void {
+    searchQuery.value = '';
+    mediaFilter.value = 'all';
+}
 </script>
 
 <template>
@@ -76,55 +93,71 @@ const filteredMoments = computed(() => {
         :image="featured?.cover_url || undefined"
     />
 
-    <div class="min-h-screen bg-tg-bg text-tg-text selection:bg-tg-accent selection:text-white">
+    <div
+        class="bg-tg-bg text-tg-text selection:bg-tg-accent min-h-screen selection:text-white"
+    >
         <!-- 01 — HERO OPENING: Strong Featured Opening Moment -->
         <FeaturedMoment :featured="featured" />
 
         <!-- 02 — ARCHIVE HEADER & SEARCH -->
         <MomentFilters
             v-model="searchQuery"
+            v-model:media-filter="mediaFilter"
             :count="filteredMoments.length"
         />
 
         <!-- 03 — EDITORIAL VISUAL ARCHIVE -->
         <MomentGallery
             :moments="filteredMoments"
-            :search-query="searchQuery"
-            @clear-search="searchQuery = ''"
+            :search-query="
+                searchQuery || (mediaFilter !== 'all' ? mediaFilter : '')
+            "
+            @clear-search="clearFilters"
         />
 
         <!-- 04 — BOTTOM CLUB SIGN-OFF (Quiet, Non-Competing) -->
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16 sm:pb-24">
-            <section class="rounded-xl overflow-hidden border border-tg-border bg-black relative">
-                <div class="absolute inset-0 pointer-events-none overflow-hidden">
+        <div class="mx-auto max-w-7xl px-4 pb-16 sm:px-6 sm:pb-24 lg:px-8">
+            <section
+                class="border-tg-border relative overflow-hidden rounded-xl border bg-black"
+            >
+                <div
+                    class="pointer-events-none absolute inset-0 overflow-hidden"
+                >
                     <img
-                        src="/images/club/team-huddle.jpg"
+                        src="/images/club/u7-u8-squad-photo-topgrade-london-fc.webp"
                         alt=""
-                        class="w-full h-full object-cover object-right md:object-center opacity-20 select-none scale-[1.02]"
+                        aria-hidden="true"
+                        class="h-full w-full scale-[1.02] select-none object-cover object-right opacity-20 md:object-center"
                         loading="lazy"
                     />
                     <div class="absolute inset-0 bg-black/90" />
                 </div>
 
-                <div class="relative z-10 p-6 sm:p-8 md:p-10 max-w-xl">
-                    <div class="text-[10px] font-bold uppercase tracking-widest text-tg-accent font-mono mb-1.5">
+                <div class="relative z-10 max-w-xl p-6 sm:p-8 md:p-10">
+                    <div
+                        class="text-tg-accent mb-1.5 font-mono text-[10px] font-bold uppercase tracking-widest"
+                    >
                         TOPGRADE LONDON FC
                     </div>
                     <h2
-                        class="text-xl sm:text-2xl md:text-3xl font-normal uppercase text-white tracking-tight mb-2"
-                        style="font-family: var(--tg-display); line-height: 1;"
+                        class="mb-2 text-xl font-normal uppercase tracking-tight text-white sm:text-2xl md:text-3xl"
+                        style="font-family: var(--tg-display); line-height: 1"
                     >
                         Join TopGrade London FC.
                     </h2>
-                    <p class="text-xs text-gray-300 leading-relaxed mb-5 max-w-md">
-                        North and East London youth football built through the game. Experience our coaching, culture, and competitive matchdays.
+                    <p
+                        class="mb-5 max-w-md text-xs leading-relaxed text-gray-300"
+                    >
+                        North and East London youth football built through the
+                        game. Experience our coaching, culture, and competitive
+                        matchdays.
                     </p>
                     <Link
                         href="/bookings"
-                        class="tg-btn text-xs py-2 px-5 shadow-sm inline-flex items-center gap-2"
+                        class="tg-btn inline-flex items-center gap-2 px-5 py-2 text-xs shadow-sm"
                     >
                         <span>Book a Session</span>
-                        <ArrowRight class="w-3.5 h-3.5" />
+                        <ArrowRight class="h-3.5 w-3.5" />
                     </Link>
                 </div>
             </section>

@@ -35,7 +35,7 @@ class PublicMomentController extends Controller
                     'images_count' => count($gallery),
                     'cover_url' => $coverUrl,
                     'cover_mime' => $coverMedia?->mime_type,
-                    'is_video' => str_starts_with($coverMedia?->mime_type ?? '', 'video/'),
+                    'is_video' => $coverMedia ? str_starts_with($coverMedia->mime_type ?? '', 'video/') : false,
                     'images' => $gallery,
                 ];
             }
@@ -82,6 +82,8 @@ class PublicMomentController extends Controller
                 'url' => $item['url'],
                 'name' => $item['name'],
                 'is_cover' => $coverUrl !== null && $item['url'] === $coverUrl,
+                'mime_type' => $item['mime_type'],
+                'is_video' => $item['is_video'],
             ];
         }, $gallery);
 
@@ -97,6 +99,8 @@ class PublicMomentController extends Controller
                 'id' => $m->id,
                 'title' => $m->title,
                 'slug' => $m->slug,
+                'published_at' => $m->published_at?->format('d M Y'),
+                'cover_mime' => $m->getCoverMedia()?->mime_type,
                 'cover_url' => $m->getResolvedCoverUrl(),
                 'images_count' => count($m->getResolvedGallery()),
             ])

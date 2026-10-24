@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Head } from '@inertiajs/vue3';
-import { useSeo, type SeoOptions } from '@/composables/useSeo';
+import { useSeo } from '@/composables/useSeo';
+import type { SeoOptions } from '@/composables/useSeo';
 
 const props = withDefaults(defineProps<SeoOptions>(), {
     path: '',
@@ -9,7 +10,15 @@ const props = withDefaults(defineProps<SeoOptions>(), {
     noindex: false,
 });
 
-const { title, description, canonicalUrl, ogImageUrl, robotsContent, type, siteName } = useSeo(props);
+const {
+    title,
+    description,
+    canonicalUrl,
+    ogImageUrl,
+    robotsContent,
+    type,
+    siteName,
+} = useSeo(props);
 </script>
 
 <template>

@@ -16,11 +16,17 @@ const props = defineProps<{
 
 <template>
     <div>
-        <h3 v-if="props.payload.title" class="mb-6 text-2xl font-semibold text-foreground">
+        <h3
+            v-if="props.payload.title"
+            class="text-foreground mb-6 text-2xl font-semibold"
+        >
             {{ props.payload.title }}
         </h3>
 
-        <ul v-if="props.payload.items?.length" class="grid gap-4 sm:grid-cols-2">
+        <ul
+            v-if="props.payload.items?.length"
+            class="grid gap-4 sm:grid-cols-2"
+        >
             <li
                 v-for="(item, idx) in props.payload.items"
                 :key="idx"
@@ -33,7 +39,9 @@ const props = defineProps<{
                 >
                     {{ item.icon }}
                 </span>
-                <span class="text-sm text-foreground leading-relaxed">{{ item.text }}</span>
+                <span class="text-foreground text-sm leading-relaxed">{{
+                    item.text
+                }}</span>
             </li>
         </ul>
     </div>

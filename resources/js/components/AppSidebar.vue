@@ -7,7 +7,6 @@ import {
     ClipboardList,
     FileText,
     LayoutGrid,
-    Menu,
     MessageSquare,
     Settings,
     Users,

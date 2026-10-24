@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { router, useForm } from '@inertiajs/vue3';
+import BlockEditor from '@/components/CMS/BlockEditor.vue';
+import type { Block } from '@/components/CMS/BlockEditor.vue';
 import FormPage from '@/components/FormPage.vue';
 import FormSection from '@/components/FormSection.vue';
 import PageActions from '@/components/PageActions.vue';
 import { Button } from '@/components/ui/button';
-import BlockEditor, { type Block } from '@/components/CMS/BlockEditor.vue';
 import { index as contentIndex, store as contentStore } from '@/routes/content';
 
 interface ContentType {
@@ -59,6 +60,7 @@ function handleSubmit(): void {
             // let server validate JSON
         }
     }
+
     form.submit(contentStore());
 }
 
@@ -80,7 +82,7 @@ function handleCancel(): void {
                 <div class="space-y-6">
                     <div>
                         <label
-                            class="mb-2 block text-sm font-medium text-foreground"
+                            class="text-foreground mb-2 block text-sm font-medium"
                         >
                             Content Type <span class="text-destructive">*</span>
                         </label>
@@ -99,7 +101,7 @@ function handleCancel(): void {
                         </select>
                         <p
                             v-if="form.errors.content_type_id"
-                            class="mt-1 text-sm text-destructive"
+                            class="text-destructive mt-1 text-sm"
                         >
                             {{ form.errors.content_type_id }}
                         </p>
@@ -107,7 +109,7 @@ function handleCancel(): void {
 
                     <div>
                         <label
-                            class="mb-2 block text-sm font-medium text-foreground"
+                            class="text-foreground mb-2 block text-sm font-medium"
                         >
                             Title <span class="text-destructive">*</span>
                         </label>
@@ -120,7 +122,7 @@ function handleCancel(): void {
                         />
                         <p
                             v-if="form.errors.title"
-                            class="mt-1 text-sm text-destructive"
+                            class="text-destructive mt-1 text-sm"
                         >
                             {{ form.errors.title }}
                         </p>
@@ -128,7 +130,7 @@ function handleCancel(): void {
 
                     <div>
                         <label
-                            class="mb-2 block text-sm font-medium text-foreground"
+                            class="text-foreground mb-2 block text-sm font-medium"
                         >
                             Slug <span class="text-destructive">*</span>
                         </label>
@@ -140,7 +142,7 @@ function handleCancel(): void {
                         />
                         <p
                             v-if="form.errors.slug"
-                            class="mt-1 text-sm text-destructive"
+                            class="text-destructive mt-1 text-sm"
                         >
                             {{ form.errors.slug }}
                         </p>
@@ -148,7 +150,7 @@ function handleCancel(): void {
 
                     <div>
                         <label
-                            class="mb-2 block text-sm font-medium text-foreground"
+                            class="text-foreground mb-2 block text-sm font-medium"
                         >
                             Excerpt
                         </label>
@@ -160,7 +162,7 @@ function handleCancel(): void {
                         />
                         <p
                             v-if="form.errors.excerpt"
-                            class="mt-1 text-sm text-destructive"
+                            class="text-destructive mt-1 text-sm"
                         >
                             {{ form.errors.excerpt }}
                         </p>
@@ -168,9 +170,15 @@ function handleCancel(): void {
                 </div>
             </FormSection>
 
-            <FormSection title="Page Blocks" description="Build your page by adding, configuring, and reordering content blocks.">
+            <FormSection
+                title="Page Blocks"
+                description="Build your page by adding, configuring, and reordering content blocks."
+            >
                 <BlockEditor v-model="form.blocks" />
-                <p v-if="form.errors.blocks" class="mt-2 text-sm text-destructive">
+                <p
+                    v-if="form.errors.blocks"
+                    class="text-destructive mt-2 text-sm"
+                >
                     {{ form.errors.blocks }}
                 </p>
             </FormSection>
@@ -182,7 +190,7 @@ function handleCancel(): void {
                 <div class="space-y-6">
                     <div>
                         <label
-                            class="mb-2 block text-sm font-medium text-foreground"
+                            class="text-foreground mb-2 block text-sm font-medium"
                         >
                             Status <span class="text-destructive">*</span>
                         </label>
@@ -192,7 +200,7 @@ function handleCancel(): void {
                         </select>
                         <p
                             v-if="form.errors.status"
-                            class="mt-1 text-sm text-destructive"
+                            class="text-destructive mt-1 text-sm"
                         >
                             {{ form.errors.status }}
                         </p>
@@ -200,7 +208,7 @@ function handleCancel(): void {
 
                     <div>
                         <label
-                            class="mb-2 block text-sm font-medium text-foreground"
+                            class="text-foreground mb-2 block text-sm font-medium"
                         >
                             Published At
                         </label>
@@ -211,7 +219,7 @@ function handleCancel(): void {
                         />
                         <p
                             v-if="form.errors.published_at"
-                            class="mt-1 text-sm text-destructive"
+                            class="text-destructive mt-1 text-sm"
                         >
                             {{ form.errors.published_at }}
                         </p>
@@ -225,7 +233,9 @@ function handleCancel(): void {
             >
                 <div class="space-y-6">
                     <div>
-                        <label class="mb-2 block text-sm font-medium text-foreground">
+                        <label
+                            class="text-foreground mb-2 block text-sm font-medium"
+                        >
                             Metadata JSON Payload
                         </label>
                         <textarea
@@ -234,12 +244,13 @@ function handleCancel(): void {
                             :class="monoTextareaClass"
                             placeholder='{\n  "tagline": "ALWAYS THE BEST — EST. 2022",\n  "headline": "DEVELOP YOUR FOOTBALL FUTURE"\n}'
                         />
-                        <p class="mt-1 text-xs text-muted-foreground">
-                            Provide a valid JSON payload to configure dynamic Inertia properties for Volara.
+                        <p class="text-muted-foreground mt-1 text-xs">
+                            Provide a valid JSON payload to configure dynamic
+                            Inertia properties for Volara.
                         </p>
                         <p
                             v-if="form.errors.metadata_json"
-                            class="mt-1 text-sm text-destructive"
+                            class="text-destructive mt-1 text-sm"
                         >
                             {{ form.errors.metadata_json }}
                         </p>
@@ -254,7 +265,7 @@ function handleCancel(): void {
                 <div class="space-y-6">
                     <div>
                         <label
-                            class="mb-2 block text-sm font-medium text-foreground"
+                            class="text-foreground mb-2 block text-sm font-medium"
                         >
                             SEO Title
                         </label>
@@ -266,7 +277,7 @@ function handleCancel(): void {
                         />
                         <p
                             v-if="form.errors['seo.title']"
-                            class="mt-1 text-sm text-destructive"
+                            class="text-destructive mt-1 text-sm"
                         >
                             {{ form.errors['seo.title'] }}
                         </p>
@@ -274,7 +285,7 @@ function handleCancel(): void {
 
                     <div>
                         <label
-                            class="mb-2 block text-sm font-medium text-foreground"
+                            class="text-foreground mb-2 block text-sm font-medium"
                         >
                             SEO Description
                         </label>
@@ -286,7 +297,7 @@ function handleCancel(): void {
                         />
                         <p
                             v-if="form.errors['seo.description']"
-                            class="mt-1 text-sm text-destructive"
+                            class="text-destructive mt-1 text-sm"
                         >
                             {{ form.errors['seo.description'] }}
                         </p>
@@ -294,7 +305,7 @@ function handleCancel(): void {
 
                     <div>
                         <label
-                            class="mb-2 block text-sm font-medium text-foreground"
+                            class="text-foreground mb-2 block text-sm font-medium"
                         >
                             Canonical URL
                         </label>
@@ -306,7 +317,7 @@ function handleCancel(): void {
                         />
                         <p
                             v-if="form.errors['seo.canonical_url']"
-                            class="mt-1 text-sm text-destructive"
+                            class="text-destructive mt-1 text-sm"
                         >
                             {{ form.errors['seo.canonical_url'] }}
                         </p>

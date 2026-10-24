@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { computed, ref, onMounted } from 'vue';
 import { Link, router } from '@inertiajs/vue3';
-import ErrorLayout from '@/layouts/ErrorLayout.vue';
+import { computed, ref, onMounted } from 'vue';
 import SeoHead from '@/components/SEO/SeoHead.vue';
+import ErrorLayout from '@/layouts/ErrorLayout.vue';
 
 defineOptions({
     layout: ErrorLayout,
@@ -19,7 +19,13 @@ interface ErrorStateConfig {
     secondaryHref?: string;
     isReloadSecondary?: boolean;
     ballAction: string;
-    situation: 'throw-in' | 'referee' | 'halftime' | 'var' | 'pitch' | 'stoppage';
+    situation:
+        | 'throw-in'
+        | 'referee'
+        | 'halftime'
+        | 'var'
+        | 'pitch'
+        | 'stoppage';
     showPlayer: boolean;
     playerImage?: string;
     playerAlt?: string;
@@ -50,7 +56,8 @@ const errorStates: Record<number, ErrorStateConfig> = {
         code: '403',
         label: "REFEREE'S CALL",
         headline: 'Access denied.',
-        description: "The referee has stopped play. You don't have permission to enter this area.",
+        description:
+            "The referee has stopped play. You don't have permission to enter this area.",
         action: 'Return to the Club',
         actionHref: '/',
         secondaryAction: 'Go to Sign In',
@@ -106,11 +113,14 @@ const current = computed<ErrorStateConfig>(() => {
     if (errorStates[props.status]) {
         return errorStates[props.status];
     }
+
     return {
         code: String(props.status || 500),
         label: 'PLAY STOPPED',
         headline: 'Play has been stopped.',
-        description: props.message || 'Something unexpected interrupted the match. Return to the club to continue.',
+        description:
+            props.message ||
+            'Something unexpected interrupted the match. Return to the club to continue.',
         action: 'Back to the Club',
         actionHref: '/',
         secondaryAction: 'Return to Pitch',
@@ -126,7 +136,9 @@ const prefersReducedMotion = ref(false);
 
 onMounted(() => {
     if (typeof window !== 'undefined' && window.matchMedia) {
-        prefersReducedMotion.value = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        prefersReducedMotion.value = window.matchMedia(
+            '(prefers-reduced-motion: reduce)',
+        ).matches;
     }
 });
 
@@ -137,10 +149,13 @@ function handleSecondaryClick() {
 }
 
 function handleBallInteraction() {
-    if (ballState.value === 'in-motion') return;
+    if (ballState.value === 'in-motion') {
+        return;
+    }
 
     if (prefersReducedMotion.value) {
         router.visit(current.value.actionHref);
+
         return;
     }
 
@@ -161,14 +176,19 @@ function handleBallInteraction() {
     />
 
     <!-- Main Matchday Notice Grid inside ErrorLayout -->
-    <section class="relative z-10 max-w-6xl w-full mx-auto px-6 sm:px-12 py-12 lg:py-16 flex flex-col justify-center">
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
-            
+    <section
+        class="relative z-10 mx-auto flex w-full max-w-6xl flex-col justify-center px-6 py-12 sm:px-12 lg:py-16"
+    >
+        <div class="grid grid-cols-1 items-center gap-10 lg:grid-cols-12">
             <!-- Left Column: Editorial Information & Direct Actions -->
-            <div class="lg:col-span-7 space-y-6 max-w-xl">
+            <div class="max-w-xl space-y-6 lg:col-span-7">
                 <!-- Whistle / Match Situation Pill -->
-                <div class="inline-flex items-center gap-2.5 px-3 py-1.5 rounded-xs border border-tg-border bg-tg-bg-deep text-tg-accent text-xs font-bold tracking-widest uppercase">
-                    <span class="inline-block w-2 h-2 rounded-full bg-tg-accent animate-pulse" />
+                <div
+                    class="rounded-xs border-tg-border bg-tg-bg-deep text-tg-accent inline-flex items-center gap-2.5 border px-3 py-1.5 text-xs font-bold uppercase tracking-widest"
+                >
+                    <span
+                        class="bg-tg-accent inline-block h-2 w-2 animate-pulse rounded-full"
+                    />
                     <span>{{ current.label }}</span>
                     <span class="text-tg-border-strong">|</span>
                     <span class="text-tg-text-muted">MATCHDAY STOPPAGE</span>
@@ -177,8 +197,8 @@ function handleBallInteraction() {
                 <!-- Large Display Status Code -->
                 <div class="leading-none">
                     <span
-                        class="text-7xl sm:text-8xl md:text-9xl font-normal tracking-tight text-tg-text-strong block select-all"
-                        style="font-family: var(--tg-display);"
+                        class="text-tg-text-strong block select-all text-7xl font-normal tracking-tight sm:text-8xl md:text-9xl"
+                        style="font-family: var(--tg-display)"
                     >
                         {{ current.code }}
                     </span>
@@ -187,22 +207,24 @@ function handleBallInteraction() {
                 <!-- Headline & Explanation -->
                 <div class="space-y-3">
                     <h1
-                        class="text-2xl sm:text-3xl md:text-4xl font-normal uppercase text-tg-text-strong tracking-wide"
-                        style="font-family: var(--tg-display);"
+                        class="text-tg-text-strong text-2xl font-normal uppercase tracking-wide sm:text-3xl md:text-4xl"
+                        style="font-family: var(--tg-display)"
                     >
                         {{ current.headline }}
                     </h1>
-                    <p class="text-tg-text text-base sm:text-lg leading-relaxed text-tg-text-muted">
+                    <p
+                        class="text-tg-text text-tg-text-muted text-base leading-relaxed sm:text-lg"
+                    >
                         {{ current.description }}
                     </p>
                 </div>
 
                 <!-- Contextual Actions -->
-                <div class="pt-4 flex flex-wrap items-center gap-5">
+                <div class="flex flex-wrap items-center gap-5 pt-4">
                     <!-- Primary Action Button -->
                     <Link
                         :href="current.actionHref"
-                        class="inline-flex items-center justify-center px-6 py-3 rounded-xs bg-tg-accent text-white font-bold text-xs uppercase tracking-widest hover:bg-tg-accent-hover transition-colors shadow-sm"
+                        class="rounded-xs bg-tg-accent hover:bg-tg-accent-hover inline-flex items-center justify-center px-6 py-3 text-xs font-bold uppercase tracking-widest text-white shadow-sm transition-colors"
                     >
                         {{ current.action }}
                     </Link>
@@ -212,7 +234,7 @@ function handleBallInteraction() {
                         v-if="current.isReloadSecondary"
                         type="button"
                         @click="handleSecondaryClick"
-                        class="inline-flex items-center gap-2 text-xs uppercase tracking-widest text-tg-text-muted hover:text-tg-text-strong transition-colors cursor-pointer py-3"
+                        class="text-tg-text-muted hover:text-tg-text-strong inline-flex cursor-pointer items-center gap-2 py-3 text-xs uppercase tracking-widest transition-colors"
                     >
                         <span>↻</span>
                         <span>{{ current.secondaryAction }}</span>
@@ -221,7 +243,7 @@ function handleBallInteraction() {
                     <Link
                         v-else-if="current.secondaryHref"
                         :href="current.secondaryHref"
-                        class="inline-flex items-center gap-1.5 text-xs uppercase tracking-widest text-tg-text-muted hover:text-tg-text-strong transition-colors py-3"
+                        class="text-tg-text-muted hover:text-tg-text-strong inline-flex items-center gap-1.5 py-3 text-xs uppercase tracking-widest transition-colors"
                     >
                         <span>{{ current.secondaryAction }}</span>
                         <span>→</span>
@@ -230,51 +252,66 @@ function handleBallInteraction() {
             </div>
 
             <!-- Right Column: Interactive Pitch Boundary & Ball Physics Zone -->
-            <div class="lg:col-span-5 relative flex flex-col items-center lg:items-end justify-center min-h-[340px] sm:min-h-[420px]">
-                
+            <div
+                class="relative flex min-h-[340px] flex-col items-center justify-center sm:min-h-[420px] lg:col-span-5 lg:items-end"
+            >
                 <!-- Optional Compositional Editorial Player Cutout (Primary on 404 throw-in, optional on 503) -->
                 <div
                     v-if="current.showPlayer && current.playerImage"
-                    class="absolute right-4 sm:right-12 bottom-6 pointer-events-none z-10 select-none transition-opacity duration-300"
-                    :class="[ballState === 'in-motion' ? 'opacity-40' : 'opacity-85']"
+                    class="pointer-events-none absolute bottom-6 right-4 z-10 select-none transition-opacity duration-300 sm:right-12"
+                    :class="[
+                        ballState === 'in-motion' ? 'opacity-40' : 'opacity-85',
+                    ]"
                 >
                     <img
                         :src="current.playerImage"
-                        :alt="current.playerAlt || 'TopGrade youth player action'"
-                        class="h-[280px] sm:h-[360px] md:h-[400px] w-auto object-contain filter drop-shadow-lg"
+                        :alt="
+                            current.playerAlt || 'TopGrade youth player action'
+                        "
+                        class="h-[280px] w-auto object-contain drop-shadow-lg filter sm:h-[360px] md:h-[400px]"
                         loading="eager"
                     />
                 </div>
 
                 <!-- Touchline Boundary Pitch Strip -->
-                <div class="relative w-full max-w-[340px] sm:max-w-[400px] pt-20 flex flex-col items-center lg:items-end">
-                    
+                <div
+                    class="relative flex w-full max-w-[340px] flex-col items-center pt-20 sm:max-w-[400px] lg:items-end"
+                >
                     <!-- Interactive Match Ball -->
                     <div class="relative z-20 flex flex-col items-center">
-                        
                         <!-- Ball trigger & physics container -->
                         <button
                             type="button"
                             @click="handleBallInteraction"
-                            class="group relative focus:outline-none focus-visible:ring-2 focus-visible:ring-tg-accent rounded-full p-2 cursor-pointer transition-transform"
+                            class="focus-visible:ring-tg-accent group relative cursor-pointer rounded-full p-2 transition-transform focus:outline-none focus-visible:ring-2"
                             :class="[
-                                ballState === 'in-motion' ? 'ball-launch-trajectory' : 'hover:scale-105'
+                                ballState === 'in-motion'
+                                    ? 'ball-launch-trajectory'
+                                    : 'hover:scale-105',
                             ]"
                             :aria-label="current.ballAction"
                         >
                             <img
                                 src="/ball-optimized.webp"
                                 alt="TopGrade Official Match Ball"
-                                class="w-24 h-24 sm:w-28 sm:h-28 object-contain"
+                                class="h-24 w-24 object-contain sm:h-28 sm:w-28"
                                 :class="[
-                                    prefersReducedMotion ? '' : (ballState === 'in-motion' ? 'ball-spin-accelerated' : 'ball-spin-ambient')
+                                    prefersReducedMotion
+                                        ? ''
+                                        : ballState === 'in-motion'
+                                          ? 'ball-spin-accelerated'
+                                          : 'ball-spin-ambient',
                                 ]"
                             />
-                            
+
                             <!-- Ground Contact Shadow -->
                             <div
-                                class="w-20 sm:w-24 h-3 mx-auto mt-1 rounded-full bg-black/70 blur-[3px] transition-all"
-                                :class="[ballState === 'in-motion' ? 'opacity-10 scale-50' : 'opacity-70']"
+                                class="mx-auto mt-1 h-3 w-20 rounded-full bg-black/70 blur-[3px] transition-all sm:w-24"
+                                :class="[
+                                    ballState === 'in-motion'
+                                        ? 'scale-50 opacity-10'
+                                        : 'opacity-70',
+                                ]"
                                 aria-hidden="true"
                             />
                         </button>
@@ -283,22 +320,25 @@ function handleBallInteraction() {
                         <button
                             type="button"
                             @click="handleBallInteraction"
-                            class="mt-3 text-xs tracking-wider uppercase font-semibold text-tg-highlight hover:text-white transition-colors flex items-center gap-1.5 cursor-pointer py-1.5 px-3 rounded-xs border border-tg-border bg-tg-bg-deep/80"
+                            class="text-tg-highlight rounded-xs border-tg-border bg-tg-bg-deep/80 mt-3 flex cursor-pointer items-center gap-1.5 border px-3 py-1.5 text-xs font-semibold uppercase tracking-wider transition-colors hover:text-white"
                             :disabled="ballState === 'in-motion'"
                         >
-                            <span v-if="ballState === 'in-motion'">Playing ball back in...</span>
+                            <span v-if="ballState === 'in-motion'"
+                                >Playing ball back in...</span
+                            >
                             <span v-else>{{ current.ballAction }}</span>
                         </button>
                     </div>
 
                     <!-- Crisp Chalk Touchline Marker -->
-                    <div class="w-full mt-6 pt-3 border-t-2 border-dashed border-white/20 flex items-center justify-between text-[10px] tracking-widest uppercase text-tg-text-muted font-mono">
+                    <div
+                        class="text-tg-text-muted mt-6 flex w-full items-center justify-between border-t-2 border-dashed border-white/20 pt-3 font-mono text-[10px] uppercase tracking-widest"
+                    >
                         <span>TOUCHLINE // PITCH EDGE</span>
                         <span>{{ current.label }}</span>
                     </div>
                 </div>
             </div>
-
         </div>
     </section>
 </template>

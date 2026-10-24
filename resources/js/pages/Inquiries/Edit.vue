@@ -1,11 +1,14 @@
 <script setup lang="ts">
 import { Link, router, useForm } from '@inertiajs/vue3';
 import FormSection from '@/components/FormSection.vue';
-import PageHeader from '@/components/PageHeader.vue';
 import PageActions from '@/components/PageActions.vue';
+import PageHeader from '@/components/PageHeader.vue';
 import { Button } from '@/components/ui/button';
 import { show as contactShow } from '@/routes/contacts';
-import { index as inquiriesIndex, update as inquiriesUpdate } from '@/routes/inquiries';
+import {
+    index as inquiriesIndex,
+    update as inquiriesUpdate,
+} from '@/routes/inquiries';
 
 interface Contact {
     id: number;
@@ -54,11 +57,21 @@ const statusColors = {
     archived: 'bg-gray-100 text-gray-800',
 };
 
-const form = useForm<{ status: 'new' | 'open' | 'in_progress' | 'resolved' | 'closed' | 'archived' }>({
+const form = useForm<{
+    status: 'new' | 'open' | 'in_progress' | 'resolved' | 'closed' | 'archived';
+}>({
     status: props.inquiry.status,
 });
 
-function updateStatus(newStatus: 'new' | 'open' | 'in_progress' | 'resolved' | 'closed' | 'archived'): void {
+function updateStatus(
+    newStatus:
+        | 'new'
+        | 'open'
+        | 'in_progress'
+        | 'resolved'
+        | 'closed'
+        | 'archived',
+): void {
     form.status = newStatus;
     form.submit(inquiriesUpdate(props.inquiry.id));
 }
@@ -69,6 +82,7 @@ function handleCancel(): void {
 
 function formatDate(dateStr: string): string {
     const date = new Date(dateStr);
+
     return new Intl.DateTimeFormat(undefined, {
         month: 'long',
         day: 'numeric',
@@ -92,17 +106,21 @@ function formatDate(dateStr: string): string {
                     <span
                         :class="[
                             statusColors[inquiry.status],
-                            'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
+                            'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium',
                         ]"
                     >
                         {{
                             inquiry.status
                                 .split('_')
-                                .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                                .map(
+                                    (word) =>
+                                        word.charAt(0).toUpperCase() +
+                                        word.slice(1),
+                                )
                                 .join(' ')
                         }}
                     </span>
-                    <p class="text-xs text-muted-foreground">
+                    <p class="text-muted-foreground text-xs">
                         Received: {{ formatDate(inquiry.created_at) }}
                     </p>
                 </div>
@@ -115,33 +133,33 @@ function formatDate(dateStr: string): string {
                 <div class="space-y-4">
                     <div>
                         <label
-                            class="mb-2 block text-sm font-medium text-foreground"
+                            class="text-foreground mb-2 block text-sm font-medium"
                         >
                             Name
                         </label>
-                        <p class="text-sm text-foreground">
+                        <p class="text-foreground text-sm">
                             {{ inquiry.name }}
                         </p>
                     </div>
 
                     <div>
                         <label
-                            class="mb-2 block text-sm font-medium text-foreground"
+                            class="text-foreground mb-2 block text-sm font-medium"
                         >
                             Email
                         </label>
-                        <p class="text-sm text-foreground">
+                        <p class="text-foreground text-sm">
                             {{ inquiry.email }}
                         </p>
                     </div>
 
                     <div v-if="inquiry.phone">
                         <label
-                            class="mb-2 block text-sm font-medium text-foreground"
+                            class="text-foreground mb-2 block text-sm font-medium"
                         >
                             Phone
                         </label>
-                        <p class="text-sm text-foreground">
+                        <p class="text-foreground text-sm">
                             {{ inquiry.phone }}
                         </p>
                     </div>
@@ -156,9 +174,10 @@ function formatDate(dateStr: string): string {
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="font-medium">
-                            {{ inquiry.contact.first_name }} {{ inquiry.contact.last_name }}
+                            {{ inquiry.contact.first_name }}
+                            {{ inquiry.contact.last_name }}
                         </p>
-                        <p class="text-sm text-muted-foreground">
+                        <p class="text-muted-foreground text-sm">
                             {{ inquiry.contact.email }}
                         </p>
                     </div>
@@ -171,30 +190,32 @@ function formatDate(dateStr: string): string {
             </FormSection>
 
             <FormSection
-                title="Message"
-                description="The full inquiry message."
+                title="Message Details"
+                description="The full enquiry message submitted by the contact."
             >
-                <div class="space-y-4">
+                <div class="space-y-6">
                     <div>
-                        <label
-                            class="mb-2 block text-sm font-medium text-foreground"
+                        <span
+                            class="text-muted-foreground mb-1 block text-xs font-bold uppercase tracking-wider"
                         >
                             Subject
-                        </label>
-                        <p class="text-sm text-foreground">
+                        </span>
+                        <p class="text-foreground text-xl font-bold">
                             {{ inquiry.subject }}
                         </p>
                     </div>
 
                     <div>
-                        <label
-                            class="mb-2 block text-sm font-medium text-foreground"
+                        <span
+                            class="text-muted-foreground mb-2 block text-xs font-bold uppercase tracking-wider"
                         >
-                            Message
-                        </label>
-                        <p class="whitespace-pre-wrap text-sm text-foreground">
+                            Full Message Body
+                        </span>
+                        <div
+                            class="border-border w-full select-text whitespace-pre-wrap rounded-xl border bg-slate-50/80 p-6 font-sans text-base leading-relaxed text-slate-900 shadow-inner sm:p-8 sm:text-lg sm:leading-8 dark:bg-slate-900/60 dark:text-slate-100"
+                        >
                             {{ inquiry.message }}
-                        </p>
+                        </div>
                     </div>
                 </div>
             </FormSection>
@@ -239,11 +260,7 @@ function formatDate(dateStr: string): string {
                     Archive
                 </Button>
             </div>
-            <Button
-                type="button"
-                variant="outline"
-                @click="handleCancel"
-            >
+            <Button type="button" variant="outline" @click="handleCancel">
                 Back
             </Button>
         </PageActions>

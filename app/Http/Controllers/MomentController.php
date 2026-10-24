@@ -7,6 +7,7 @@ use App\Http\Requests\UpdateMomentRequest;
 use App\Models\Moment;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
@@ -58,18 +59,44 @@ class MomentController extends Controller
         $images = $request->file('images', []);
         unset($data['seo'], $data['images']);
 
-        $moment = Moment::create($data);
+        $uploadedMedia = [];
 
-        if (! empty($seoData)) {
-            $moment->seo()->create($seoData);
-        }
+        try {
+            $moment = DB::transaction(function () use ($data, $seoData) {
+                $moment = Moment::create($data);
 
-        foreach ($images as $image) {
-            $moment->addMedia($image)->toMediaCollection('gallery');
-        }
+                if (! empty($seoData)) {
+                    $moment->seo()->create($seoData);
+                }
 
-        if (! $moment->cover_media_id && ($firstMedia = $moment->getFirstMedia('gallery'))) {
-            $moment->update(['cover_media_id' => $firstMedia->id]);
+                return $moment;
+            });
+
+            foreach ($images as $image) {
+                $uploadedMedia[] = $moment->addMedia($image)->toMediaCollection('gallery');
+            }
+
+            if (! $moment->cover_media_id && ($firstMedia = $moment->getFirstMedia('gallery'))) {
+                $moment->update(['cover_media_id' => $firstMedia->id]);
+            }
+        } catch (\Throwable $e) {
+            foreach ($uploadedMedia as $media) {
+                try {
+                    $media->delete();
+                } catch (\Throwable) {
+                    // ignore secondary errors during rollback
+                }
+            }
+
+            if (isset($moment) && $moment->exists) {
+                $moment->delete();
+            }
+
+            report($e);
+
+            return back()
+                ->withInput()
+                ->withErrors(['images' => 'Failed to upload one or more gallery images. The draft was not saved. Please try again.']);
         }
 
         $redirectRoute = $request->routeIs('dashboard.moments.*') ? 'dashboard.moments.edit' : 'dashboard.galleries.edit';
@@ -113,9 +140,9 @@ class MomentController extends Controller
                 'external_link_label' => $moment->external_link_label,
                 'people' => $moment->people ?? [],
                 'seo' => [
-                    'title' => $moment->seo?->title ?? '',
-                    'description' => $moment->seo?->description ?? '',
-                    'canonical_url' => $moment->seo?->canonical_url ?? '',
+                    'title' => $moment->seo->title ?? '',
+                    'description' => $moment->seo->description ?? '',
+                    'canonical_url' => $moment->seo->canonical_url ?? '',
                 ],
             ],
             'gallery' => $gallery,
@@ -135,19 +162,39 @@ class MomentController extends Controller
             abort_unless($isOwned, 422, 'Selected cover image does not belong to this gallery.');
         }
 
-        $moment->update($data);
+        $uploadedMedia = [];
 
-        if (! empty($seoData)) {
-            $moment->seo()->updateOrCreate([], $seoData);
-        }
+        try {
+            foreach ($images as $image) {
+                $uploadedMedia[] = $moment->addMedia($image)->toMediaCollection('gallery');
+            }
 
-        foreach ($images as $image) {
-            $moment->addMedia($image)->toMediaCollection('gallery');
-        }
+            DB::transaction(function () use ($moment, $data, $seoData) {
+                $moment->update($data);
 
-        // Enforce cover fallback invariant if cover is not set
-        if (! $moment->cover_media_id && ($firstMedia = $moment->fresh()->getFirstMedia('gallery'))) {
-            $moment->update(['cover_media_id' => $firstMedia->id]);
+                if (! empty($seoData)) {
+                    $moment->seo()->updateOrCreate([], $seoData);
+                }
+
+                // Enforce cover fallback invariant if cover is not set
+                if (! $moment->cover_media_id && ($firstMedia = $moment->fresh()->getFirstMedia('gallery'))) {
+                    $moment->update(['cover_media_id' => $firstMedia->id]);
+                }
+            });
+        } catch (\Throwable $e) {
+            foreach ($uploadedMedia as $media) {
+                try {
+                    $media->delete();
+                } catch (\Throwable) {
+                    // ignore secondary errors during rollback
+                }
+            }
+
+            report($e);
+
+            return back()
+                ->withInput()
+                ->withErrors(['images' => 'Failed to upload one or more images to storage. Album details and existing photos were preserved.']);
         }
 
         $redirectRoute = $request->routeIs('dashboard.moments.*') ? 'dashboard.moments.edit' : 'dashboard.galleries.edit';
@@ -163,11 +210,12 @@ class MomentController extends Controller
             'order.*' => ['integer'],
         ]);
 
+        /** @var array<int, int> $submittedIds */
         $submittedIds = $validated['order'];
         $ownedIds = $moment->getMedia('gallery')->pluck('id');
 
         abort_unless(
-            collect($submittedIds)->every(fn ($id) => $ownedIds->contains($id)),
+            collect($submittedIds)->every(fn (int $id) => $ownedIds->contains($id)),
             422,
             'One or more media items do not belong to this gallery.'
         );

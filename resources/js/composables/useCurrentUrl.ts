@@ -47,7 +47,10 @@ export function useCurrentUrl(): UseCurrentUrlReturn {
                 ? new URL(urlString)
                 : new URL(urlString, 'http://localhost');
             const targetPathWithSearch = targetUrl.pathname + targetUrl.search;
-            return startsWith ? currentFull.startsWith(targetPathWithSearch) : currentFull === targetPathWithSearch;
+
+            return startsWith
+                ? currentFull.startsWith(targetPathWithSearch)
+                : currentFull === targetPathWithSearch;
         }
 
         const urlToCompare = currentUrl ?? currentUrlReactive.value;

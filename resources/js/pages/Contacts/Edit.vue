@@ -51,9 +51,14 @@ function handleCancel(): void {
 }
 
 function handleDelete(): void {
-    if (!confirm(`Delete ${props.contact.first_name} ${props.contact.last_name}? This cannot be undone.`)) {
+    if (
+        !confirm(
+            `Delete ${props.contact.first_name} ${props.contact.last_name}? This cannot be undone.`,
+        )
+    ) {
         return;
     }
+
     router.delete(contactsDestroy.url(props.contact.id));
 }
 </script>
@@ -72,9 +77,10 @@ function handleDelete(): void {
                     <div class="grid grid-cols-2 gap-6">
                         <div>
                             <label
-                                class="mb-2 block text-sm font-medium text-foreground"
+                                class="text-foreground mb-2 block text-sm font-medium"
                             >
-                                First Name <span class="text-destructive">*</span>
+                                First Name
+                                <span class="text-destructive">*</span>
                             </label>
                             <input
                                 v-model="form.first_name"
@@ -83,7 +89,7 @@ function handleDelete(): void {
                             />
                             <p
                                 v-if="form.errors.first_name"
-                                class="mt-1 text-sm text-destructive"
+                                class="text-destructive mt-1 text-sm"
                             >
                                 {{ form.errors.first_name }}
                             </p>
@@ -91,9 +97,10 @@ function handleDelete(): void {
 
                         <div>
                             <label
-                                class="mb-2 block text-sm font-medium text-foreground"
+                                class="text-foreground mb-2 block text-sm font-medium"
                             >
-                                Last Name <span class="text-destructive">*</span>
+                                Last Name
+                                <span class="text-destructive">*</span>
                             </label>
                             <input
                                 v-model="form.last_name"
@@ -102,7 +109,7 @@ function handleDelete(): void {
                             />
                             <p
                                 v-if="form.errors.last_name"
-                                class="mt-1 text-sm text-destructive"
+                                class="text-destructive mt-1 text-sm"
                             >
                                 {{ form.errors.last_name }}
                             </p>
@@ -111,7 +118,7 @@ function handleDelete(): void {
 
                     <div>
                         <label
-                            class="mb-2 block text-sm font-medium text-foreground"
+                            class="text-foreground mb-2 block text-sm font-medium"
                         >
                             Email <span class="text-destructive">*</span>
                         </label>
@@ -122,7 +129,7 @@ function handleDelete(): void {
                         />
                         <p
                             v-if="form.errors.email"
-                            class="mt-1 text-sm text-destructive"
+                            class="text-destructive mt-1 text-sm"
                         >
                             {{ form.errors.email }}
                         </p>
@@ -131,7 +138,7 @@ function handleDelete(): void {
                     <div class="grid grid-cols-3 gap-6">
                         <div>
                             <label
-                                class="mb-2 block text-sm font-medium text-foreground"
+                                class="text-foreground mb-2 block text-sm font-medium"
                             >
                                 Phone
                             </label>
@@ -142,7 +149,7 @@ function handleDelete(): void {
                             />
                             <p
                                 v-if="form.errors.phone"
-                                class="mt-1 text-sm text-destructive"
+                                class="text-destructive mt-1 text-sm"
                             >
                                 {{ form.errors.phone }}
                             </p>
@@ -150,7 +157,7 @@ function handleDelete(): void {
 
                         <div>
                             <label
-                                class="mb-2 block text-sm font-medium text-foreground"
+                                class="text-foreground mb-2 block text-sm font-medium"
                             >
                                 Company
                             </label>
@@ -161,7 +168,7 @@ function handleDelete(): void {
                             />
                             <p
                                 v-if="form.errors.company"
-                                class="mt-1 text-sm text-destructive"
+                                class="text-destructive mt-1 text-sm"
                             >
                                 {{ form.errors.company }}
                             </p>
@@ -169,7 +176,7 @@ function handleDelete(): void {
 
                         <div>
                             <label
-                                class="mb-2 block text-sm font-medium text-foreground"
+                                class="text-foreground mb-2 block text-sm font-medium"
                             >
                                 Position
                             </label>
@@ -180,7 +187,7 @@ function handleDelete(): void {
                             />
                             <p
                                 v-if="form.errors.position"
-                                class="mt-1 text-sm text-destructive"
+                                class="text-destructive mt-1 text-sm"
                             >
                                 {{ form.errors.position }}
                             </p>
@@ -192,7 +199,7 @@ function handleDelete(): void {
             <FormSection title="Additional Information">
                 <div>
                     <label
-                        class="mb-2 block text-sm font-medium text-foreground"
+                        class="text-foreground mb-2 block text-sm font-medium"
                     >
                         Notes
                     </label>
@@ -203,7 +210,7 @@ function handleDelete(): void {
                     />
                     <p
                         v-if="form.errors.notes"
-                        class="mt-1 text-sm text-destructive"
+                        class="text-destructive mt-1 text-sm"
                     >
                         {{ form.errors.notes }}
                     </p>
@@ -213,7 +220,7 @@ function handleDelete(): void {
             <FormSection title="Status">
                 <div>
                     <label
-                        class="mb-2 block text-sm font-medium text-foreground"
+                        class="text-foreground mb-2 block text-sm font-medium"
                     >
                         Status <span class="text-destructive">*</span>
                     </label>
@@ -223,7 +230,7 @@ function handleDelete(): void {
                     </select>
                     <p
                         v-if="form.errors.status"
-                        class="mt-1 text-sm text-destructive"
+                        class="text-destructive mt-1 text-sm"
                     >
                         {{ form.errors.status }}
                     </p>

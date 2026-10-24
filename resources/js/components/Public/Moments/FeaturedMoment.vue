@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { Link } from '@inertiajs/vue3';
 import { ArrowRight, ChevronLeft, ChevronRight } from '@lucide/vue';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
 import MomentMedia from './MomentMedia.vue';
 
 interface MomentImage {
@@ -37,9 +37,14 @@ let touchStartX = 0;
 let touchEndX = 0;
 
 const carouselImages = computed(() => {
-    if (!props.featured || !props.featured.images || props.featured.images.length === 0) {
+    if (
+        !props.featured ||
+        !props.featured.images ||
+        props.featured.images.length === 0
+    ) {
         return [];
     }
+
     return props.featured.images;
 });
 
@@ -57,7 +62,11 @@ function resetTimer(): void {
         return;
     }
 
-    if (canAutoplay.value && !isPaused.value && document.visibilityState !== 'hidden') {
+    if (
+        canAutoplay.value &&
+        !isPaused.value &&
+        document.visibilityState !== 'hidden'
+    ) {
         autoplayTimer = setInterval(() => {
             nextSlide();
         }, 5000);
@@ -65,26 +74,31 @@ function resetTimer(): void {
 }
 
 function nextSlide(): void {
-    if (carouselImages.value.length <= 1) return;
+    if (carouselImages.value.length <= 1) {
+        return;
+    }
+
     currentSlide.value = (currentSlide.value + 1) % carouselImages.value.length;
     resetTimer();
 }
 
 function prevSlide(): void {
-    if (carouselImages.value.length <= 1) return;
-    currentSlide.value =
-        (currentSlide.value - 1 + carouselImages.value.length) % carouselImages.value.length;
-    resetTimer();
-}
+    if (carouselImages.value.length <= 1) {
+        return;
+    }
 
-function goToSlide(idx: number): void {
-    currentSlide.value = idx;
+    currentSlide.value =
+        (currentSlide.value - 1 + carouselImages.value.length) %
+        carouselImages.value.length;
     resetTimer();
 }
 
 function onHeroMouseEnter(): void {
     isPaused.value = true;
-    if (autoplayTimer) clearInterval(autoplayTimer);
+
+    if (autoplayTimer) {
+        clearInterval(autoplayTimer);
+    }
 }
 
 function onHeroMouseLeave(): void {
@@ -99,6 +113,7 @@ function onTouchStart(e: TouchEvent): void {
 function onTouchEnd(e: TouchEvent): void {
     touchEndX = e.changedTouches[0].screenX;
     const diff = touchEndX - touchStartX;
+
     if (Math.abs(diff) > 40) {
         if (diff > 0) {
             prevSlide();
@@ -110,21 +125,28 @@ function onTouchEnd(e: TouchEvent): void {
 
 function onVisibilityChange(): void {
     if (document.visibilityState === 'hidden') {
-        if (autoplayTimer) clearInterval(autoplayTimer);
+        if (autoplayTimer) {
+            clearInterval(autoplayTimer);
+        }
     } else {
         resetTimer();
     }
 }
 
 onMounted(() => {
-    reduceMotion.value = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    reduceMotion.value = window.matchMedia(
+        '(prefers-reduced-motion: reduce)',
+    ).matches;
     document.addEventListener('visibilitychange', onVisibilityChange);
     resetTimer();
 });
 
 onUnmounted(() => {
     document.removeEventListener('visibilitychange', onVisibilityChange);
-    if (autoplayTimer) clearInterval(autoplayTimer);
+
+    if (autoplayTimer) {
+        clearInterval(autoplayTimer);
+    }
 });
 </script>
 
@@ -132,23 +154,27 @@ onUnmounted(() => {
     <section
         v-if="featured && carouselImages.length > 0"
         aria-label="Featured Moment Gallery"
-        class="relative border-b border-tg-border/80 bg-black overflow-hidden pt-4 pb-10 sm:pt-6 sm:pb-14"
+        class="border-tg-border/80 relative overflow-hidden border-b bg-black pb-10 pt-4 sm:pb-14 sm:pt-6"
         @mouseenter="onHeroMouseEnter"
         @mouseleave="onHeroMouseLeave"
         @touchstart="onTouchStart"
         @touchend="onTouchEnd"
     >
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <!-- Cinematic Frame with Restrained Depth -->
             <div
-                class="relative w-full aspect-4/3 sm:aspect-16/10 md:aspect-21/10 min-h-[480px] max-h-[720px] rounded-2xl overflow-hidden border border-tg-border bg-tg-bg-deep shadow-2xl"
+                class="aspect-4/3 sm:aspect-16/10 md:aspect-21/10 border-tg-border bg-tg-bg-deep relative max-h-[720px] min-h-[480px] w-full overflow-hidden rounded-2xl border shadow-2xl"
             >
                 <!-- Carousel Slide Images/Videos -->
                 <div
                     v-for="(img, idx) in carouselImages"
                     :key="img.id"
                     class="absolute inset-0 transition-opacity duration-700 ease-out"
-                    :class="idx === currentSlide ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'"
+                    :class="
+                        idx === currentSlide
+                            ? 'z-10 opacity-100'
+                            : 'pointer-events-none z-0 opacity-0'
+                    "
                 >
                     <MomentMedia
                         :src="img.url"
@@ -163,22 +189,31 @@ onUnmounted(() => {
                 </div>
 
                 <!-- Flat Translucent Layer (No Gradients) -->
-                <div class="absolute inset-0 z-15 pointer-events-none bg-black/55" />
+                <div
+                    class="z-15 pointer-events-none absolute inset-0 bg-black/55"
+                />
 
                 <!-- Content Overlay: Editorial Hierarchy -->
-                <div class="absolute inset-0 z-20 p-6 sm:p-10 md:p-14 flex flex-col justify-between pointer-events-none">
+                <div
+                    class="pointer-events-none absolute inset-0 z-20 flex flex-col justify-between p-6 sm:p-10 md:p-14"
+                >
                     <!-- Top-Left Story Eyebrow & Monumental Heading -->
-                    <div class="max-w-2xl pointer-events-auto">
-                        <div class="flex items-center gap-2 mb-3">
-                            <span class="w-2 h-2 rounded-full" style="background: var(--tg-accent);" />
-                            <span class="text-[11px] sm:text-xs font-bold uppercase tracking-widest text-tg-accent font-mono">
+                    <div class="pointer-events-auto max-w-2xl">
+                        <div class="mb-3 flex items-center gap-2">
+                            <span
+                                class="h-2 w-2 rounded-full"
+                                style="background: var(--tg-accent)"
+                            />
+                            <span
+                                class="text-tg-accent font-mono text-[11px] font-bold uppercase tracking-widest sm:text-xs"
+                            >
                                 OUR STORY. THEIR JOURNEY.
                             </span>
                         </div>
 
                         <!-- Monumental Headline -->
                         <h1
-                            class="font-normal uppercase tracking-tight text-white mb-3"
+                            class="mb-3 font-normal uppercase tracking-tight text-white"
                             style="
                                 font-family: var(--tg-display);
                                 font-size: clamp(2.8rem, 8vw, 6.5rem);
@@ -191,68 +226,99 @@ onUnmounted(() => {
 
                         <!-- Editorial Subheadline as instructed -->
                         <p
-                            class="text-sm sm:text-base md:text-lg text-gray-200 font-normal leading-relaxed max-w-xl mb-6"
-                            style="text-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);"
+                            class="mb-6 max-w-xl text-sm font-normal leading-relaxed text-gray-200 sm:text-base md:text-lg"
+                            style="text-shadow: 0 2px 12px rgba(0, 0, 0, 0.5)"
                         >
-                            The story of TopGrade, one moment at a time. Matchdays, training, and player journeys.
+                            The story of TopGrade, one moment at a time.
+                            Matchdays, training, and player journeys.
                         </p>
 
                         <!-- Primary CTA Button -->
                         <Link
                             v-if="featured"
                             :href="`/moments/${featured.slug}`"
-                            class="inline-flex items-center gap-2.5 rounded-full border border-tg-accent/80 bg-black/60 hover:bg-tg-accent hover:text-black px-6 py-2.5 text-xs sm:text-sm font-semibold tracking-wide text-white transition-all duration-200 shadow-md group"
+                            class="border-tg-accent/80 hover:bg-tg-accent group inline-flex items-center gap-2.5 rounded-full border bg-black/60 px-6 py-2.5 text-xs font-semibold tracking-wide text-white shadow-md transition-all duration-200 hover:text-black sm:text-sm"
                         >
                             <span>Explore Story</span>
-                            <ArrowRight class="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                            <ArrowRight
+                                class="h-4 w-4 transition-transform group-hover:translate-x-1"
+                            />
                         </Link>
                     </div>
 
                     <!-- Bottom Meta Bar: Slide Counter + Navigation Controls -->
-                    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pt-6 border-t border-white/10 pointer-events-auto">
+                    <div
+                        class="pointer-events-auto flex flex-col justify-between gap-4 border-t border-white/10 pt-6 sm:flex-row sm:items-end"
+                    >
                         <!-- Left: Slide Counter + Progress Track -->
                         <div class="flex items-center gap-3">
-                            <div class="font-mono text-xs sm:text-sm font-bold tracking-widest text-white/90 select-none">
-                                {{ String(currentSlide + 1).padStart(2, '0') }} / {{ String(carouselImages.length).padStart(2, '0') }}
+                            <div
+                                class="select-none font-mono text-xs font-bold tracking-widest text-white/90 sm:text-sm"
+                            >
+                                {{ String(currentSlide + 1).padStart(2, '0') }}
+                                /
+                                {{
+                                    String(carouselImages.length).padStart(
+                                        2,
+                                        '0',
+                                    )
+                                }}
                             </div>
 
                             <!-- Progress Track -->
-                            <div class="w-24 sm:w-36 h-1 rounded-full bg-white/20 overflow-hidden relative">
+                            <div
+                                class="relative h-1 w-24 overflow-hidden rounded-full bg-white/20 sm:w-36"
+                            >
                                 <div
-                                    class="h-full bg-tg-accent transition-all duration-500 ease-out"
-                                    :style="{ width: carouselImages.length ? `${((currentSlide + 1) / carouselImages.length) * 100}%` : '0%' }"
+                                    class="bg-tg-accent h-full transition-all duration-500 ease-out"
+                                    :style="{
+                                        width: carouselImages.length
+                                            ? `${((currentSlide + 1) / carouselImages.length) * 100}%`
+                                            : '0%',
+                                    }"
                                 />
                             </div>
                         </div>
 
                         <!-- Right: Story Context & Circular Prev/Next Controls -->
                         <div class="flex items-center gap-4">
-                            <div class="hidden md:block text-right">
-                                <div class="text-[11px] font-bold uppercase tracking-wider text-tg-accent font-mono">
+                            <div class="hidden text-right md:block">
+                                <div
+                                    class="text-tg-accent font-mono text-[11px] font-bold uppercase tracking-wider"
+                                >
                                     {{ featured?.published_at || 'Matchday' }}
                                 </div>
-                                <div class="text-xs text-white/90 font-medium truncate max-w-xs">
+                                <div
+                                    class="max-w-xs truncate text-xs font-medium text-white/90"
+                                >
                                     {{ featured?.title || '' }}
                                 </div>
                             </div>
 
                             <!-- Controls -->
-                            <div v-if="canAutoplay" class="flex items-center gap-2">
+                            <div
+                                v-if="canAutoplay"
+                                class="flex items-center gap-2"
+                            >
                                 <button
                                     type="button"
                                     @click="prevSlide"
-                                    class="w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-white/25 hover:border-tg-accent bg-black/60 hover:bg-black text-white flex items-center justify-center transition-all active:scale-95 shadow-md focus:outline-none focus:ring-2 focus:ring-tg-accent"
+                                    class="hover:border-tg-accent focus:ring-tg-accent flex h-9 w-9 items-center justify-center rounded-full border border-white/25 bg-black/60 text-white shadow-md transition-all hover:bg-black focus:outline-none focus:ring-2 active:scale-95 sm:h-10 sm:w-10"
                                     aria-label="Previous slide"
                                 >
-                                    <ChevronLeft class="w-4 h-4 sm:w-5 sm:h-5" />
+                                    <ChevronLeft
+                                        class="h-4 w-4 sm:h-5 sm:w-5"
+                                    />
                                 </button>
                                 <button
                                     type="button"
                                     @click="nextSlide"
-                                    class="w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-white/25 hover:border-tg-accent bg-black/60 hover:bg-black text-white flex items-center justify-center transition-all active:scale-95 shadow-md focus:outline-none focus:ring-2 focus:ring-tg-accent"
+                                    class="hover:border-tg-accent focus:ring-tg-accent flex h-9 w-9 items-center justify-center rounded-full border border-white/25 bg-black/60 text-white shadow-md transition-all hover:bg-black focus:outline-none focus:ring-2 active:scale-95 sm:h-10 sm:w-10"
                                     aria-label="Next slide"
                                 >
-                                    <ChevronRight class="w-4 h-4 sm:w-5 sm:h-5" />
+                                    <ChevronRight
+                                        class="h-4 w-4 sm:h-5 sm:w-5"
+                                    />
                                 </button>
                             </div>
                         </div>
@@ -265,18 +331,23 @@ onUnmounted(() => {
     <!-- Fallback Opening when no carousel is available -->
     <section
         v-else
-        class="relative border-b border-tg-border/80 bg-black overflow-hidden pt-12 pb-14 sm:pt-16 sm:pb-20"
+        class="border-tg-border/80 relative overflow-hidden border-b bg-black pb-14 pt-12 sm:pb-20 sm:pt-16"
     >
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div class="max-w-2xl">
-                <div class="flex items-center gap-2 mb-3">
-                    <span class="w-2 h-2 rounded-full" style="background: var(--tg-accent);" />
-                    <span class="text-[11px] sm:text-xs font-bold uppercase tracking-widest text-tg-accent font-mono">
+                <div class="mb-3 flex items-center gap-2">
+                    <span
+                        class="h-2 w-2 rounded-full"
+                        style="background: var(--tg-accent)"
+                    />
+                    <span
+                        class="text-tg-accent font-mono text-[11px] font-bold uppercase tracking-widest sm:text-xs"
+                    >
                         OUR STORY. THEIR JOURNEY.
                     </span>
                 </div>
                 <h1
-                    class="font-normal uppercase tracking-tight text-white mb-3"
+                    class="mb-3 font-normal uppercase tracking-tight text-white"
                     style="
                         font-family: var(--tg-display);
                         font-size: clamp(2.8rem, 8vw, 6.5rem);
@@ -285,8 +356,11 @@ onUnmounted(() => {
                 >
                     Moments
                 </h1>
-                <p class="text-sm sm:text-base md:text-lg text-gray-200 font-normal leading-relaxed max-w-xl">
-                    The story of TopGrade, one moment at a time. Players. Pathways. Progress.
+                <p
+                    class="max-w-xl text-sm font-normal leading-relaxed text-gray-200 sm:text-base md:text-lg"
+                >
+                    The story of TopGrade, one moment at a time. Players.
+                    Pathways. Progress.
                 </p>
             </div>
         </div>

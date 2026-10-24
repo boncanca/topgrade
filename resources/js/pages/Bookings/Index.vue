@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import { Head, Link } from '@inertiajs/vue3';
+import EmptyState from '@/components/EmptyState.vue';
 import PageHeader from '@/components/PageHeader.vue';
 import { Button } from '@/components/ui/button';
-import EmptyState from '@/components/EmptyState.vue';
-import { index as bookingsIndex, show as bookingsShow } from '@/routes/bookings';
+import {
+    index as bookingsIndex,
+    show as bookingsShow,
+} from '@/routes/bookings';
 
 interface Activity {
     id: number;
@@ -83,6 +86,7 @@ const paymentColors = {
 
 function formatScheduled(dateStr: string): string {
     const date = new Date(dateStr);
+
     return new Intl.DateTimeFormat(undefined, {
         month: 'short',
         day: 'numeric',
@@ -96,6 +100,7 @@ function formatPrice(price: number | null, currency: string): string {
     if (price === null) {
         return 'Free';
     }
+
     return new Intl.NumberFormat(undefined, {
         style: 'currency',
         currency: currency || 'USD',
@@ -118,79 +123,79 @@ function paginationLabel(label: string): string {
 
         <div
             v-if="props.bookings.data.length > 0"
-            class="overflow-hidden rounded-lg border border-border bg-background"
+            class="border-border bg-background overflow-hidden rounded-lg border"
         >
             <div class="overflow-x-auto">
                 <table class="w-full min-w-[1000px] table-auto">
-                    <thead class="border-b border-border bg-muted/40">
+                    <thead class="border-border bg-muted/40 border-b">
                         <tr>
                             <th
-                                class="px-4 py-3 text-left text-xs font-medium tracking-wide text-muted-foreground uppercase"
+                                class="text-muted-foreground px-4 py-3 text-left text-xs font-medium uppercase tracking-wide"
                             >
                                 Reference
                             </th>
                             <th
-                                class="px-4 py-3 text-left text-xs font-medium tracking-wide text-muted-foreground uppercase"
+                                class="text-muted-foreground px-4 py-3 text-left text-xs font-medium uppercase tracking-wide"
                             >
                                 Participant
                             </th>
                             <th
-                                class="px-4 py-3 text-left text-xs font-medium tracking-wide text-muted-foreground uppercase"
+                                class="text-muted-foreground px-4 py-3 text-left text-xs font-medium uppercase tracking-wide"
                             >
                                 Activity
                             </th>
                             <th
-                                class="px-4 py-3 text-left text-xs font-medium tracking-wide text-muted-foreground uppercase"
+                                class="text-muted-foreground px-4 py-3 text-left text-xs font-medium uppercase tracking-wide"
                             >
                                 Scheduled
                             </th>
                             <th
-                                class="px-4 py-3 text-left text-xs font-medium tracking-wide text-muted-foreground uppercase"
+                                class="text-muted-foreground px-4 py-3 text-left text-xs font-medium uppercase tracking-wide"
                             >
                                 Status
                             </th>
                             <th
-                                class="px-4 py-3 text-left text-xs font-medium tracking-wide text-muted-foreground uppercase"
+                                class="text-muted-foreground px-4 py-3 text-left text-xs font-medium uppercase tracking-wide"
                             >
                                 Payment
                             </th>
                             <th
-                                class="px-4 py-3 text-right text-xs font-medium tracking-wide text-muted-foreground uppercase"
+                                class="text-muted-foreground px-4 py-3 text-right text-xs font-medium uppercase tracking-wide"
                             >
                                 Actions
                             </th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-border">
+                    <tbody class="divide-border divide-y">
                         <tr
                             v-for="booking in props.bookings.data"
                             :key="booking.id"
-                            class="transition-colors hover:bg-muted/40"
+                            class="hover:bg-muted/40 transition-colors"
                         >
                             <td class="px-4 py-4">
                                 <Link
                                     :href="bookingsShow(booking.id)"
-                                    class="text-sm font-medium text-foreground underline-offset-4 hover:underline"
+                                    class="text-foreground text-sm font-medium underline-offset-4 hover:underline"
                                 >
                                     {{ booking.reference }}
                                 </Link>
                             </td>
-                            <td class="px-4 py-4 text-sm text-muted-foreground">
+                            <td class="text-muted-foreground px-4 py-4 text-sm">
                                 {{ booking.participant_name }}
                             </td>
-                            <td class="px-4 py-4 text-sm text-muted-foreground">
+                            <td class="text-muted-foreground px-4 py-4 text-sm">
                                 {{ booking.bookable_item.name }}
                             </td>
                             <td
-                                class="px-4 py-4 text-sm whitespace-nowrap text-muted-foreground"
+                                class="text-muted-foreground whitespace-nowrap px-4 py-4 text-sm"
                             >
                                 {{ formatScheduled(booking.scheduled_at) }}
                             </td>
-                            <td class="px-4 py-4 whitespace-nowrap">
+                            <td class="whitespace-nowrap px-4 py-4">
                                 <span
                                     :class="[
                                         statusColors[booking.status],
-                                        'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
+                                        'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium',
                                     ]"
                                 >
                                     {{
@@ -199,12 +204,14 @@ function paginationLabel(label: string): string {
                                     }}
                                 </span>
                             </td>
-                            <td class="px-4 py-4 whitespace-nowrap">
+                            <td class="whitespace-nowrap px-4 py-4">
                                 <div class="flex flex-col gap-1">
                                     <span
                                         :class="[
-                                            paymentColors[booking.payment_status],
-                                            'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium w-fit',
+                                            paymentColors[
+                                                booking.payment_status
+                                            ],
+                                            'inline-flex w-fit items-center rounded-full px-2.5 py-0.5 text-xs font-medium',
                                         ]"
                                     >
                                         {{
@@ -214,13 +221,11 @@ function paginationLabel(label: string): string {
                                             booking.payment_status.slice(1)
                                         }}
                                     </span>
-                                    <span
-                                        class="text-xs text-muted-foreground"
-                                    >
+                                    <span class="text-muted-foreground text-xs">
                                         {{
                                             formatPrice(
                                                 booking.amount,
-                                                booking.currency
+                                                booking.currency,
                                             )
                                         }}
                                     </span>
@@ -241,7 +246,7 @@ function paginationLabel(label: string): string {
             </div>
 
             <div
-                class="flex flex-col gap-4 border-t border-border px-4 py-3 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between"
+                class="border-border text-muted-foreground flex flex-col gap-4 border-t px-4 py-3 text-sm sm:flex-row sm:items-center sm:justify-between"
             >
                 <p>
                     Showing {{ props.bookings.from }} to

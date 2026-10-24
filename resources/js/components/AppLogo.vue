@@ -4,13 +4,13 @@ import AppLogoIcon from '@/components/AppLogoIcon.vue';
 
 <template>
     <div
-        class="flex aspect-square size-8 items-center justify-center rounded-md bg-sidebar-primary text-sidebar-primary-foreground"
+        class="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-md"
     >
         <AppLogoIcon class="size-5 fill-current text-white dark:text-black" />
     </div>
     <div class="ml-1 grid flex-1 text-left text-sm">
-        <span class="truncate leading-tight font-semibold">Volara</span>
-        <span class="truncate text-xs leading-tight text-muted-foreground">
+        <span class="truncate font-semibold leading-tight">Volara</span>
+        <span class="text-muted-foreground truncate text-xs leading-tight">
             TopGrade FC
         </span>
     </div>

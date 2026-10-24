@@ -3,11 +3,27 @@
 use App\Models\Content;
 use App\Models\ContentType;
 use App\Models\User;
+use App\Services\Storage\CloudinaryAdapter;
+use Cloudinary\Api\Admin\AdminApi;
+use Cloudinary\Api\ApiResponse;
+use Cloudinary\Cloudinary;
+use CodebarAg\FlysystemCloudinary\CloudinaryDiskOptions;
 use CodebarAg\FlysystemCloudinary\FlysystemCloudinaryAdapter;
 use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Testing\AssertableInertia as Assert;
+
+beforeEach(function () {
+    if (empty(config('filesystems.disks.cloudinary.cloud_name'))) {
+        config([
+            'filesystems.disks.cloudinary.cloud_name' => 'testing_cloud',
+            'filesystems.disks.cloudinary.api_key' => 'testing_key',
+            'filesystems.disks.cloudinary.api_secret' => 'testing_secret',
+        ]);
+        Storage::forgetDisk('cloudinary');
+    }
+});
 
 test('cloudinary disk is configured in filesystems', function () {
     $cloudinaryConfig = config('filesystems.disks.cloudinary');
@@ -23,7 +39,63 @@ test('cloudinary disk can be resolved from Storage facade', function () {
     $disk = Storage::disk('cloudinary');
 
     expect($disk)->toBeInstanceOf(FilesystemAdapter::class);
+    expect($disk->getAdapter())->toBeInstanceOf(CloudinaryAdapter::class);
     expect($disk->getAdapter())->toBeInstanceOf(FlysystemCloudinaryAdapter::class);
+});
+
+test('cloudinary adapter resolves .jpeg paths with canonical .jpg format suffix', function () {
+    $url = Storage::disk('cloudinary')->url('16/PRINCE-ACHEAMPONG-topgradelondonfc.jpeg');
+
+    expect($url)->toBeString()
+        ->and($url)->toContain('16/PRINCE-ACHEAMPONG-topgradelondonfc.jpeg.jpg');
+});
+
+test('cloudinary adapter appends the delivery format for every image extension', function () {
+    $disk = Storage::disk('cloudinary');
+
+    expect($disk->url('10/training-agility-drills.jpg'))->toContain('10/training-agility-drills.jpg.jpg')
+        ->and($disk->url('12/badge-logo.png'))->toContain('12/badge-logo.png.png')
+        ->and($disk->url('12/hero.webp'))->toContain('12/hero.webp.webp')
+        ->and($disk->url('12/My Photo.JPG'))->toContain('My%20Photo.JPG.jpg')
+        ->and($disk->url('12/badge-logo.png'))->not->toContain('.png.jpg');
+});
+
+test('cloudinary adapter does not double-append the format', function () {
+    $adapter = Storage::disk('cloudinary')->getAdapter();
+
+    expect($adapter->getUrl('a/b.png.png'))->not->toContain('.png.png.png');
+});
+
+test('cloudinary adapter generates video delivery urls for video extensions', function () {
+    $disk = Storage::disk('cloudinary');
+
+    $mp4Url = $disk->url('10/hero-loop.mp4');
+    expect($mp4Url)->toBeString()
+        ->and($mp4Url)->toContain('/video/upload/')
+        ->and($mp4Url)->not->toContain('/image/upload/')
+        ->and($mp4Url)->toContain('hero-loop.mp4');
+
+    $webmUrl = $disk->url('10/clip.webm');
+    expect($webmUrl)->toContain('/video/upload/')
+        ->and($webmUrl)->not->toContain('/image/upload/');
+
+    $movUrl = $disk->url('10/action.MOV');
+    expect($movUrl)->toContain('/video/upload/')
+        ->and($movUrl)->not->toContain('/image/upload/');
+});
+
+test('cloudinary adapter supports transformation options for video delivery urls', function () {
+    $adapter = Storage::disk('cloudinary')->getAdapter();
+
+    $url = $adapter->getUrl([
+        'path' => '10/hero-loop.mp4',
+        'options' => ['vc_auto', 'q_auto'],
+    ]);
+
+    expect($url)->toBeString()
+        ->and($url)->toContain('/video/upload/')
+        ->and($url)->toContain('vc_auto,q_auto')
+        ->and($url)->toContain('hero-loop.mp4');
 });
 
 test('media library disk defaults to MEDIA_DISK or public', function () {
@@ -129,8 +201,8 @@ test('homepage supplies canonical hero props when no runtime media is attached',
         ->assertInertia(fn (Assert $page) => $page
             ->component('Public/Home')
             ->has('hero')
-            ->where('hero.video_url', '/topgrade-video.mp4')
-            ->where('hero.poster_url', '/images/club/hero-football.jpg')
+            ->where('hero.video_url', '/hero-training-loop-topgrade-london-fc.mp4')
+            ->where('hero.poster_url', '/images/club/hero-matchday-topgrade-london-fc.webp')
         );
 });
 
@@ -212,4 +284,56 @@ test('deleting content removes associated Spatie media', function () {
     $content->delete();
 
     $this->assertDatabaseMissing('media', ['id' => $mediaId]);
+});
+
+test('cloudinary adapter deleteDirectory enforces directory boundary with trailing slash to prevent sibling prefix matching', function () {
+    $cloudinary = Mockery::mock(Cloudinary::class);
+    $adminApi = Mockery::mock(AdminApi::class);
+    $cloudinary->shouldReceive('adminApi')->andReturn($adminApi);
+
+    // Directory '1' must delete prefix ending with '1/' to avoid wiping '10/' or '11/'
+    $adminApi->shouldReceive('deleteAssetsByPrefix')
+        ->once()
+        ->withArgs(function ($prefix) {
+            return str_ends_with($prefix, '1/');
+        });
+
+    $adminApi->shouldReceive('deleteFolder')->once();
+
+    $adapter = new CloudinaryAdapter($cloudinary);
+    $adapter->deleteDirectory('1');
+});
+
+test('cloudinary adapter deleteDirectory ignores empty string path', function () {
+    $cloudinary = Mockery::mock(Cloudinary::class);
+    $cloudinary->shouldNotReceive('adminApi');
+
+    $adapter = new CloudinaryAdapter($cloudinary);
+    $adapter->deleteDirectory('');
+    $adapter->deleteDirectory('/');
+    $adapter->deleteDirectory('///');
+});
+
+test('cloudinary directory deletion preserves sibling assets within the configured folder', function () {
+    $assets = ['topgrade/1/photo.jpg', 'topgrade/10/photo.jpg', 'topgrade/11/photo.jpg'];
+    $cloudinary = Mockery::mock(Cloudinary::class);
+    $adminApi = Mockery::mock(AdminApi::class);
+    $cloudinary->shouldReceive('adminApi')->andReturn($adminApi);
+    $adminApi->shouldReceive('deleteAssetsByPrefix')->once()->with('topgrade/1/')
+        ->andReturnUsing(function (string $prefix) use (&$assets) {
+            $assets = array_values(array_filter($assets, fn (string $asset) => ! str_starts_with($asset, $prefix)));
+
+            return new ApiResponse([], []);
+        });
+    $adminApi->shouldReceive('deleteFolder')->once()->with('topgrade/1');
+
+    $adapter = new CloudinaryAdapter($cloudinary, new CloudinaryDiskOptions(
+        folder: 'topgrade',
+        uploadPreset: null,
+        globalUploadOptions: [],
+        preferSecureUrl: true,
+    ));
+    $adapter->deleteDirectory('1/');
+
+    expect($assets)->toBe(['topgrade/10/photo.jpg', 'topgrade/11/photo.jpg']);
 });

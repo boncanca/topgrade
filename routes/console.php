@@ -12,3 +12,8 @@ Artisan::command('inspire', function () {
 Schedule::command('bookings:expire-pending')
     ->everyFiveMinutes()
     ->withoutOverlapping();
+
+// Daily sitemap cache refresh
+Schedule::command('sitemap:generate')
+    ->daily()
+    ->withoutOverlapping();

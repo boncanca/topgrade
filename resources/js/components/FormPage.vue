@@ -1,27 +1,29 @@
 <script setup lang="ts">
 interface Props {
-  title: string
-  description?: string
+    title: string;
+    description?: string;
 }
 
 withDefaults(defineProps<Props>(), {
-  description: undefined,
-})
+    description: undefined,
+});
 </script>
 
 <template>
-  <div class="min-h-screen bg-background">
-    <div class="form-container py-12">
-      <div class="mb-12">
-        <h1 class="text-3xl font-semibold tracking-tight text-foreground mb-2">
-          {{ title }}
-        </h1>
-        <p v-if="description" class="text-sm text-muted-foreground">
-          {{ description }}
-        </p>
-      </div>
+    <div class="bg-background min-h-screen">
+        <div class="form-container py-12">
+            <div class="mb-12">
+                <h1
+                    class="text-foreground mb-2 text-3xl font-semibold tracking-tight"
+                >
+                    {{ title }}
+                </h1>
+                <p v-if="description" class="text-muted-foreground text-sm">
+                    {{ description }}
+                </p>
+            </div>
 
-      <slot />
+            <slot />
+        </div>
     </div>
-  </div>
 </template>

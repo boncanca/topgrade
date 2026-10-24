@@ -14,9 +14,10 @@ const props = defineProps<{
     settings?: ImageSettings;
 }>();
 
-const imageUrl = typeof props.payload.image === 'object'
-    ? props.payload.image.url
-    : props.payload.image;
+const imageUrl =
+    typeof props.payload.image === 'object'
+        ? props.payload.image.url
+        : props.payload.image;
 
 const maxWidthClass: Record<string, string> = {
     full: 'max-w-full',
@@ -33,11 +34,11 @@ const maxWidthClass: Record<string, string> = {
         <img
             :src="imageUrl"
             :alt="props.payload.alt ?? ''"
-            class="w-full rounded-xl border border-border object-cover"
+            class="border-border w-full rounded-xl border object-cover"
         />
         <figcaption
             v-if="props.payload.caption"
-            class="mt-2 text-center text-sm text-muted-foreground"
+            class="text-muted-foreground mt-2 text-center text-sm"
         >
             {{ props.payload.caption }}
         </figcaption>

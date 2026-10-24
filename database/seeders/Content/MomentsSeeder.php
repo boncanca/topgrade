@@ -19,8 +19,9 @@ class MomentsSeeder extends Seeder
                 'featured' => true,
                 'sort_order' => 1,
                 'images' => [
-                    'images/club/club-training-london.jpg',
-                    'images/club/training-agility-drills.jpg',
+                    'images/club/youth-squad-team-topgrade-london-fc.jpg',
+                    'images/club/u7-u8-squad-photo-topgrade-london-fc.jpg',
+                    'images/club/training-agility-drills-topgrade-london-fc.jpg',
                 ],
             ],
             [
@@ -32,9 +33,9 @@ class MomentsSeeder extends Seeder
                 'featured' => true,
                 'sort_order' => 2,
                 'images' => [
-                    '484977737_1109608517845156_6730033439051003629_n.jpg',
-                    'images/club/youth_match_action.jpg',
-                    'images/club/squad_celebration.jpg',
+                    'images/club/matchday-fixture-action-topgrade-london-fc.jpg',
+                    'images/club/foundation-phase-match-action-topgrade-london-fc.jpg',
+                    'images/club/squad-celebration-trophy-topgrade-london-fc.jpg',
                 ],
             ],
             [
@@ -46,8 +47,8 @@ class MomentsSeeder extends Seeder
                 'featured' => true,
                 'sort_order' => 3,
                 'images' => [
-                    'images/club/tactical_coaching.jpg',
-                    '484192970_1108922961247045_3935375872642678849_n.jpg',
+                    'images/club/tactical-coaching-briefing-topgrade-london-fc.jpg',
+                    'images/club/player-match-action-topgrade-london-fc.jpg',
                 ],
             ],
         ];

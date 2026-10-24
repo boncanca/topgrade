@@ -3,10 +3,12 @@ import { Link } from '@inertiajs/vue3';
 </script>
 
 <template>
-    <div class="min-h-screen bg-tg-bg text-tg-text relative flex flex-col justify-between overflow-hidden select-none">
+    <div
+        class="bg-tg-bg text-tg-text relative flex min-h-screen select-none flex-col justify-between overflow-hidden"
+    >
         <!-- Subtle Chalk Pitch Atmosphere Lines (Restrained lines, no gradients, no glowing blobs) -->
         <svg
-            class="absolute inset-0 w-full h-full pointer-events-none stroke-white/10"
+            class="pointer-events-none absolute inset-0 h-full w-full stroke-white/10"
             xmlns="http://www.w3.org/2000/svg"
             aria-hidden="true"
         >
@@ -27,8 +29,10 @@ import { Link } from '@inertiajs/vue3';
         </svg>
 
         <!-- Top Header Bar (Zero Admin / Volara Shell) -->
-        <header class="relative z-20 px-6 sm:px-12 py-8 flex items-center justify-between border-b border-tg-border">
-            <Link href="/" class="flex items-center gap-3.5 group">
+        <header
+            class="border-tg-border relative z-20 flex items-center justify-between border-b px-6 py-8 sm:px-12"
+        >
+            <Link href="/" class="group flex items-center gap-3.5">
                 <img
                     src="/logo.png"
                     alt="TopGrade London FC Logo"
@@ -36,12 +40,14 @@ import { Link } from '@inertiajs/vue3';
                 />
                 <div class="flex flex-col">
                     <span
-                        class="text-base sm:text-lg tracking-wider text-tg-text-strong uppercase leading-none"
-                        style="font-family: var(--tg-display);"
+                        class="text-tg-text-strong text-base uppercase leading-none tracking-wider sm:text-lg"
+                        style="font-family: var(--tg-display)"
                     >
                         TopGrade London FC
                     </span>
-                    <span class="text-[10px] tracking-widest text-tg-text-muted uppercase mt-0.5">
+                    <span
+                        class="text-tg-text-muted mt-0.5 text-[10px] uppercase tracking-widest"
+                    >
                         Play Stopped · Matchday Notice
                     </span>
                 </div>
@@ -49,26 +55,40 @@ import { Link } from '@inertiajs/vue3';
 
             <Link
                 href="/"
-                class="text-xs font-semibold uppercase tracking-widest text-tg-text-muted hover:text-tg-text-strong transition-colors"
+                class="text-tg-text-muted hover:text-tg-text-strong text-xs font-semibold uppercase tracking-widest transition-colors"
             >
                 ← Club Home
             </Link>
         </header>
 
         <!-- Standalone Error Page Content Slot -->
-        <div class="relative z-10 flex-1 flex flex-col justify-center">
+        <div class="relative z-10 flex flex-1 flex-col justify-center">
             <slot />
         </div>
 
         <!-- Bottom Matchday Metadata Bar -->
-        <footer class="relative z-20 px-6 sm:px-12 py-5 border-t border-tg-border flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-tg-text-muted">
+        <footer
+            class="border-tg-border text-tg-text-muted relative z-20 flex flex-col items-center justify-between gap-3 border-t px-6 py-5 text-xs sm:flex-row sm:px-12"
+        >
             <div>
                 <span>Official Matchday Control · TOPGRADE LONDON FC CIC</span>
             </div>
             <div class="flex items-center gap-6">
-                <Link href="/privacy-policy" class="hover:text-tg-text-strong transition-colors">Privacy Policy</Link>
-                <Link href="/terms-and-conditions" class="hover:text-tg-text-strong transition-colors">Terms &amp; Conditions</Link>
-                <Link href="/contact" class="hover:text-tg-text-strong transition-colors">Contact Club</Link>
+                <Link
+                    href="/privacy-policy"
+                    class="hover:text-tg-text-strong transition-colors"
+                    >Privacy Policy</Link
+                >
+                <Link
+                    href="/terms-and-conditions"
+                    class="hover:text-tg-text-strong transition-colors"
+                    >Terms &amp; Conditions</Link
+                >
+                <Link
+                    href="/contact"
+                    class="hover:text-tg-text-strong transition-colors"
+                    >Contact Club</Link
+                >
             </div>
         </footer>
     </div>

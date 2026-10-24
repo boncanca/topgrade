@@ -37,15 +37,15 @@ class SyncMediaStorageCommand extends Command
                 'model' => Content::class,
                 'identifier' => ['slug' => 'home'],
                 'collection' => 'videos',
-                'source' => 'topgrade-video.mp4',
-                'file_name' => 'topgrade-video.mp4',
+                'source' => 'hero-training-loop-topgrade-london-fc.mp4',
+                'file_name' => 'hero-training-loop-topgrade-london-fc.mp4',
             ],
             [
                 'model' => Content::class,
                 'identifier' => ['slug' => 'home'],
                 'collection' => 'images',
-                'source' => 'images/club/hero-football.jpg',
-                'file_name' => 'hero-football.jpg',
+                'source' => 'images/club/hero-matchday-topgrade-london-fc.jpg',
+                'file_name' => 'hero-matchday-topgrade-london-fc.jpg',
             ],
 
             // Head Coach / Staff Photo
@@ -53,8 +53,8 @@ class SyncMediaStorageCommand extends Command
                 'model' => Staff::class,
                 'identifier' => ['slug' => 'richard-matey-opoku'],
                 'collection' => 'photo',
-                'source' => 'images/club/club-coach-mentoring.jpg',
-                'file_name' => 'club-coach-mentoring.jpg',
+                'source' => 'images/club/coach-mentoring-session-topgrade-london-fc.jpg',
+                'file_name' => 'coach-mentoring-session-topgrade-london-fc.jpg',
             ],
 
             // Club Squad Teams
@@ -62,36 +62,36 @@ class SyncMediaStorageCommand extends Command
                 'model' => Team::class,
                 'identifier' => ['slug' => 'u7-u8'],
                 'collection' => 'image',
-                'source' => 'images/club/youth_match_action.jpg',
-                'file_name' => 'youth_match_action.jpg',
+                'source' => 'images/club/u7-u8-squad-photo-topgrade-london-fc.jpg',
+                'file_name' => 'u7-u8-squad-photo-topgrade-london-fc.jpg',
             ],
             [
                 'model' => Team::class,
                 'identifier' => ['slug' => 'u9-u10'],
                 'collection' => 'image',
-                'source' => '484192970_1108922961247045_3935375872642678849_n.jpg',
-                'file_name' => '484192970_1108922961247045_3935375872642678849_n.jpg',
+                'source' => 'images/club/skill-acquisition-training-topgrade-london-fc.jpg',
+                'file_name' => 'skill-acquisition-training-topgrade-london-fc.jpg',
             ],
             [
                 'model' => Team::class,
                 'identifier' => ['slug' => 'u11-u12'],
                 'collection' => 'image',
-                'source' => '485087659_1108923127913695_5031817050217357486_n.jpg',
-                'file_name' => '485087659_1108923127913695_5031817050217357486_n.jpg',
+                'source' => 'images/club/game-development-match-action-topgrade-london-fc.jpg',
+                'file_name' => 'game-development-match-action-topgrade-london-fc.jpg',
             ],
             [
                 'model' => Team::class,
                 'identifier' => ['slug' => 'u13-u14'],
                 'collection' => 'image',
-                'source' => 'images/club/tactical_coaching.jpg',
-                'file_name' => 'tactical_coaching.jpg',
+                'source' => 'images/club/tactical-coaching-briefing-topgrade-london-fc.jpg',
+                'file_name' => 'tactical-coaching-briefing-topgrade-london-fc.jpg',
             ],
             [
                 'model' => Team::class,
                 'identifier' => ['slug' => 'u15-u16'],
                 'collection' => 'image',
-                'source' => 'images/club/squad_celebration.jpg',
-                'file_name' => 'squad_celebration.jpg',
+                'source' => 'images/club/squad-celebration-trophy-topgrade-london-fc.jpg',
+                'file_name' => 'squad-celebration-trophy-topgrade-london-fc.jpg',
             ],
 
             // Moments Gallery Items
@@ -99,50 +99,50 @@ class SyncMediaStorageCommand extends Command
                 'model' => Moment::class,
                 'identifier' => ['slug' => 'midweek-technical-training'],
                 'collection' => 'gallery',
-                'source' => 'images/club/club-training-london.jpg',
-                'file_name' => 'club-training-london.jpg',
+                'source' => 'images/club/youth-squad-team-topgrade-london-fc.jpg',
+                'file_name' => 'youth-squad-team-topgrade-london-fc.jpg',
             ],
             [
                 'model' => Moment::class,
                 'identifier' => ['slug' => 'midweek-technical-training'],
                 'collection' => 'gallery',
-                'source' => 'images/club/training-agility-drills.jpg',
-                'file_name' => 'training-agility-drills.jpg',
+                'source' => 'images/club/training-agility-drills-topgrade-london-fc.jpg',
+                'file_name' => 'training-agility-drills-topgrade-london-fc.jpg',
             ],
             [
                 'model' => Moment::class,
                 'identifier' => ['slug' => 'matchday-saturday-league-fixture'],
                 'collection' => 'gallery',
-                'source' => '484977737_1109608517845156_6730033439051003629_n.jpg',
-                'file_name' => '484977737_1109608517845156_6730033439051003629_n.jpg',
+                'source' => 'images/club/matchday-fixture-action-topgrade-london-fc.jpg',
+                'file_name' => 'matchday-fixture-action-topgrade-london-fc.jpg',
             ],
             [
                 'model' => Moment::class,
                 'identifier' => ['slug' => 'matchday-saturday-league-fixture'],
                 'collection' => 'gallery',
-                'source' => 'images/club/youth_match_action.jpg',
-                'file_name' => 'youth_match_action.jpg',
+                'source' => 'images/club/foundation-phase-match-action-topgrade-london-fc.jpg',
+                'file_name' => 'foundation-phase-match-action-topgrade-london-fc.jpg',
             ],
             [
                 'model' => Moment::class,
                 'identifier' => ['slug' => 'matchday-saturday-league-fixture'],
                 'collection' => 'gallery',
-                'source' => 'images/club/squad_celebration.jpg',
-                'file_name' => 'squad_celebration.jpg',
+                'source' => 'images/club/squad-celebration-trophy-topgrade-london-fc.jpg',
+                'file_name' => 'squad-celebration-trophy-topgrade-london-fc.jpg',
             ],
             [
                 'model' => Moment::class,
                 'identifier' => ['slug' => 'squad-mentoring-tactical-coaching'],
                 'collection' => 'gallery',
-                'source' => 'images/club/tactical_coaching.jpg',
-                'file_name' => 'tactical_coaching.jpg',
+                'source' => 'images/club/tactical-coaching-briefing-topgrade-london-fc.jpg',
+                'file_name' => 'tactical-coaching-briefing-topgrade-london-fc.jpg',
             ],
             [
                 'model' => Moment::class,
                 'identifier' => ['slug' => 'squad-mentoring-tactical-coaching'],
                 'collection' => 'gallery',
-                'source' => '484192970_1108922961247045_3935375872642678849_n.jpg',
-                'file_name' => '484192970_1108922961247045_3935375872642678849_n.jpg',
+                'source' => 'images/club/player-match-action-topgrade-london-fc.jpg',
+                'file_name' => 'player-match-action-topgrade-london-fc.jpg',
             ],
         ];
     }
@@ -177,18 +177,28 @@ class SyncMediaStorageCommand extends Command
                 continue;
             }
 
+            $namer = app(config('media-library.file_namer'));
+            $expectedBase = $namer->originalFileName($asset['file_name']);
+            $expectedExt = pathinfo($asset['file_name'], PATHINFO_EXTENSION);
+            $expectedFileName = $expectedExt ? "{$expectedBase}.{$expectedExt}" : $expectedBase;
+            $sourceBaseName = pathinfo($asset['source'], PATHINFO_BASENAME);
+
             // Find existing Media record matching this collection and filename
             /** @var Media|null $media */
             $media = $model->media()
                 ->where('collection_name', $asset['collection'])
-                ->where('file_name', $asset['file_name'])
+                ->where(function ($query) use ($asset, $expectedFileName, $sourceBaseName) {
+                    $query->where('file_name', $asset['file_name'])
+                        ->orWhere('file_name', $expectedFileName)
+                        ->orWhere('file_name', $sourceBaseName);
+                })
                 ->first();
 
             if ($media) {
                 $targetPath = $media->getPath();
 
                 if (! $force && file_exists($targetPath)) {
-                    $this->line(" [OK] Media #{$media->id} ({$asset['file_name']}) already exists at {$targetPath}");
+                    $this->line(" [OK] Media #{$media->id} ({$media->file_name}) already exists at {$targetPath}");
                     $alreadyPresentCount++;
 
                     continue;
@@ -204,7 +214,7 @@ class SyncMediaStorageCommand extends Command
                     continue;
                 }
 
-                $this->info(" [RESTORED] Media #{$media->id} ({$asset['file_name']}) restored to {$targetPath}");
+                $this->info(" [RESTORED] Media #{$media->id} ({$media->file_name}) restored to {$targetPath}");
                 $restoredCount++;
             } else {
                 // Media record does not exist yet; attach using MediaLibrary
@@ -212,6 +222,7 @@ class SyncMediaStorageCommand extends Command
                     /** @var Media $newMedia */
                     $newMedia = $model->addMedia($sourcePath)
                         ->preservingOriginal()
+                        ->usingFileName($asset['file_name'])
                         ->toMediaCollection($asset['collection']);
 
                     if (! file_exists($newMedia->getPath())) {

@@ -20,7 +20,7 @@ const props = withDefaults(
         active: true,
         fitClass: 'object-cover',
         positionClass: 'object-center',
-    }
+    },
 );
 
 const videoRef = ref<HTMLVideoElement | null>(null);
@@ -28,13 +28,18 @@ const videoError = ref(false);
 const prefersReducedMotion = ref(false);
 
 const checkReducedMotion = () => {
-    prefersReducedMotion.value = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    prefersReducedMotion.value = window.matchMedia(
+        '(prefers-reduced-motion: reduce)',
+    ).matches;
 };
 
 watch(
     () => props.active,
     (isActive) => {
-        if (!videoRef.value || prefersReducedMotion.value) return;
+        if (!videoRef.value || prefersReducedMotion.value) {
+            return;
+        }
+
         if (isActive) {
             videoRef.value.play().catch(() => {
                 videoError.value = true;
@@ -42,12 +47,18 @@ watch(
         } else {
             videoRef.value.pause();
         }
-    }
+    },
 );
 
 onMounted(() => {
     checkReducedMotion();
-    if (props.isVideo && videoRef.value && props.active && !prefersReducedMotion.value) {
+
+    if (
+        props.isVideo &&
+        videoRef.value &&
+        props.active &&
+        !prefersReducedMotion.value
+    ) {
         videoRef.value.play().catch(() => {
             videoError.value = true;
         });
@@ -62,7 +73,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-    <div class="relative w-full h-full overflow-hidden bg-black select-none">
+    <div class="relative h-full w-full select-none overflow-hidden bg-black">
         <!-- Video Player -->
         <video
             v-if="isVideo && !videoError && !prefersReducedMotion"
@@ -74,7 +85,7 @@ onUnmounted(() => {
             loop
             playsinline
             preload="metadata"
-            class="w-full h-full transition-opacity duration-500"
+            class="h-full w-full transition-opacity duration-500"
             :class="[fitClass, positionClass]"
             @error="videoError = true"
         />
@@ -86,7 +97,7 @@ onUnmounted(() => {
             :alt="alt"
             :loading="loading"
             decoding="async"
-            class="w-full h-full transition-transform duration-700 ease-out"
+            class="h-full w-full transition-transform duration-700 ease-out"
             :class="[fitClass, positionClass]"
         />
     </div>

@@ -2,8 +2,8 @@
 import { Head, router } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import FormSection from '@/components/FormSection.vue';
-import PageHeader from '@/components/PageHeader.vue';
 import PageActions from '@/components/PageActions.vue';
+import PageHeader from '@/components/PageHeader.vue';
 import { Button } from '@/components/ui/button';
 import { index as bookingsIndex } from '@/routes/bookings';
 
@@ -85,6 +85,7 @@ const processing = ref(false);
 
 function formatScheduled(dateStr: string): string {
     const date = new Date(dateStr);
+
     return new Intl.DateTimeFormat(undefined, {
         weekday: 'long',
         month: 'long',
@@ -100,6 +101,7 @@ function formatPrice(price: number | null, currency: string): string {
     if (price === null) {
         return 'Free';
     }
+
     return new Intl.NumberFormat(undefined, {
         style: 'currency',
         currency: currency || 'USD',
@@ -113,19 +115,28 @@ function canTransitionTo(newStatus: string): boolean {
         completed: [],
         cancelled: [],
     };
+
     return transitions[props.booking.status]?.includes(newStatus) ?? false;
 }
 
-function transitionStatus(newStatus: 'pending' | 'confirmed' | 'completed' | 'cancelled'): void {
+function transitionStatus(
+    newStatus: 'pending' | 'confirmed' | 'completed' | 'cancelled',
+): void {
     processing.value = true;
     const routeMap = {
         confirmed: `/dashboard/bookings/${props.booking.id}/confirm`,
         completed: `/dashboard/bookings/${props.booking.id}/complete`,
         cancelled: `/dashboard/bookings/${props.booking.id}/cancel`,
     };
-    router.post(routeMap[newStatus as keyof typeof routeMap], {}, {
-        onFinish: () => { processing.value = false; },
-    });
+    router.post(
+        routeMap[newStatus as keyof typeof routeMap],
+        {},
+        {
+            onFinish: () => {
+                processing.value = false;
+            },
+        },
+    );
 }
 
 function handleCancel(): void {
@@ -142,7 +153,12 @@ function handleCancel(): void {
             :description="booking.participant_name"
         />
 
-        <div v-if="$page.props.errors && Object.keys($page.props.errors).length > 0" class="rounded-lg border border-destructive/50 bg-destructive/10 p-4 text-sm text-destructive">
+        <div
+            v-if="
+                $page.props.errors && Object.keys($page.props.errors).length > 0
+            "
+            class="border-destructive/50 bg-destructive/10 text-destructive rounded-lg border p-4 text-sm"
+        >
             <p v-for="(err, key) in $page.props.errors" :key="key">{{ err }}</p>
         </div>
 
@@ -153,22 +169,26 @@ function handleCancel(): void {
             >
                 <div class="grid grid-cols-2 gap-6">
                     <div>
-                        <label class="mb-2 block text-sm font-medium text-foreground">
+                        <label
+                            class="text-foreground mb-2 block text-sm font-medium"
+                        >
                             Reference
                         </label>
-                        <p class="text-sm text-foreground">
+                        <p class="text-foreground text-sm">
                             {{ booking.reference }}
                         </p>
                     </div>
 
                     <div>
-                        <label class="mb-2 block text-sm font-medium text-foreground">
+                        <label
+                            class="text-foreground mb-2 block text-sm font-medium"
+                        >
                             Status
                         </label>
                         <span
                             :class="[
                                 statusColors[booking.status],
-                                'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
+                                'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium',
                             ]"
                         >
                             {{
@@ -179,28 +199,30 @@ function handleCancel(): void {
                     </div>
 
                     <div class="col-span-2">
-                        <label class="mb-2 block text-sm font-medium text-foreground">
+                        <label
+                            class="text-foreground mb-2 block text-sm font-medium"
+                        >
                             Activity
                         </label>
-                        <p class="text-sm text-foreground">
+                        <p class="text-foreground text-sm">
                             {{ booking.bookable_item.name }}
                         </p>
-                        <p class="text-xs text-muted-foreground">
-                            {{
-                                booking.bookable_item.duration_minutes
-                            }}
+                        <p class="text-muted-foreground text-xs">
+                            {{ booking.bookable_item.duration_minutes }}
                             minutes at {{ booking.bookable_item.location }}
                         </p>
                     </div>
 
                     <div class="col-span-2">
-                        <label class="mb-2 block text-sm font-medium text-foreground">
+                        <label
+                            class="text-foreground mb-2 block text-sm font-medium"
+                        >
                             Scheduled
                         </label>
-                        <p class="text-sm text-foreground">
+                        <p class="text-foreground text-sm">
                             {{ formatScheduled(booking.scheduled_at) }}
                         </p>
-                        <p class="text-xs text-muted-foreground">
+                        <p class="text-muted-foreground text-xs">
                             Timezone: {{ booking.timezone }}
                         </p>
                     </div>
@@ -213,28 +235,34 @@ function handleCancel(): void {
             >
                 <div class="space-y-4">
                     <div>
-                        <label class="mb-2 block text-sm font-medium text-foreground">
+                        <label
+                            class="text-foreground mb-2 block text-sm font-medium"
+                        >
                             Name
                         </label>
-                        <p class="text-sm text-foreground">
+                        <p class="text-foreground text-sm">
                             {{ booking.participant_name }}
                         </p>
                     </div>
 
                     <div>
-                        <label class="mb-2 block text-sm font-medium text-foreground">
+                        <label
+                            class="text-foreground mb-2 block text-sm font-medium"
+                        >
                             Email
                         </label>
-                        <p class="text-sm text-foreground">
+                        <p class="text-foreground text-sm">
                             {{ booking.participant_email }}
                         </p>
                     </div>
 
                     <div v-if="booking.participant_phone">
-                        <label class="mb-2 block text-sm font-medium text-foreground">
+                        <label
+                            class="text-foreground mb-2 block text-sm font-medium"
+                        >
                             Phone
                         </label>
-                        <p class="text-sm text-foreground">
+                        <p class="text-foreground text-sm">
                             {{ booking.participant_phone }}
                         </p>
                     </div>
@@ -247,29 +275,31 @@ function handleCancel(): void {
             >
                 <div class="grid grid-cols-2 gap-6">
                     <div>
-                        <label class="mb-2 block text-sm font-medium text-foreground">
+                        <label
+                            class="text-foreground mb-2 block text-sm font-medium"
+                        >
                             Status
                         </label>
                         <span
                             :class="[
                                 paymentColors[booking.payment_status],
-                                'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
+                                'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium',
                             ]"
                         >
                             {{
-                                booking.payment_status
-                                    .charAt(0)
-                                    .toUpperCase() +
+                                booking.payment_status.charAt(0).toUpperCase() +
                                 booking.payment_status.slice(1)
                             }}
                         </span>
                     </div>
 
                     <div>
-                        <label class="mb-2 block text-sm font-medium text-foreground">
+                        <label
+                            class="text-foreground mb-2 block text-sm font-medium"
+                        >
                             Amount
                         </label>
-                        <p class="text-sm text-foreground">
+                        <p class="text-foreground text-sm">
                             {{ formatPrice(booking.amount, booking.currency) }}
                         </p>
                     </div>
@@ -283,16 +313,25 @@ function handleCancel(): void {
             >
                 <div class="space-y-4">
                     <div v-if="booking.notes">
-                        <label class="mb-2 block text-sm font-medium text-foreground">
+                        <label
+                            class="text-foreground mb-2 block text-sm font-medium"
+                        >
                             Notes
                         </label>
-                        <p class="text-sm text-foreground">
+                        <p class="text-foreground text-sm">
                             {{ booking.notes }}
                         </p>
                     </div>
 
-                    <div v-if="booking.metadata && Object.keys(booking.metadata).length > 0">
-                        <label class="mb-2 block text-sm font-medium text-foreground">
+                    <div
+                        v-if="
+                            booking.metadata &&
+                            Object.keys(booking.metadata).length > 0
+                        "
+                    >
+                        <label
+                            class="text-foreground mb-2 block text-sm font-medium"
+                        >
                             Additional Details
                         </label>
                         <dl class="grid gap-2">
@@ -340,11 +379,7 @@ function handleCancel(): void {
                     {{ processing ? 'Cancelling...' : 'Cancel Booking' }}
                 </Button>
             </div>
-            <Button
-                type="button"
-                variant="outline"
-                @click="handleCancel"
-            >
+            <Button type="button" variant="outline" @click="handleCancel">
                 Back
             </Button>
         </PageActions>

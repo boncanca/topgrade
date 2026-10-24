@@ -18,7 +18,7 @@ class TeamsSeeder extends Seeder
                 'description' => 'First touch, ball mastery, agility, balance, and introducing team play in a positive environment.',
                 'visual_variant' => 'foundation',
                 'sort_order' => 1,
-                'image_asset' => 'images/club/youth_match_action.jpg',
+                'image_asset' => 'images/club/u7-u8-squad-photo-topgrade-london-fc.jpg',
             ],
             [
                 'name' => 'U9 – U10',
@@ -28,7 +28,7 @@ class TeamsSeeder extends Seeder
                 'description' => '1v1 attacking and defending, spatial awareness, passing range, and instinctive game decisions.',
                 'visual_variant' => 'acquisition',
                 'sort_order' => 2,
-                'image_asset' => '484192970_1108922961247045_3935375872642678849_n.jpg',
+                'image_asset' => 'images/club/skill-acquisition-training-topgrade-london-fc.jpg',
             ],
             [
                 'name' => 'U11 – U12',
@@ -38,7 +38,7 @@ class TeamsSeeder extends Seeder
                 'description' => 'Tactical positioning, transition play, set-pieces, spatial compactness, and match tempo management.',
                 'visual_variant' => 'development',
                 'sort_order' => 3,
-                'image_asset' => '485087659_1108923127913695_5031817050217357486_n.jpg',
+                'image_asset' => 'images/club/game-development-match-action-topgrade-london-fc.jpg',
             ],
             [
                 'name' => 'U13 – U14',
@@ -48,7 +48,7 @@ class TeamsSeeder extends Seeder
                 'description' => 'Tactical discipline, physical conditioning, competitive league fixtures, and structured pitch mentoring.',
                 'visual_variant' => 'progression',
                 'sort_order' => 4,
-                'image_asset' => 'images/club/tactical_coaching.jpg',
+                'image_asset' => 'images/club/tactical-coaching-briefing-topgrade-london-fc.jpg',
             ],
             [
                 'name' => 'U15 – U16',
@@ -58,7 +58,7 @@ class TeamsSeeder extends Seeder
                 'description' => 'Competitive match play, high-intensity game management, leadership, and senior club pathway preparation.',
                 'visual_variant' => 'competition',
                 'sort_order' => 5,
-                'image_asset' => 'images/club/squad_celebration.jpg',
+                'image_asset' => 'images/club/squad-celebration-trophy-topgrade-london-fc.jpg',
             ],
         ];
 

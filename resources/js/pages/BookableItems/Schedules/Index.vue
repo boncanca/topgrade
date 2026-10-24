@@ -2,7 +2,6 @@
 import { Head, Link, router } from '@inertiajs/vue3';
 import EmptyState from '@/components/EmptyState.vue';
 import PageHeader from '@/components/PageHeader.vue';
-import { Button } from '@/components/ui/button';
 import { index as activitiesIndex } from '@/routes/bookable-items';
 import {
     create as schedulesCreate,
@@ -56,6 +55,7 @@ defineOptions({
 
 function formatDateTime(dateStr: string): string {
     const date = new Date(dateStr);
+
     return new Intl.DateTimeFormat(undefined, {
         month: 'short',
         day: 'numeric',
@@ -65,11 +65,13 @@ function formatDateTime(dateStr: string): string {
 }
 
 function getStatusColor(status: string): string {
-    return {
-        active: 'bg-green-100 text-green-800',
-        cancelled: 'bg-red-100 text-red-800',
-        full: 'bg-amber-100 text-amber-800',
-    }[status] || 'bg-gray-100 text-gray-800';
+    return (
+        {
+            active: 'bg-green-100 text-green-800',
+            cancelled: 'bg-red-100 text-red-800',
+            full: 'bg-amber-100 text-amber-800',
+        }[status] || 'bg-gray-100 text-gray-800'
+    );
 }
 
 function deleteSchedule(schedule: Schedule): void {
@@ -77,9 +79,7 @@ function deleteSchedule(schedule: Schedule): void {
         return;
     }
 
-    router.delete(
-        schedulesDestroy.url([props.activity.id, schedule.id])
-    );
+    router.delete(schedulesDestroy.url([props.activity.id, schedule.id]));
 }
 
 function paginationLabel(label: string): string {
@@ -100,36 +100,53 @@ function paginationLabel(label: string): string {
         <div class="flex justify-end">
             <Link
                 :href="schedulesCreate(activity.id)"
-                class="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+                class="bg-primary text-primary-foreground hover:bg-primary/90 inline-flex items-center rounded-md px-4 py-2 text-sm font-medium transition-colors"
             >
                 + Add Schedule
             </Link>
         </div>
 
         <!-- Schedules Table -->
-        <div v-if="schedules.total > 0" class="overflow-x-auto rounded-lg border border-input">
+        <div
+            v-if="schedules.total > 0"
+            class="border-input overflow-x-auto rounded-lg border"
+        >
             <table class="w-full">
-                <thead class="border-b border-input bg-muted/50">
+                <thead class="border-input bg-muted/50 border-b">
                     <tr>
-                        <th class="px-6 py-3 text-left text-sm font-medium text-foreground">
+                        <th
+                            class="text-foreground px-6 py-3 text-left text-sm font-medium"
+                        >
                             Date & Time
                         </th>
-                        <th class="px-6 py-3 text-left text-sm font-medium text-foreground">
+                        <th
+                            class="text-foreground px-6 py-3 text-left text-sm font-medium"
+                        >
                             Location
                         </th>
-                        <th class="px-6 py-3 text-left text-sm font-medium text-foreground">
+                        <th
+                            class="text-foreground px-6 py-3 text-left text-sm font-medium"
+                        >
                             Capacity
                         </th>
-                        <th class="px-6 py-3 text-left text-sm font-medium text-foreground">
+                        <th
+                            class="text-foreground px-6 py-3 text-left text-sm font-medium"
+                        >
                             Status
                         </th>
-                        <th class="px-6 py-3 text-right text-sm font-medium text-foreground">
+                        <th
+                            class="text-foreground px-6 py-3 text-right text-sm font-medium"
+                        >
                             Actions
                         </th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-input">
-                    <tr v-for="schedule in schedules.data" :key="schedule.id" class="hover:bg-muted/50">
+                <tbody class="divide-input divide-y">
+                    <tr
+                        v-for="schedule in schedules.data"
+                        :key="schedule.id"
+                        class="hover:bg-muted/50"
+                    >
                         <td class="px-6 py-4 text-sm">
                             {{ formatDateTime(schedule.starts_at) }}
                         </td>
@@ -140,21 +157,31 @@ function paginationLabel(label: string): string {
                             {{ schedule.capacity || '—' }}
                         </td>
                         <td class="px-6 py-4 text-sm">
-                            <span :class="['inline-block rounded-full px-3 py-1 text-xs font-medium', getStatusColor(schedule.status)]">
+                            <span
+                                :class="[
+                                    'inline-block rounded-full px-3 py-1 text-xs font-medium',
+                                    getStatusColor(schedule.status),
+                                ]"
+                            >
                                 {{ schedule.status }}
                             </span>
                         </td>
                         <td class="px-6 py-4 text-right">
                             <div class="flex items-center justify-end gap-2">
                                 <Link
-                                    :href="schedulesEdit([activity.id, schedule.id])"
-                                    class="text-xs font-medium text-primary hover:underline"
+                                    :href="
+                                        schedulesEdit([
+                                            activity.id,
+                                            schedule.id,
+                                        ])
+                                    "
+                                    class="text-primary text-xs font-medium hover:underline"
                                 >
                                     Edit
                                 </Link>
                                 <button
                                     @click="deleteSchedule(schedule)"
-                                    class="text-xs font-medium text-destructive hover:underline"
+                                    class="text-destructive text-xs font-medium hover:underline"
                                 >
                                     Delete
                                 </button>
@@ -175,7 +202,10 @@ function paginationLabel(label: string): string {
         />
 
         <!-- Pagination -->
-        <div v-if="schedules.links.length > 3" class="flex items-center justify-center gap-2">
+        <div
+            v-if="schedules.links.length > 3"
+            class="flex items-center justify-center gap-2"
+        >
             <Link
                 v-for="link in schedules.links"
                 :key="link.label"
@@ -184,7 +214,7 @@ function paginationLabel(label: string): string {
                     'rounded-md px-3 py-2 text-sm font-medium transition-colors',
                     link.active
                         ? 'bg-primary text-primary-foreground'
-                        : 'border border-input text-foreground hover:bg-muted',
+                        : 'border-input text-foreground hover:bg-muted border',
                 ]"
             >
                 {{ paginationLabel(link.label) }}

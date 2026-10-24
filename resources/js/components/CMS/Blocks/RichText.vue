@@ -17,7 +17,7 @@ const props = defineProps<{
     <div class="py-12">
         <div class="mx-auto max-w-3xl px-6 lg:px-8">
             <div
-                class="prose dark:prose-invert max-w-none text-foreground leading-7"
+                class="prose dark:prose-invert text-foreground max-w-none leading-7"
                 :class="props.settings?.prose_class ?? 'text-base'"
             >
                 {{ props.payload.content }}

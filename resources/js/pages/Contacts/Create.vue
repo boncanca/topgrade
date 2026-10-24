@@ -4,7 +4,10 @@ import FormPage from '@/components/FormPage.vue';
 import FormSection from '@/components/FormSection.vue';
 import PageActions from '@/components/PageActions.vue';
 import { Button } from '@/components/ui/button';
-import { index as contactsIndex, store as contactsStore } from '@/routes/contacts';
+import {
+    index as contactsIndex,
+    store as contactsStore,
+} from '@/routes/contacts';
 
 const fieldClass =
     'w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50';
@@ -31,10 +34,7 @@ function handleCancel(): void {
 </script>
 
 <template>
-    <FormPage
-        title="Add Contact"
-        description="Create a new contact record."
-    >
+    <FormPage title="Add Contact" description="Create a new contact record.">
         <form @submit.prevent="handleSubmit" class="space-y-12">
             <FormSection
                 title="Personal Information"
@@ -44,9 +44,10 @@ function handleCancel(): void {
                     <div class="grid grid-cols-2 gap-6">
                         <div>
                             <label
-                                class="mb-2 block text-sm font-medium text-foreground"
+                                class="text-foreground mb-2 block text-sm font-medium"
                             >
-                                First Name <span class="text-destructive">*</span>
+                                First Name
+                                <span class="text-destructive">*</span>
                             </label>
                             <input
                                 v-model="form.first_name"
@@ -56,7 +57,7 @@ function handleCancel(): void {
                             />
                             <p
                                 v-if="form.errors.first_name"
-                                class="mt-1 text-sm text-destructive"
+                                class="text-destructive mt-1 text-sm"
                             >
                                 {{ form.errors.first_name }}
                             </p>
@@ -64,9 +65,10 @@ function handleCancel(): void {
 
                         <div>
                             <label
-                                class="mb-2 block text-sm font-medium text-foreground"
+                                class="text-foreground mb-2 block text-sm font-medium"
                             >
-                                Last Name <span class="text-destructive">*</span>
+                                Last Name
+                                <span class="text-destructive">*</span>
                             </label>
                             <input
                                 v-model="form.last_name"
@@ -76,7 +78,7 @@ function handleCancel(): void {
                             />
                             <p
                                 v-if="form.errors.last_name"
-                                class="mt-1 text-sm text-destructive"
+                                class="text-destructive mt-1 text-sm"
                             >
                                 {{ form.errors.last_name }}
                             </p>
@@ -85,7 +87,7 @@ function handleCancel(): void {
 
                     <div>
                         <label
-                            class="mb-2 block text-sm font-medium text-foreground"
+                            class="text-foreground mb-2 block text-sm font-medium"
                         >
                             Email <span class="text-destructive">*</span>
                         </label>
@@ -97,7 +99,7 @@ function handleCancel(): void {
                         />
                         <p
                             v-if="form.errors.email"
-                            class="mt-1 text-sm text-destructive"
+                            class="text-destructive mt-1 text-sm"
                         >
                             {{ form.errors.email }}
                         </p>
@@ -106,7 +108,7 @@ function handleCancel(): void {
                     <div class="grid grid-cols-3 gap-6">
                         <div>
                             <label
-                                class="mb-2 block text-sm font-medium text-foreground"
+                                class="text-foreground mb-2 block text-sm font-medium"
                             >
                                 Phone
                             </label>
@@ -118,7 +120,7 @@ function handleCancel(): void {
                             />
                             <p
                                 v-if="form.errors.phone"
-                                class="mt-1 text-sm text-destructive"
+                                class="text-destructive mt-1 text-sm"
                             >
                                 {{ form.errors.phone }}
                             </p>
@@ -126,7 +128,7 @@ function handleCancel(): void {
 
                         <div>
                             <label
-                                class="mb-2 block text-sm font-medium text-foreground"
+                                class="text-foreground mb-2 block text-sm font-medium"
                             >
                                 Company
                             </label>
@@ -138,7 +140,7 @@ function handleCancel(): void {
                             />
                             <p
                                 v-if="form.errors.company"
-                                class="mt-1 text-sm text-destructive"
+                                class="text-destructive mt-1 text-sm"
                             >
                                 {{ form.errors.company }}
                             </p>
@@ -146,7 +148,7 @@ function handleCancel(): void {
 
                         <div>
                             <label
-                                class="mb-2 block text-sm font-medium text-foreground"
+                                class="text-foreground mb-2 block text-sm font-medium"
                             >
                                 Position
                             </label>
@@ -158,7 +160,7 @@ function handleCancel(): void {
                             />
                             <p
                                 v-if="form.errors.position"
-                                class="mt-1 text-sm text-destructive"
+                                class="text-destructive mt-1 text-sm"
                             >
                                 {{ form.errors.position }}
                             </p>
@@ -170,7 +172,7 @@ function handleCancel(): void {
             <FormSection title="Additional Information">
                 <div>
                     <label
-                        class="mb-2 block text-sm font-medium text-foreground"
+                        class="text-foreground mb-2 block text-sm font-medium"
                     >
                         Notes
                     </label>
@@ -182,7 +184,7 @@ function handleCancel(): void {
                     />
                     <p
                         v-if="form.errors.notes"
-                        class="mt-1 text-sm text-destructive"
+                        class="text-destructive mt-1 text-sm"
                     >
                         {{ form.errors.notes }}
                     </p>
@@ -192,7 +194,7 @@ function handleCancel(): void {
             <FormSection title="Status">
                 <div>
                     <label
-                        class="mb-2 block text-sm font-medium text-foreground"
+                        class="text-foreground mb-2 block text-sm font-medium"
                     >
                         Status <span class="text-destructive">*</span>
                     </label>
@@ -202,7 +204,7 @@ function handleCancel(): void {
                     </select>
                     <p
                         v-if="form.errors.status"
-                        class="mt-1 text-sm text-destructive"
+                        class="text-destructive mt-1 text-sm"
                     >
                         {{ form.errors.status }}
                     </p>

@@ -3,10 +3,7 @@ import { Head, Link } from '@inertiajs/vue3';
 import PageHeader from '@/components/PageHeader.vue';
 import StatusBadge from '@/components/StatusBadge.vue';
 import { Button } from '@/components/ui/button';
-import {
-    index as contentIndex,
-    edit as contentEdit,
-} from '@/routes/content';
+import { index as contentIndex, edit as contentEdit } from '@/routes/content';
 
 interface ContentType {
     id: number;
@@ -76,24 +73,43 @@ function formattedDate(value: string | null): string {
                         <Link :href="contentIndex()">Back</Link>
                     </Button>
                     <Button as-child>
-                        <Link :href="contentEdit(props.content.id)">Edit Content</Link>
+                        <Link :href="contentEdit(props.content.id)"
+                            >Edit Content</Link
+                        >
                     </Button>
                 </div>
             </template>
         </PageHeader>
 
         <div class="grid gap-6 md:grid-cols-3">
-            <div class="md:col-span-2 space-y-6">
+            <div class="space-y-6 md:col-span-2">
                 <!-- Main Excerpt & Content -->
-                <div class="rounded-lg border border-border bg-background p-6 space-y-6">
-                    <div v-if="props.content.excerpt" class="border-l-4 border-primary pl-4 py-1">
-                        <span class="text-xs text-muted-foreground block uppercase font-semibold tracking-wider">Excerpt</span>
-                        <p class="text-foreground text-sm font-medium italic mt-1">{{ props.content.excerpt }}</p>
+                <div
+                    class="border-border bg-background space-y-6 rounded-lg border p-6"
+                >
+                    <div
+                        v-if="props.content.excerpt"
+                        class="border-primary border-l-4 py-1 pl-4"
+                    >
+                        <span
+                            class="text-muted-foreground block text-xs font-semibold uppercase tracking-wider"
+                            >Excerpt</span
+                        >
+                        <p
+                            class="text-foreground mt-1 text-sm font-medium italic"
+                        >
+                            {{ props.content.excerpt }}
+                        </p>
                     </div>
 
                     <div>
-                        <span class="text-xs text-muted-foreground block uppercase font-semibold tracking-wider mb-3">Content Body</span>
-                        <div class="whitespace-pre-wrap font-mono text-sm bg-muted/40 p-4 rounded-md border border-border max-h-[500px] overflow-y-auto">
+                        <span
+                            class="text-muted-foreground mb-3 block text-xs font-semibold uppercase tracking-wider"
+                            >Content Body</span
+                        >
+                        <div
+                            class="bg-muted/40 border-border max-h-[500px] overflow-y-auto whitespace-pre-wrap rounded-md border p-4 font-mono text-sm"
+                        >
                             {{ props.content.content }}
                         </div>
                     </div>
@@ -103,36 +119,79 @@ function formattedDate(value: string | null): string {
             <!-- Sidebar Info & SEO -->
             <div class="space-y-6 md:col-span-1">
                 <!-- Status & Classification -->
-                <div class="rounded-lg border border-border bg-background p-6 space-y-4">
-                    <h3 class="text-sm font-semibold text-foreground border-b border-border pb-2">Status & Meta</h3>
+                <div
+                    class="border-border bg-background space-y-4 rounded-lg border p-6"
+                >
+                    <h3
+                        class="text-foreground border-border border-b pb-2 text-sm font-semibold"
+                    >
+                        Status & Meta
+                    </h3>
                     <div>
-                        <span class="text-xs text-muted-foreground block font-medium uppercase">Type</span>
-                        <span class="text-sm text-foreground">{{ props.content.contentType?.name ?? 'Ungrouped' }}</span>
+                        <span
+                            class="text-muted-foreground block text-xs font-medium uppercase"
+                            >Type</span
+                        >
+                        <span class="text-foreground text-sm">{{
+                            props.content.contentType?.name ?? 'Ungrouped'
+                        }}</span>
                     </div>
                     <div>
-                        <span class="text-xs text-muted-foreground block font-medium uppercase mb-1">Status</span>
+                        <span
+                            class="text-muted-foreground mb-1 block text-xs font-medium uppercase"
+                            >Status</span
+                        >
                         <StatusBadge :status="props.content.status" />
                     </div>
                     <div>
-                        <span class="text-xs text-muted-foreground block font-medium uppercase">Published At</span>
-                        <span class="text-sm text-foreground">{{ formattedDate(props.content.published_at) }}</span>
+                        <span
+                            class="text-muted-foreground block text-xs font-medium uppercase"
+                            >Published At</span
+                        >
+                        <span class="text-foreground text-sm">{{
+                            formattedDate(props.content.published_at)
+                        }}</span>
                     </div>
                 </div>
 
                 <!-- SEO Config -->
-                <div class="rounded-lg border border-border bg-background p-6 space-y-4">
-                    <h3 class="text-sm font-semibold text-foreground border-b border-border pb-2">SEO Configuration</h3>
+                <div
+                    class="border-border bg-background space-y-4 rounded-lg border p-6"
+                >
+                    <h3
+                        class="text-foreground border-border border-b pb-2 text-sm font-semibold"
+                    >
+                        SEO Configuration
+                    </h3>
                     <div>
-                        <span class="text-xs text-muted-foreground block font-medium uppercase">SEO Title</span>
-                        <span class="text-sm text-foreground font-medium">{{ props.content.seo?.title || '(Inherited Title)' }}</span>
+                        <span
+                            class="text-muted-foreground block text-xs font-medium uppercase"
+                            >SEO Title</span
+                        >
+                        <span class="text-foreground text-sm font-medium">{{
+                            props.content.seo?.title || '(Inherited Title)'
+                        }}</span>
                     </div>
                     <div>
-                        <span class="text-xs text-muted-foreground block font-medium uppercase">SEO Description</span>
-                        <p class="text-sm text-muted-foreground mt-1">{{ props.content.seo?.description || 'None provided' }}</p>
+                        <span
+                            class="text-muted-foreground block text-xs font-medium uppercase"
+                            >SEO Description</span
+                        >
+                        <p class="text-muted-foreground mt-1 text-sm">
+                            {{
+                                props.content.seo?.description ||
+                                'None provided'
+                            }}
+                        </p>
                     </div>
                     <div>
-                        <span class="text-xs text-muted-foreground block font-medium uppercase">Canonical URL</span>
-                        <span class="text-sm text-foreground font-mono text-xs truncate block max-w-full">
+                        <span
+                            class="text-muted-foreground block text-xs font-medium uppercase"
+                            >Canonical URL</span
+                        >
+                        <span
+                            class="text-foreground block max-w-full truncate font-mono text-sm text-xs"
+                        >
                             {{ props.content.seo?.canonical_url || 'None' }}
                         </span>
                     </div>

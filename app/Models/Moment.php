@@ -6,6 +6,7 @@ use App\Concerns\HasSeo;
 use App\Concerns\HasSlug;
 use App\Concerns\Publishable;
 use App\Concerns\ResolvesMediaUrl;
+use Database\Factories\MomentFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -17,6 +18,10 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class Moment extends Model implements HasMedia
 {
+    /**
+     * @use HasFactory<MomentFactory>
+     * @use Publishable<Moment>
+     */
     use HasFactory, HasSeo, HasSlug, InteractsWithMedia, Publishable, ResolvesMediaUrl;
 
     /**
@@ -27,25 +32,26 @@ class Moment extends Model implements HasMedia
      */
     public const SEEDED_MOMENTS = [
         'midweek-technical-training' => [
-            'cover' => '/images/club/club-training-london.jpg',
+            'cover' => '/images/club/youth-squad-team-topgrade-london-fc.webp',
             'gallery' => [
-                '/images/club/club-training-london.jpg',
-                '/images/club/training-agility-drills.jpg',
+                '/images/club/youth-squad-team-topgrade-london-fc.webp',
+                '/images/club/u7-u8-squad-photo-topgrade-london-fc.webp',
+                '/images/club/training-agility-drills-topgrade-london-fc.webp',
             ],
         ],
         'matchday-saturday-league-fixture' => [
-            'cover' => '/484977737_1109608517845156_6730033439051003629_n.jpg',
+            'cover' => '/images/club/u7-u8-squad-photo-topgrade-london-fc.webp',
             'gallery' => [
-                '/484977737_1109608517845156_6730033439051003629_n.jpg',
-                '/images/club/youth_match_action.jpg',
-                '/images/club/squad_celebration.jpg',
+                '/images/club/u7-u8-squad-photo-topgrade-london-fc.webp',
+                '/images/club/foundation-phase-match-action-topgrade-london-fc.webp',
+                '/images/club/squad-celebration-trophy-topgrade-london-fc.webp',
             ],
         ],
         'squad-mentoring-tactical-coaching' => [
-            'cover' => '/images/club/tactical_coaching.jpg',
+            'cover' => '/images/club/tactical-coaching-briefing-topgrade-london-fc.webp',
             'gallery' => [
-                '/images/club/tactical_coaching.jpg',
-                '/484192970_1108922961247045_3935375872642678849_n.jpg',
+                '/images/club/tactical-coaching-briefing-topgrade-london-fc.webp',
+                '/images/club/player-match-action-topgrade-london-fc.webp',
             ],
         ],
     ];
@@ -78,6 +84,9 @@ class Moment extends Model implements HasMedia
         $this->addMediaCollection('gallery');
     }
 
+    /**
+     * @return BelongsTo<Media, $this>
+     */
     public function coverMedia(): BelongsTo
     {
         return $this->belongsTo(Media::class, 'cover_media_id');
@@ -106,6 +115,7 @@ class Moment extends Model implements HasMedia
                 return $matched;
             }
         } elseif ($this->cover_media_id) {
+            /** @var Media|null $cover */
             $cover = $this->coverMedia;
             if ($cover && (int) $cover->model_id === (int) $this->id && $cover->model_type === self::class && $cover->collection_name === 'gallery') {
                 return $cover;
@@ -145,8 +155,10 @@ class Moment extends Model implements HasMedia
         $cover = $this->getCoverMedia();
 
         if ($cover !== null) {
+            $isRemote = ! in_array($cover->disk, ['public', 'local'], true);
             $path = $cover->getPath();
-            if (empty($path) || file_exists($path)) {
+
+            if ($isRemote || empty($path) || file_exists($path)) {
                 return $cover->getUrl();
             }
 
@@ -179,8 +191,10 @@ class Moment extends Model implements HasMedia
         $mediaItems = $this->getMedia('gallery');
 
         foreach ($mediaItems as $media) {
+            $isRemote = ! in_array($media->disk, ['public', 'local'], true);
             $path = $media->getPath();
-            if (empty($path) || file_exists($path)) {
+
+            if ($isRemote || empty($path) || file_exists($path)) {
                 $gallery[] = [
                     'id' => $media->id,
                     'url' => $media->getUrl(),

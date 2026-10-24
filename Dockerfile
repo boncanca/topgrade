@@ -35,6 +35,7 @@ RUN install-php-extensions \
 
 # Configure OPcache
 COPY docker/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
+COPY docker/uploads.ini /usr/local/etc/php/conf.d/uploads.ini
 
 # ==============================================================================
 # STAGE 2: Build stage (Composer & Node 22 for Vite compilation)

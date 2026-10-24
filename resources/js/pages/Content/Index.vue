@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { Head, Link, router } from '@inertiajs/vue3';
+import { Head, Link, router, usePage } from '@inertiajs/vue3';
+import { computed } from 'vue';
 import EmptyState from '@/components/EmptyState.vue';
 import PageHeader from '@/components/PageHeader.vue';
 import StatusBadge from '@/components/StatusBadge.vue';
@@ -82,13 +83,12 @@ function deleteContent(item: ContentItem): void {
         preserveScroll: true,
     });
 }
-import { computed } from 'vue';
-import { usePage } from '@inertiajs/vue3';
 
 const page = usePage();
 const contentTypeParam = computed(() => {
     try {
         const url = new URL(page.url, 'http://localhost');
+
         return url.searchParams.get('type');
     } catch {
         return null;
@@ -96,20 +96,38 @@ const contentTypeParam = computed(() => {
 });
 
 const pageTitle = computed(() => {
-    if (contentTypeParam.value === 'page') return 'Pages';
-    if (contentTypeParam.value === 'article') return 'Articles';
+    if (contentTypeParam.value === 'page') {
+        return 'Pages';
+    }
+
+    if (contentTypeParam.value === 'article') {
+        return 'Articles';
+    }
+
     return 'Content';
 });
 
 const pageDescription = computed(() => {
-    if (contentTypeParam.value === 'page') return 'Manage editable website pages and sections.';
-    if (contentTypeParam.value === 'article') return 'Official club news, updates, and matchday announcements.';
+    if (contentTypeParam.value === 'page') {
+        return 'Manage editable website pages and sections.';
+    }
+
+    if (contentTypeParam.value === 'article') {
+        return 'Official club news, updates, and matchday announcements.';
+    }
+
     return 'Manage pages, articles, and reusable site content.';
 });
 
 const createButtonText = computed(() => {
-    if (contentTypeParam.value === 'page') return 'Create Page';
-    if (contentTypeParam.value === 'article') return 'Create Article';
+    if (contentTypeParam.value === 'page') {
+        return 'Create Page';
+    }
+
+    if (contentTypeParam.value === 'article') {
+        return 'Create Article';
+    }
+
     return 'Create Content';
 });
 </script>
@@ -118,10 +136,7 @@ const createButtonText = computed(() => {
     <Head :title="pageTitle" />
 
     <div class="flex flex-1 flex-col gap-6 p-4 md:p-6">
-        <PageHeader
-            :title="pageTitle"
-            :description="pageDescription"
-        >
+        <PageHeader :title="pageTitle" :description="pageDescription">
             <template #actions>
                 <Button as-child>
                     <Link :href="contentCreate()">{{ createButtonText }}</Link>
@@ -131,70 +146,70 @@ const createButtonText = computed(() => {
 
         <div
             v-if="props.content.data.length > 0"
-            class="overflow-hidden rounded-lg border border-border bg-background"
+            class="border-border bg-background overflow-hidden rounded-lg border"
         >
             <div class="overflow-x-auto">
                 <table class="w-full min-w-[760px] table-auto">
-                    <thead class="border-b border-border bg-muted/40">
+                    <thead class="border-border bg-muted/40 border-b">
                         <tr>
                             <th
-                                class="px-4 py-3 text-left text-xs font-medium tracking-wide text-muted-foreground uppercase"
+                                class="text-muted-foreground px-4 py-3 text-left text-xs font-medium uppercase tracking-wide"
                             >
                                 Title
                             </th>
                             <th
-                                class="px-4 py-3 text-left text-xs font-medium tracking-wide text-muted-foreground uppercase"
+                                class="text-muted-foreground px-4 py-3 text-left text-xs font-medium uppercase tracking-wide"
                             >
                                 Type
                             </th>
                             <th
-                                class="px-4 py-3 text-left text-xs font-medium tracking-wide text-muted-foreground uppercase"
+                                class="text-muted-foreground px-4 py-3 text-left text-xs font-medium uppercase tracking-wide"
                             >
                                 Status
                             </th>
                             <th
-                                class="px-4 py-3 text-left text-xs font-medium tracking-wide text-muted-foreground uppercase"
+                                class="text-muted-foreground px-4 py-3 text-left text-xs font-medium uppercase tracking-wide"
                             >
                                 Published
                             </th>
                             <th
-                                class="px-4 py-3 text-right text-xs font-medium tracking-wide text-muted-foreground uppercase"
+                                class="text-muted-foreground px-4 py-3 text-right text-xs font-medium uppercase tracking-wide"
                             >
                                 Actions
                             </th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-border">
+                    <tbody class="divide-border divide-y">
                         <tr
                             v-for="item in props.content.data"
                             :key="item.id"
-                            class="transition-colors hover:bg-muted/40"
+                            class="hover:bg-muted/40 transition-colors"
                         >
                             <td class="px-4 py-4">
                                 <div class="flex min-w-0 flex-col gap-1">
                                     <Link
                                         :href="contentShow(item.id)"
-                                        class="truncate text-sm font-medium text-foreground underline-offset-4 hover:underline"
+                                        class="text-foreground truncate text-sm font-medium underline-offset-4 hover:underline"
                                     >
                                         {{ item.title }}
                                     </Link>
                                     <span
-                                        class="truncate text-xs text-muted-foreground"
+                                        class="text-muted-foreground truncate text-xs"
                                     >
                                         /{{ item.slug }}
                                     </span>
                                 </div>
                             </td>
                             <td
-                                class="px-4 py-4 text-sm whitespace-nowrap text-muted-foreground"
+                                class="text-muted-foreground whitespace-nowrap px-4 py-4 text-sm"
                             >
                                 {{ item.content_type?.name ?? 'Ungrouped' }}
                             </td>
-                            <td class="px-4 py-4 whitespace-nowrap">
+                            <td class="whitespace-nowrap px-4 py-4">
                                 <StatusBadge :status="item.status" />
                             </td>
                             <td
-                                class="px-4 py-4 text-sm whitespace-nowrap text-muted-foreground"
+                                class="text-muted-foreground whitespace-nowrap px-4 py-4 text-sm"
                             >
                                 {{ formattedDate(item.published_at) }}
                             </td>
@@ -221,7 +236,7 @@ const createButtonText = computed(() => {
             </div>
 
             <div
-                class="flex flex-col gap-4 border-t border-border px-4 py-3 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between"
+                class="border-border text-muted-foreground flex flex-col gap-4 border-t px-4 py-3 text-sm sm:flex-row sm:items-center sm:justify-between"
             >
                 <p>
                     Showing {{ props.content.from }} to
