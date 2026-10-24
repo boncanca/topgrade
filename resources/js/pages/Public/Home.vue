@@ -1344,7 +1344,7 @@ onUnmounted(() => {
                         style="--d: 120ms"
                     >
                         <div
-                            class="border-tg-border bg-tg-bg-deep group relative w-full cursor-pointer overflow-hidden rounded-xl border shadow-xl transition-all duration-300 hover:border-tg-accent/70"
+                            class="border-tg-border bg-tg-bg-deep hover:border-tg-accent/70 group relative w-full cursor-pointer overflow-hidden rounded-xl border shadow-xl transition-all duration-300"
                             role="button"
                             tabindex="0"
                             aria-label="View full photo of youth player match action"
@@ -1384,7 +1384,7 @@ onUnmounted(() => {
                                 >
                             </div>
                             <span
-                                class="absolute right-3 top-3 flex items-center gap-1.5 rounded-full border border-white/20 bg-black/75 px-3 py-1.5 text-xs text-white shadow-lg backdrop-blur-sm transition-all duration-200 group-hover:border-tg-accent group-hover:bg-black/90"
+                                class="group-hover:border-tg-accent absolute right-3 top-3 flex items-center gap-1.5 rounded-full border border-white/20 bg-black/75 px-3 py-1.5 text-xs text-white shadow-lg backdrop-blur-sm transition-all duration-200 group-hover:bg-black/90"
                             >
                                 <Maximize2 class="text-tg-accent size-3.5" />
                                 <span
@@ -1619,7 +1619,7 @@ onUnmounted(() => {
                 <!-- Wide Training Pitch Photography -->
                 <div class="mt-14" data-reveal style="--d: 200ms">
                     <div
-                        class="border-tg-border bg-tg-bg-deep group relative w-full cursor-pointer overflow-hidden rounded-xl border shadow-xl transition-all duration-300 hover:border-tg-accent/70"
+                        class="border-tg-border bg-tg-bg-deep hover:border-tg-accent/70 group relative w-full cursor-pointer overflow-hidden rounded-xl border shadow-xl transition-all duration-300"
                         role="button"
                         tabindex="0"
                         aria-label="View full photo of floodlit training pitch"
@@ -1649,7 +1649,7 @@ onUnmounted(() => {
                             loading="lazy"
                         />
                         <span
-                            class="absolute right-3 top-3 flex items-center gap-1.5 rounded-full border border-white/20 bg-black/75 px-3 py-1.5 text-xs text-white shadow-lg backdrop-blur-sm transition-all duration-200 group-hover:border-tg-accent group-hover:bg-black/90"
+                            class="group-hover:border-tg-accent absolute right-3 top-3 flex items-center gap-1.5 rounded-full border border-white/20 bg-black/75 px-3 py-1.5 text-xs text-white shadow-lg backdrop-blur-sm transition-all duration-200 group-hover:bg-black/90"
                         >
                             <Maximize2 class="text-tg-accent size-3.5" />
                             <span
@@ -2016,7 +2016,7 @@ onUnmounted(() => {
                         style="--d: 150ms"
                     >
                         <div
-                            class="border-tg-border bg-tg-bg-deep group relative w-full cursor-pointer overflow-hidden rounded-xl border shadow-xl transition-all duration-300 hover:border-tg-accent/70"
+                            class="border-tg-border bg-tg-bg-deep hover:border-tg-accent/70 group relative w-full cursor-pointer overflow-hidden rounded-xl border shadow-xl transition-all duration-300"
                             role="button"
                             tabindex="0"
                             aria-label="View full photo of matchday fixture action"
@@ -2049,7 +2049,7 @@ onUnmounted(() => {
                                 class="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"
                             />
                             <span
-                                class="absolute right-3 top-3 flex items-center gap-1.5 rounded-full border border-white/20 bg-black/75 px-3 py-1.5 text-xs text-white shadow-lg backdrop-blur-sm transition-all duration-200 group-hover:border-tg-accent group-hover:bg-black/90"
+                                class="group-hover:border-tg-accent absolute right-3 top-3 flex items-center gap-1.5 rounded-full border border-white/20 bg-black/75 px-3 py-1.5 text-xs text-white shadow-lg backdrop-blur-sm transition-all duration-200 group-hover:bg-black/90"
                             >
                                 <Maximize2 class="text-tg-accent size-3.5" />
                                 <span

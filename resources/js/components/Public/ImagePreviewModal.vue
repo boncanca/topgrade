@@ -61,7 +61,7 @@ function onOpenChange(value: boolean): void {
     <DialogRoot :open="open" @update:open="onOpenChange">
         <DialogPortal>
             <DialogOverlay
-                class="fixed inset-0 z-50 bg-black/92 backdrop-blur-sm transition-opacity duration-300"
+                class="bg-black/92 fixed inset-0 z-50 backdrop-blur-sm transition-opacity duration-300"
             />
             <DialogContent
                 class="fixed inset-0 z-50 flex h-dvh flex-col justify-between p-3 text-white outline-none sm:p-6"
@@ -103,7 +103,7 @@ function onOpenChange(value: boolean): void {
                         v-if="image"
                         :src="image.url"
                         :alt="image.alt || image.title || 'TopGrade London FC'"
-                        class="max-h-[82vh] max-w-full rounded-md object-contain shadow-2xl select-none"
+                        class="max-h-[82vh] max-w-full select-none rounded-md object-contain shadow-2xl"
                     />
                 </div>
 
