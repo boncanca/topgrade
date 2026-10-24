@@ -219,7 +219,7 @@ const facilities = computed(() => {
 
                 <div class="grid grid-cols-2 gap-3 sm:gap-4">
                     <div
-                        class="border-tg-border bg-tg-bg-deep group relative aspect-[16/10] cursor-pointer overflow-hidden rounded-lg border shadow-sm transition-all duration-300 hover:border-tg-accent/60 sm:aspect-[16/9]"
+                        class="border-tg-border bg-tg-bg-deep group relative aspect-[16/9] cursor-pointer overflow-hidden rounded-lg border shadow-sm transition-all duration-300 hover:border-tg-accent/70"
                         role="button"
                         tabindex="0"
                         aria-label="View full photo of Under-7 and Under-8 squad with medals"
@@ -245,7 +245,7 @@ const facilities = computed(() => {
                         <img
                             src="/images/club/u7-u8-squad-photo-topgrade-london-fc.webp"
                             alt="TopGrade London FC Under-7 and Under-8 players with medals and coach"
-                            class="h-full w-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-105"
+                            class="h-full w-full object-cover object-center select-none"
                             loading="lazy"
                         />
                         <span
@@ -256,7 +256,7 @@ const facilities = computed(() => {
                         </span>
                     </div>
                     <div
-                        class="border-tg-border bg-tg-bg-deep group relative aspect-[16/10] cursor-pointer overflow-hidden rounded-lg border shadow-sm transition-all duration-300 hover:border-tg-accent/60 sm:aspect-[16/9]"
+                        class="border-tg-border bg-tg-bg-deep group relative aspect-[16/9] cursor-pointer overflow-hidden rounded-lg border shadow-sm transition-all duration-300 hover:border-tg-accent/70"
                         role="button"
                         tabindex="0"
                         aria-label="View full photo of coach mentoring youth player"
@@ -282,7 +282,7 @@ const facilities = computed(() => {
                         <img
                             src="/images/club/coach-mentoring-session-topgrade-london-fc.webp"
                             alt="TopGrade coach mentoring a youth football player"
-                            class="h-full w-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-105"
+                            class="h-full w-full object-contain bg-black/40 object-center select-none"
                             loading="lazy"
                         />
                         <span
@@ -293,7 +293,7 @@ const facilities = computed(() => {
                         </span>
                     </div>
                     <div
-                        class="border-tg-border bg-tg-bg-deep group relative aspect-[16/10] cursor-pointer overflow-hidden rounded-lg border shadow-sm transition-all duration-300 hover:border-tg-accent/60 sm:aspect-[16/9]"
+                        class="border-tg-border bg-tg-bg-deep group relative aspect-[16/9] cursor-pointer overflow-hidden rounded-lg border shadow-sm transition-all duration-300 hover:border-tg-accent/70"
                         role="button"
                         tabindex="0"
                         aria-label="View full photo of evening floodlit training pitch"
@@ -319,7 +319,7 @@ const facilities = computed(() => {
                         <img
                             src="/images/club/floodlit-training-pitch-topgrade-london-fc.webp"
                             alt="TopGrade evening squad training under floodlights"
-                            class="h-full w-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-105"
+                            class="h-full w-full object-cover object-center select-none"
                             loading="lazy"
                         />
                         <span
@@ -330,7 +330,7 @@ const facilities = computed(() => {
                         </span>
                     </div>
                     <div
-                        class="border-tg-border bg-tg-bg-deep group relative aspect-[16/10] cursor-pointer overflow-hidden rounded-lg border shadow-sm transition-all duration-300 hover:border-tg-accent/60 sm:aspect-[16/9]"
+                        class="border-tg-border bg-tg-bg-deep group relative aspect-[16/9] cursor-pointer overflow-hidden rounded-lg border shadow-sm transition-all duration-300 hover:border-tg-accent/70"
                         role="button"
                         tabindex="0"
                         aria-label="View full photo of youth squad team"
@@ -356,7 +356,7 @@ const facilities = computed(() => {
                         <img
                             src="/images/club/youth-squad-team-topgrade-london-fc.webp"
                             alt="TopGrade London FC youth squad posing together on the pitch"
-                            class="h-full w-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-105"
+                            class="h-full w-full object-cover object-center select-none"
                             loading="lazy"
                         />
                         <span

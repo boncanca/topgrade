@@ -9,6 +9,7 @@ import {
     DialogRoot,
     DialogTitle,
 } from 'reka-ui';
+import { onBeforeUnmount, watch } from 'vue';
 
 export interface PreviewImageData {
     url: string;
@@ -17,18 +18,47 @@ export interface PreviewImageData {
     subtitle?: string;
 }
 
-defineProps<{
+const props = defineProps<{
     open: boolean;
     image: PreviewImageData | null;
 }>();
 
-defineEmits<{
+const emit = defineEmits<{
     (e: 'update:open', value: boolean): void;
 }>();
+
+let originalBodyOverflow = '';
+
+watch(
+    () => props.open,
+    (isOpen) => {
+        if (typeof document === 'undefined') {
+            return;
+        }
+
+        if (isOpen) {
+            originalBodyOverflow = document.body.style.overflow;
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = originalBodyOverflow;
+        }
+    },
+    { immediate: true },
+);
+
+onBeforeUnmount(() => {
+    if (typeof document !== 'undefined') {
+        document.body.style.overflow = originalBodyOverflow;
+    }
+});
+
+function onOpenChange(value: boolean): void {
+    emit('update:open', value);
+}
 </script>
 
 <template>
-    <DialogRoot :open="open" @update:open="$emit('update:open', $event)">
+    <DialogRoot :open="open" @update:open="onOpenChange">
         <DialogPortal>
             <DialogOverlay
                 class="fixed inset-0 z-50 bg-black/92 backdrop-blur-sm transition-opacity duration-300"
@@ -37,7 +67,7 @@ defineEmits<{
                 class="fixed inset-0 z-50 flex h-dvh flex-col justify-between p-3 text-white outline-none sm:p-6"
                 aria-modal="true"
             >
-                <!-- Header -->
+                <!-- Header with Accessible Title and Description -->
                 <div
                     class="flex shrink-0 items-center justify-between gap-4 border-b border-white/10 pb-3"
                 >
@@ -57,7 +87,7 @@ defineEmits<{
                         </DialogDescription>
                     </div>
                     <DialogClose
-                        class="focus-visible:outline-tg-accent flex shrink-0 items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-xs text-white transition-colors hover:bg-white/20 focus-visible:outline-2"
+                        class="focus-visible:ring-tg-accent focus-visible:ring-offset-tg-bg-deep flex shrink-0 items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-xs text-white transition-colors hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
                         aria-label="Close photo preview"
                     >
                         <X class="size-4" />

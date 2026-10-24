@@ -1344,7 +1344,7 @@ onUnmounted(() => {
                         style="--d: 120ms"
                     >
                         <div
-                            class="border-tg-border bg-tg-bg-deep group relative aspect-[4/3] cursor-pointer overflow-hidden rounded-xl border shadow-xl transition-all duration-300 hover:border-tg-accent/60"
+                            class="border-tg-border bg-tg-bg-deep group relative w-full cursor-pointer overflow-hidden rounded-xl border shadow-xl transition-all duration-300 hover:border-tg-accent/70"
                             role="button"
                             tabindex="0"
                             aria-label="View full photo of youth player match action"
@@ -1370,7 +1370,7 @@ onUnmounted(() => {
                             <img
                                 src="/images/club/player-match-action-topgrade-london-fc.webp"
                                 alt="TopGrade London FC youth player in purple kit competing for possession during a league match"
-                                class="h-full w-full object-cover object-[35%_bottom] transition-transform duration-700 ease-out group-hover:scale-[1.03] sm:object-center"
+                                class="block h-auto w-full select-none"
                                 loading="lazy"
                             />
                             <div
@@ -1619,7 +1619,7 @@ onUnmounted(() => {
                 <!-- Wide Training Pitch Photography -->
                 <div class="mt-14" data-reveal style="--d: 200ms">
                     <div
-                        class="border-tg-border bg-tg-bg-deep group relative aspect-[16/9] cursor-pointer overflow-hidden rounded-xl border shadow-xl transition-all duration-300 hover:border-tg-accent/60 lg:aspect-[21/10]"
+                        class="border-tg-border bg-tg-bg-deep group relative w-full cursor-pointer overflow-hidden rounded-xl border shadow-xl transition-all duration-300 hover:border-tg-accent/70"
                         role="button"
                         tabindex="0"
                         aria-label="View full photo of floodlit training pitch"
@@ -1645,7 +1645,7 @@ onUnmounted(() => {
                         <img
                             src="/images/club/floodlit-training-pitch-topgrade-london-fc.webp"
                             alt="TopGrade London FC all-weather training pitch illuminated under evening floodlights"
-                            class="h-full w-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-[1.02]"
+                            class="block h-auto w-full select-none"
                             loading="lazy"
                         />
                         <span
@@ -2016,7 +2016,7 @@ onUnmounted(() => {
                         style="--d: 150ms"
                     >
                         <div
-                            class="border-tg-border bg-tg-bg-deep group relative aspect-[16/10] cursor-pointer overflow-hidden rounded-xl border shadow-xl transition-all duration-300 hover:border-tg-accent/60 sm:aspect-[16/9]"
+                            class="border-tg-border bg-tg-bg-deep group relative w-full cursor-pointer overflow-hidden rounded-xl border shadow-xl transition-all duration-300 hover:border-tg-accent/70"
                             role="button"
                             tabindex="0"
                             aria-label="View full photo of matchday fixture action"
@@ -2042,7 +2042,7 @@ onUnmounted(() => {
                             <img
                                 src="/images/club/matchday-fixture-action-topgrade-london-fc.webp"
                                 alt="TopGrade London FC matchday action"
-                                class="h-full w-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+                                class="block h-auto w-full select-none"
                                 loading="lazy"
                             />
                             <div

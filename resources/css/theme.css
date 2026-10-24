@@ -465,8 +465,8 @@
     }
 
     @media (hover: hover) and (pointer: fine) {
-        .tg-slot:hover img {
-            transform: scale(1.02);
+        .tg-slot:hover {
+            border-color: var(--tg-accent);
         }
     }
 
@@ -495,7 +495,7 @@
     }
 
     .tg-float-img {
-        transform: translate3d(0, 0, 0) scale(1);
+        transform: translate3d(0, 0, 0);
         transition: transform 650ms cubic-bezier(0.22, 1, 0.36, 1);
         will-change: transform;
         display: block;
@@ -506,8 +506,7 @@
 
     @media (hover: hover) and (pointer: fine) {
         .tg-float-card:hover .tg-float-img {
-            transform: translate3d(0, var(--float-y, -5px), 0)
-                rotate(var(--rotate, -0.3deg)) scale(1.02);
+            transform: translate3d(0, var(--float-y, -4px), 0);
         }
     }
 
