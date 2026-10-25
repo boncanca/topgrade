@@ -8,6 +8,8 @@
 /public/sitemap.xml
 /storage/*.key
 /storage/pail
+/storage/framework/*.php
+/storage/framework/lsp-*
 /resources/js/actions
 /resources/js/routes
 /resources/js/wayfinder
