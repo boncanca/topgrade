@@ -2,8 +2,10 @@
 
 use App\Models\User;
 use Illuminate\Auth\Notifications\ResetPassword;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Notification;
 use Laravel\Fortify\Features;
+use Symfony\Component\Mailer\Exception\TransportException;
 
 beforeEach(function () {
     $this->skipUnlessFortifyHas(Features::resetPasswords());
@@ -75,4 +77,17 @@ test('password cannot be reset with invalid token', function () {
     ]);
 
     $response->assertSessionHasErrors('email');
+});
+
+test('handles mail transport exception gracefully when requesting password reset link', function () {
+    $user = User::factory()->create();
+
+    Mail::shouldReceive('mailer->send')
+        ->andThrow(new TransportException('SMTP 535 Authentication failed'));
+
+    $response = $this->from(route('password.request'))
+        ->post(route('password.email'), ['email' => $user->email]);
+
+    $response->assertRedirect(route('password.request'));
+    $response->assertSessionHasErrors(['email' => 'We were unable to deliver the password reset email. Please try again later or contact support.']);
 });
