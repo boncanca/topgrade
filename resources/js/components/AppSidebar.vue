@@ -46,15 +46,15 @@ const navGroups = computed<NavGroup[]>(() => {
 
     const items = [
         {
-            title: 'Inbox',
-            href: inquiriesIndex(),
-            icon: MessageSquare,
-        },
-        {
             title: 'Overview',
             href: dashboard(),
             icon: LayoutGrid,
             exact: true,
+        },
+        {
+            title: 'Inbox',
+            href: inquiriesIndex(),
+            icon: MessageSquare,
         },
         {
             title: 'Articles',
