@@ -121,6 +121,7 @@ Route::middleware(['auth', 'verified', 'admin'])->group(function () {
 
         // Inquiries & Messages
         Route::resource('inquiries', InquiryController::class)->only(['index', 'show', 'edit', 'update', 'destroy']);
+        Route::post('inquiries/{inquiry}/reply', [InquiryController::class, 'reply'])->name('inquiries.reply');
         Route::get('messages', fn () => redirect()->route('inquiries.index'))->name('dashboard.messages.index');
 
         // Articles direct alias

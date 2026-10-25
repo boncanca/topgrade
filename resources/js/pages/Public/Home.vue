@@ -109,7 +109,7 @@ const heroVideoUrl = computed(
 const heroPosterUrl = computed(
     () =>
         props.hero?.poster_url ||
-        '/images/club/hero-matchday-topgrade-london-fc.webp',
+        '/images/club/floodlit-training-pitch-topgrade-london-fc.webp',
 );
 const heroEyebrow = computed(() => props.hero?.eyebrow || 'More Than Football');
 const heroHeadline = computed(
@@ -153,22 +153,12 @@ const heroHeadlineParts = computed(() => {
     return [text];
 });
 
-const onSourceError = () => {
-    if (heroVideoRef.value && !heroVideoRef.value.src.endsWith(localFallbackVideo)) {
-        heroVideoRef.value.src = localFallbackVideo;
-        heroVideoRef.value.load();
-        heroVideoRef.value.play().catch(() => {
-            videoFailed.value = true;
-        });
-    }
-};
-
 const onVideoError = () => {
-    if (heroVideoRef.value && !heroVideoRef.value.src.endsWith(localFallbackVideo)) {
+    if (heroVideoRef.value && !heroVideoRef.value.currentSrc.endsWith(localFallbackVideo)) {
         heroVideoRef.value.src = localFallbackVideo;
         heroVideoRef.value.load();
         heroVideoRef.value.play().catch(() => {
-            videoFailed.value = true;
+            // Autoplay rejected; will play on interaction
         });
 
         return;
@@ -636,10 +626,26 @@ onMounted(async () => {
     document.querySelectorAll('[data-reveal]').forEach((el) => io?.observe(el));
 
     if (heroVideoRef.value && !prefersReducedMotion.value) {
-        heroVideoRef.value.muted = true;
-        heroVideoRef.value.play().catch(() => {
-            videoFailed.value = true;
-        });
+        const video = heroVideoRef.value;
+        video.muted = true;
+        video.defaultMuted = true;
+        video.playsInline = true;
+
+        const playPromise = video.play();
+
+        if (playPromise !== undefined) {
+            playPromise.catch(() => {
+                const playOnGesture = () => {
+                    if (heroVideoRef.value) {
+                        heroVideoRef.value.muted = true;
+                        heroVideoRef.value.play().catch(() => {});
+                    }
+                };
+                window.addEventListener('click', playOnGesture, { once: true, passive: true });
+                window.addEventListener('touchstart', playOnGesture, { once: true, passive: true });
+                window.addEventListener('scroll', playOnGesture, { once: true, passive: true });
+            });
+        }
     }
 
     if (reduceMotion || !ball) {
@@ -1063,28 +1069,32 @@ onUnmounted(() => {
                     muted
                     loop
                     playsinline
-                    preload="metadata"
+                    webkit-playsinline
+                    preload="auto"
                     :poster="heroPosterUrl || undefined"
                     @error="onVideoError"
                 >
                     <source
+                        :src="localFallbackVideo"
+                        type="video/mp4"
+                    />
+                    <source
                         v-if="heroVideoUrl && heroVideoUrl !== localFallbackVideo"
                         :src="heroVideoUrl"
                         type="video/mp4"
-                        @error="onSourceError"
-                    />
-                    <source
-                        :src="localFallbackVideo"
-                        type="video/mp4"
-                        @error="onVideoError"
                     />
                 </video>
-                <img
-                    v-else-if="heroPosterUrl"
-                    :src="heroPosterUrl"
-                    alt="TopGrade London FC Squad Training"
-                    class="h-full w-full object-cover object-center transition-opacity duration-700"
-                />
+                <picture v-else-if="heroPosterUrl">
+                    <source
+                        srcset="/images/club/floodlit-training-pitch-topgrade-london-fc.webp"
+                        type="image/webp"
+                    />
+                    <img
+                        :src="heroPosterUrl"
+                        alt="TopGrade London FC Floodlit Training Pitch"
+                        class="h-full w-full object-cover object-center transition-opacity duration-700"
+                    />
+                </picture>
                 <!-- Subtle flat translucent overlay (restrained 35%, no gradients, no glows) -->
                 <div class="absolute inset-0 bg-[#08040f]/35" />
             </div>

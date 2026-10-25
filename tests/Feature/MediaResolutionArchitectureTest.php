@@ -77,7 +77,7 @@ test('runtime media absent resolves to domain canonical asset', function () {
     ]);
 
     expect($home->getResolvedMediaUrl('videos'))->toBe('/hero-training-loop-topgrade-london-fc.mp4')
-        ->and($home->getResolvedMediaUrl('images'))->toBe('/images/club/hero-matchday-topgrade-london-fc.webp');
+        ->and($home->getResolvedMediaUrl('images'))->toBe('/images/club/floodlit-training-pitch-topgrade-london-fc.webp');
 });
 
 test('runtime media record exists but physical file is missing logs warning and falls back cleanly', function () {
@@ -239,7 +239,7 @@ test('existing frontend response shape remains completely unchanged', function (
             ->has('hero.video_url')
             ->where('hero.video_url', '/hero-training-loop-topgrade-london-fc.mp4')
             ->has('hero.poster_url')
-            ->where('hero.poster_url', '/images/club/hero-matchday-topgrade-london-fc.webp')
+            ->where('hero.poster_url', '/images/club/floodlit-training-pitch-topgrade-london-fc.webp')
             ->has('squads.0.image_url')
             ->where('squads.0.image_url', '/images/club/u7-u8-squad-photo-topgrade-london-fc.webp')
             ->has('momentsRibbon.0.image_url')

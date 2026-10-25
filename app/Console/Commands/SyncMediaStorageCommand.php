@@ -44,8 +44,8 @@ class SyncMediaStorageCommand extends Command
                 'model' => Content::class,
                 'identifier' => ['slug' => 'home'],
                 'collection' => 'images',
-                'source' => 'images/club/hero-matchday-topgrade-london-fc.jpg',
-                'file_name' => 'hero-matchday-topgrade-london-fc.jpg',
+                'source' => 'images/club/floodlit-training-pitch-topgrade-london-fc.jpg',
+                'file_name' => 'floodlit-training-pitch-topgrade-london-fc.jpg',
             ],
 
             // Head Coach / Staff Photo

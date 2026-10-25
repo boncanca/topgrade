@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Head, Link, router } from '@inertiajs/vue3';
+import { Head, Link, router, useForm, usePage } from '@inertiajs/vue3';
 import {
     AlertCircle,
     Archive,
@@ -12,9 +12,10 @@ import {
     MessageSquare,
     Send,
     ShieldCheck,
+    Sparkles,
     User,
 } from '@lucide/vue';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import PageActions from '@/components/PageActions.vue';
 import PageHeader from '@/components/PageHeader.vue';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -43,6 +44,12 @@ interface Contact {
     phone: string | null;
 }
 
+interface RepliedByUser {
+    id: number;
+    name: string;
+    email: string;
+}
+
 interface Inquiry {
     id: number;
     name: string;
@@ -50,6 +57,10 @@ interface Inquiry {
     phone: string | null;
     subject: string;
     message: string;
+    reply_message?: string | null;
+    replied_by?: RepliedByUser | null;
+    responded_at?: string | null;
+    read_at?: string | null;
     status: 'new' | 'open' | 'in_progress' | 'resolved' | 'closed' | 'archived';
     created_at: string;
     ip_address?: string | null;
@@ -171,6 +182,60 @@ function getInitials(name: string): string {
         .join('')
         .toUpperCase()
         .slice(0, 2);
+}
+
+const page = usePage();
+const currentUser = computed(() => page.props.auth?.user);
+const isDevAdmin = computed(() => Boolean(
+    currentUser.value?.is_dev_admin ||
+    currentUser.value?.role === 'dev' ||
+    currentUser.value?.is_system_account
+));
+
+const replyForm = useForm({
+    subject: props.inquiry.subject.toLowerCase().startsWith('re:')
+        ? props.inquiry.subject
+        : `Re: ${props.inquiry.subject}`,
+    message: '',
+    status: 'resolved',
+});
+
+const replySentSuccess = ref(false);
+
+const quickReplyPresets = [
+    {
+        label: 'Trial Session Invite',
+        text: `Dear ${props.inquiry.name},\n\nThank you for getting in touch with TopGrade London FC. We would be delighted to welcome you for a complimentary trial session with your age group squad.\n\nOur coaching team holds midweek training at Tottenham Powerleague. Please let us know if Tuesday or Thursday at 5:00 PM works best for you, and we will confirm your place.\n\nBest regards,\nTopGrade London FC Coaching Staff`,
+    },
+    {
+        label: 'General Inquiry Info',
+        text: `Dear ${props.inquiry.name},\n\nThank you for reaching out to us. We have received your inquiry regarding "${props.inquiry.subject}".\n\nA member of our coaching and academy administration team will follow up directly with detailed information regarding our training schedules, venues, and registration requirements.\n\nBest regards,\nTopGrade London FC Team`,
+    },
+    {
+        label: 'Fixture & Matchday',
+        text: `Dear ${props.inquiry.name},\n\nThank you for getting in touch. Matchday schedules and team allocations for the upcoming league fixtures are currently published on our club portal.\n\nPlease don't hesitate to reach out if you have any questions.\n\nBest regards,\nTopGrade London FC Team`,
+    },
+];
+
+function applyPreset(presetText: string): void {
+    replyForm.message = presetText;
+}
+
+function submitQuickReply(): void {
+    if (!replyForm.message.trim() || replyForm.processing) {
+        return;
+    }
+
+    replyForm.post(`/dashboard/inquiries/${props.inquiry.id}/reply`, {
+        preserveScroll: true,
+        onSuccess: () => {
+            replyForm.reset('message');
+            replySentSuccess.value = true;
+            setTimeout(() => {
+                replySentSuccess.value = false;
+            }, 6000);
+        },
+    });
 }
 </script>
 
@@ -422,6 +487,164 @@ function getInitials(name: string): string {
                             </Badge>
                         </div>
                     </CardFooter>
+                </Card>
+
+                <!-- Previous Reply Sent Card (if previously responded) -->
+                <Card
+                    v-if="inquiry.reply_message"
+                    class="border-emerald-200/80 bg-emerald-50/20 shadow-sm dark:border-emerald-900/50 dark:bg-emerald-950/10"
+                >
+                    <CardHeader class="border-b border-emerald-100/80 pb-3 dark:border-emerald-900/30">
+                        <div class="flex flex-wrap items-center justify-between gap-2">
+                            <div class="flex items-center gap-2">
+                                <CheckCircle2 class="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                                <CardTitle class="text-sm font-bold text-emerald-900 dark:text-emerald-200">
+                                    Previous Reply Sent
+                                </CardTitle>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <Badge variant="outline" class="border-emerald-300 bg-emerald-100/60 text-emerald-800 text-[10px] dark:border-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
+                                    Delivered to {{ inquiry.email }}
+                                </Badge>
+                                <span v-if="inquiry.responded_at" class="text-xs text-muted-foreground flex items-center gap-1">
+                                    <Clock class="h-3 w-3" />
+                                    {{ formatDate(inquiry.responded_at) }}
+                                </span>
+                            </div>
+                        </div>
+                    </CardHeader>
+                    <CardContent class="pt-4">
+                        <div class="whitespace-pre-wrap rounded-lg border border-emerald-200/60 bg-white/80 p-4 font-sans text-sm leading-relaxed text-slate-800 shadow-xs dark:border-emerald-900/40 dark:bg-slate-900/80 dark:text-slate-200">
+                            {{ inquiry.reply_message }}
+                        </div>
+                        <div v-if="inquiry.replied_by" class="mt-2.5 text-[11px] text-muted-foreground flex items-center gap-1.5">
+                            <User class="h-3 w-3" />
+                            <span>Sent by {{ inquiry.replied_by.name }} ({{ inquiry.replied_by.email }})</span>
+                        </div>
+                    </CardContent>
+                </Card>
+
+                <!-- In-Panel Quick Reply Composer (Dev Admin Only) -->
+                <Card
+                    v-if="isDevAdmin"
+                    class="border-purple-300/80 bg-gradient-to-b from-purple-50/40 to-background shadow-md dark:border-purple-900/80 dark:from-purple-950/20"
+                >
+                    <CardHeader class="border-b border-purple-100 pb-4 dark:border-purple-900/50">
+                        <div class="flex flex-wrap items-center justify-between gap-3">
+                            <div class="flex items-center gap-2.5">
+                                <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-purple-600 text-white shadow-xs">
+                                    <MessageSquare class="h-4 w-4" />
+                                </div>
+                                <div>
+                                    <CardTitle class="text-base font-bold text-foreground flex items-center gap-2">
+                                        <span>Quick Reply Composer</span>
+                                        <Badge variant="outline" class="border-purple-300 bg-purple-100/60 text-purple-800 text-[10px] dark:border-purple-800 dark:bg-purple-950 dark:text-purple-300">
+                                            Dev Admin
+                                        </Badge>
+                                    </CardTitle>
+                                    <p class="text-xs text-muted-foreground mt-0.5">
+                                        Compose and send an email reply directly from this panel to {{ inquiry.email }}.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </CardHeader>
+
+                    <CardContent class="space-y-4 pt-5">
+                        <!-- Success Feedback Banner -->
+                        <div
+                            v-if="replySentSuccess"
+                            class="flex items-center gap-2.5 rounded-lg border border-emerald-300 bg-emerald-50 p-3 text-xs font-medium text-emerald-800 dark:border-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-200"
+                        >
+                            <CheckCircle2 class="h-4 w-4 text-emerald-600 shrink-0" />
+                            <span>Reply delivered successfully to {{ inquiry.email }}!</span>
+                        </div>
+
+                        <!-- Quick Template Presets -->
+                        <div>
+                            <span class="text-muted-foreground/80 mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider">
+                                <Sparkles class="h-3.5 w-3.5 text-amber-500" />
+                                Quick Response Templates:
+                            </span>
+                            <div class="flex flex-wrap gap-2">
+                                <Button
+                                    v-for="(preset, pKey) in quickReplyPresets"
+                                    :key="pKey"
+                                    type="button"
+                                    variant="outline"
+                                    size="sm"
+                                    class="h-7 text-xs bg-card hover:bg-purple-50 hover:text-purple-700 dark:hover:bg-purple-950/50 dark:hover:text-purple-300 border-border"
+                                    @click="applyPreset(preset.text)"
+                                >
+                                    {{ preset.label }}
+                                </Button>
+                            </div>
+                        </div>
+
+                        <!-- Subject Field -->
+                        <div>
+                            <label class="text-foreground block text-xs font-semibold mb-1">
+                                Subject
+                            </label>
+                            <input
+                                v-model="replyForm.subject"
+                                type="text"
+                                required
+                                class="border-input bg-background focus-visible:ring-ring w-full rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2"
+                                placeholder="Re: Inquiry Subject"
+                            />
+                            <span v-if="replyForm.errors.subject" class="text-destructive mt-1 block text-xs">
+                                {{ replyForm.errors.subject }}
+                            </span>
+                        </div>
+
+                        <!-- Message Textarea -->
+                        <div>
+                            <label class="text-foreground block text-xs font-semibold mb-1">
+                                Message *
+                            </label>
+                            <textarea
+                                v-model="replyForm.message"
+                                rows="6"
+                                required
+                                class="border-input bg-background placeholder:text-muted-foreground focus-visible:ring-ring w-full rounded-md border p-3 text-sm focus-visible:outline-none focus-visible:ring-2 font-sans"
+                                :placeholder="`Type your response to ${inquiry.name}...`"
+                            />
+                            <span v-if="replyForm.errors.message" class="text-destructive mt-1 block text-xs">
+                                {{ replyForm.errors.message }}
+                            </span>
+                        </div>
+
+                        <!-- Status After Reply and Send Button -->
+                        <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-2">
+                            <div class="flex items-center gap-2">
+                                <label class="text-muted-foreground text-xs font-medium shrink-0">
+                                    Update status to:
+                                </label>
+                                <select
+                                    v-model="replyForm.status"
+                                    class="border-input bg-background text-foreground focus-visible:ring-ring rounded-md border px-2.5 py-1.5 text-xs focus-visible:outline-none focus-visible:ring-2"
+                                >
+                                    <option value="resolved">Resolved (Default)</option>
+                                    <option value="in_progress">In Progress</option>
+                                    <option value="open">Open</option>
+                                    <option value="closed">Closed</option>
+                                </select>
+                            </div>
+
+                            <Button
+                                type="button"
+                                variant="default"
+                                size="sm"
+                                class="bg-purple-600 hover:bg-purple-700 text-white shadow-xs cursor-pointer gap-2"
+                                :disabled="replyForm.processing || !replyForm.message.trim()"
+                                @click="submitQuickReply"
+                            >
+                                <Send class="h-3.5 w-3.5" />
+                                <span>{{ replyForm.processing ? 'Sending...' : 'Send Quick Reply' }}</span>
+                            </Button>
+                        </div>
+                    </CardContent>
                 </Card>
             </div>
 

@@ -202,7 +202,7 @@ test('homepage supplies canonical hero props when no runtime media is attached',
             ->component('Public/Home')
             ->has('hero')
             ->where('hero.video_url', '/hero-training-loop-topgrade-london-fc.mp4')
-            ->where('hero.poster_url', '/images/club/hero-matchday-topgrade-london-fc.webp')
+            ->where('hero.poster_url', '/images/club/floodlit-training-pitch-topgrade-london-fc.webp')
         );
 });
 

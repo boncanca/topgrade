@@ -20,12 +20,18 @@ class Inquiry extends Model
         'phone',
         'subject',
         'message',
+        'reply_message',
+        'replied_by_id',
         'status',
         'source',
+        'read_at',
+        'responded_at',
     ];
 
     protected $casts = [
         'status' => InquiryStatusEnum::class,
+        'read_at' => 'datetime',
+        'responded_at' => 'datetime',
     ];
 
     protected $attributes = [
@@ -35,5 +41,10 @@ class Inquiry extends Model
     public function contact(): BelongsTo
     {
         return $this->belongsTo(Contact::class);
+    }
+
+    public function repliedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'replied_by_id');
     }
 }
