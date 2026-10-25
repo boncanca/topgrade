@@ -115,8 +115,9 @@ Route::middleware(['auth', 'verified', 'admin'])->group(function () {
         // Contacts
         Route::resource('contacts', ContactController::class);
 
-        // Inquiries
+        // Inquiries & Messages
         Route::resource('inquiries', InquiryController::class)->only(['index', 'show', 'edit', 'update', 'destroy']);
+        Route::get('messages', fn () => redirect()->route('inquiries.index'))->name('messages.index');
 
         // Articles direct alias
         Route::get('articles', fn () => redirect()->route('content.index', ['type' => 'article']))->name('articles.index');

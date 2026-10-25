@@ -7,6 +7,7 @@ import {
     History,
     Image,
     LayoutGrid,
+    MessageSquare,
     Newspaper,
     Settings,
     Users,
@@ -27,6 +28,7 @@ import { dashboard } from '@/routes';
 import { index as bookableItemsIndex } from '@/routes/bookable-items';
 import { index as bookingsIndex } from '@/routes/bookings';
 import { index as contentIndex } from '@/routes/content';
+import { index as inquiriesIndex } from '@/routes/inquiries';
 import { edit as profileEdit } from '@/routes/profile';
 import type { NavGroup } from '@/types';
 
@@ -63,6 +65,11 @@ const navGroups: NavGroup[] = [
                 title: 'Bookings',
                 href: bookingsIndex(),
                 icon: CalendarCheck,
+            },
+            {
+                title: 'Messages',
+                href: inquiriesIndex(),
+                icon: MessageSquare,
             },
             {
                 title: 'Users',
