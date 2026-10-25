@@ -27,33 +27,50 @@ const emit = defineEmits<{
     (e: 'update:open', value: boolean): void;
 }>();
 
-let originalBodyOverflow = '';
+function forceUnlockBody(): void {
+    if (typeof document === 'undefined') {
+        return;
+    }
+
+    document.body.style.overflow = '';
+    document.body.style.pointerEvents = '';
+    document.body.style.paddingRight = '';
+    document.body.style.marginRight = '';
+    document.documentElement.style.overflow = '';
+    document.documentElement.style.pointerEvents = '';
+    document.documentElement.style.removeProperty('--scrollbar-width');
+    document.body.removeAttribute('data-reka-scroll-locked');
+}
+
+function scheduleUnlock(): void {
+    forceUnlockBody();
+
+    if (typeof window !== 'undefined') {
+        window.requestAnimationFrame(() => forceUnlockBody());
+        window.setTimeout(() => forceUnlockBody(), 50);
+        window.setTimeout(() => forceUnlockBody(), 350);
+    }
+}
 
 watch(
     () => props.open,
     (isOpen) => {
-        if (typeof document === 'undefined') {
-            return;
-        }
-
-        if (isOpen) {
-            originalBodyOverflow = document.body.style.overflow;
-            document.body.style.overflow = 'hidden';
-        } else {
-            document.body.style.overflow = originalBodyOverflow;
+        if (!isOpen) {
+            scheduleUnlock();
         }
     },
-    { immediate: true },
 );
 
 onBeforeUnmount(() => {
-    if (typeof document !== 'undefined') {
-        document.body.style.overflow = originalBodyOverflow;
-    }
+    scheduleUnlock();
 });
 
 function onOpenChange(value: boolean): void {
     emit('update:open', value);
+
+    if (!value) {
+        scheduleUnlock();
+    }
 }
 </script>
 
@@ -64,8 +81,12 @@ function onOpenChange(value: boolean): void {
                 class="bg-black/92 fixed inset-0 z-50 backdrop-blur-sm transition-opacity duration-300"
             />
             <DialogContent
+                :disable-outside-pointer-events="false"
                 class="fixed inset-0 z-50 flex h-dvh flex-col justify-between p-3 text-white outline-none sm:p-6"
                 aria-modal="true"
+                @close-auto-focus="scheduleUnlock"
+                @escape-key-down="scheduleUnlock"
+                @pointer-down-outside="scheduleUnlock"
             >
                 <!-- Header with Accessible Title and Description -->
                 <div

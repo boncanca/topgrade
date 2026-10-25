@@ -9,7 +9,7 @@ import {
     DialogRoot,
     DialogTitle,
 } from 'reka-ui';
-import { computed, nextTick, ref, watch } from 'vue';
+import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue';
 
 interface GalleryItem {
     id: number;
@@ -25,6 +25,31 @@ const current = computed(() => props.gallery[activeIndex.value]);
 const thumbnailStrip = ref<HTMLElement | null>(null);
 let opener: HTMLElement | null = null;
 let touchStart: { x: number; y: number } | null = null;
+
+function forceUnlockBody(): void {
+    if (typeof document === 'undefined') {
+        return;
+    }
+
+    document.body.style.overflow = '';
+    document.body.style.pointerEvents = '';
+    document.body.style.paddingRight = '';
+    document.body.style.marginRight = '';
+    document.documentElement.style.overflow = '';
+    document.documentElement.style.pointerEvents = '';
+    document.documentElement.style.removeProperty('--scrollbar-width');
+    document.body.removeAttribute('data-reka-scroll-locked');
+}
+
+function scheduleUnlock(): void {
+    forceUnlockBody();
+
+    if (typeof window !== 'undefined') {
+        window.requestAnimationFrame(() => forceUnlockBody());
+        window.setTimeout(() => forceUnlockBody(), 50);
+        window.setTimeout(() => forceUnlockBody(), 350);
+    }
+}
 
 function show(index: number, event: MouseEvent): void {
     if (!props.gallery[index]) {
@@ -55,6 +80,7 @@ function onKeydown(event: KeyboardEvent): void {
 }
 function restoreFocus(event: Event): void {
     event.preventDefault();
+    scheduleUnlock();
     opener?.focus();
 }
 function onTouchStart(event: TouchEvent): void {
@@ -89,14 +115,22 @@ watch(activeIndex, async () => {
         ?.querySelector('[aria-current="true"]')
         ?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
 });
-watch(open, () => {
+watch(open, (isOpen) => {
     failed.value = false;
+
+    if (!isOpen) {
+        scheduleUnlock();
+    }
+});
+onBeforeUnmount(() => {
+    scheduleUnlock();
 });
 watch(
     () => props.gallery,
     () => {
         open.value = false;
         activeIndex.value = 0;
+        scheduleUnlock();
     },
 );
 defineExpose({ show });
@@ -107,9 +141,12 @@ defineExpose({ show });
         <DialogPortal>
             <DialogOverlay class="fixed inset-0 z-50 bg-black/95" />
             <DialogContent
+                :disable-outside-pointer-events="false"
                 class="bg-tg-bg-deep fixed inset-0 z-50 flex h-dvh flex-col gap-3 p-3 text-white outline-none sm:p-6"
                 @keydown="onKeydown"
                 @close-auto-focus="restoreFocus"
+                @escape-key-down="scheduleUnlock"
+                @pointer-down-outside="scheduleUnlock"
             >
                 <div
                     class="flex shrink-0 items-center justify-between gap-4 border-b border-white/15 pb-3"
