@@ -55,6 +55,19 @@ class UserFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'is_admin' => true,
+            'role' => 'admin',
+        ]);
+    }
+
+    /**
+     * Indicate that the model is a developer super administrator.
+     */
+    public function dev(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'is_admin' => true,
+            'role' => 'dev',
+            'is_system_account' => true,
         ]);
     }
 

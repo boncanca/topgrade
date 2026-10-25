@@ -54,6 +54,33 @@ class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
     }
 
     /**
+     * The accessors to append to the model's array form.
+     *
+     * @var list<string>
+     */
+    protected $appends = [
+        'is_dev_admin',
+    ];
+
+    /**
+     * Determine if user has developer/super administrator privileges.
+     */
+    public function isDevAdmin(): bool
+    {
+        return $this->role === 'dev'
+            || (bool) $this->is_system_account
+            || $this->email === (string) config('topgrade.dev_admin.email', 'tomc@trupabranding.com');
+    }
+
+    /**
+     * Accessor for is_dev_admin attribute.
+     */
+    public function getIsDevAdminAttribute(): bool
+    {
+        return $this->isDevAdmin();
+    }
+
+    /**
      * Scope to exclude protected system accounts for normal admin views.
      */
     public function scopeNonSystem($query)

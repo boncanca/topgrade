@@ -30,10 +30,12 @@ class ResetAdminPasswordCommand extends Command
         if ($isClub) {
             $email = (string) ($this->argument('email') ?: config('topgrade.admin.email', 'info@topgradelondonfc.co.uk'));
             $name = (string) config('topgrade.admin.name', 'TopGrade Club Admin');
+            $role = 'admin';
             $isSystem = false;
         } else {
             $email = (string) ($this->argument('email') ?: config('topgrade.dev_admin.email', 'tomc@trupabranding.com'));
-            $name = (string) config('topgrade.dev_admin.name', 'Technical Super Admin');
+            $name = (string) config('topgrade.dev_admin.name', 'Tom Collins');
+            $role = 'dev';
             $isSystem = true;
         }
 
@@ -50,6 +52,7 @@ class ResetAdminPasswordCommand extends Command
         if ($user) {
             $user->forceFill([
                 'password' => Hash::make($password),
+                'role' => $role,
                 'is_admin' => true,
                 'is_system_account' => $isSystem,
                 'email_verified_at' => $user->email_verified_at ?? now(),
@@ -59,6 +62,7 @@ class ResetAdminPasswordCommand extends Command
                 'name' => $name,
                 'email' => $email,
                 'password' => Hash::make($password),
+                'role' => $role,
                 'is_admin' => true,
                 'is_system_account' => $isSystem,
                 'email_verified_at' => now(),

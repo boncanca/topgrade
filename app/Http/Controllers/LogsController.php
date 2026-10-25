@@ -17,6 +17,10 @@ class LogsController
      */
     public function index(Request $request): Response
     {
+        if (! $request->user()?->isDevAdmin()) {
+            abort(403, 'Unauthorized. System logs and audit trails are only accessible to developer administrators.');
+        }
+
         $tab = $request->string('tab', 'audit')->value();
         $search = $request->string('search')->trim()->value();
         $level = $request->string('level', 'all')->value();
@@ -137,6 +141,10 @@ class LogsController
      */
     public function clear(Request $request): RedirectResponse
     {
+        if (! $request->user()?->isDevAdmin()) {
+            abort(403, 'Unauthorized. System logs and audit trails are only accessible to developer administrators.');
+        }
+
         $type = $request->input('type', 'system');
 
         if ($type === 'audit') {

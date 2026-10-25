@@ -3,14 +3,14 @@
 use App\Models\User;
 use Inertia\Testing\AssertableInertia as Assert;
 
-test('admin can view audit and system logs', function () {
-    $admin = User::factory()->admin()->create();
+test('dev admin can view audit and system logs', function () {
+    $dev = User::factory()->dev()->create();
 
     activity()
-        ->causedBy($admin)
-        ->log('Admin checked dashboard settings');
+        ->causedBy($dev)
+        ->log('Dev checked dashboard settings');
 
-    $response = $this->actingAs($admin)->get(route('dashboard.logs.index'));
+    $response = $this->actingAs($dev)->get(route('dashboard.logs.index'));
 
     $response->assertOk()
         ->assertInertia(fn (Assert $page) => $page
@@ -22,10 +22,10 @@ test('admin can view audit and system logs', function () {
         );
 });
 
-test('admin can clear system logs', function () {
-    $admin = User::factory()->admin()->create();
+test('dev admin can clear system logs', function () {
+    $dev = User::factory()->dev()->create();
 
-    $response = $this->actingAs($admin)->post(route('dashboard.logs.clear'), [
+    $response = $this->actingAs($dev)->post(route('dashboard.logs.clear'), [
         'type' => 'system',
     ]);
 
@@ -33,15 +33,33 @@ test('admin can clear system logs', function () {
     $response->assertSessionHas('success');
 });
 
-test('admin can clear audit logs', function () {
-    $admin = User::factory()->admin()->create();
+test('dev admin can clear audit logs', function () {
+    $dev = User::factory()->dev()->create();
 
     activity()->log('Temporary log for test');
 
-    $response = $this->actingAs($admin)->post(route('dashboard.logs.clear'), [
+    $response = $this->actingAs($dev)->post(route('dashboard.logs.clear'), [
         'type' => 'audit',
     ]);
 
     $response->assertRedirect(route('dashboard.logs.index', ['tab' => 'audit']));
     $response->assertSessionHas('success');
+});
+
+test('regular admin cannot view logs and receives 403 forbidden', function () {
+    $admin = User::factory()->admin()->create(['role' => 'admin', 'is_system_account' => false]);
+
+    $response = $this->actingAs($admin)->get(route('dashboard.logs.index'));
+
+    $response->assertForbidden();
+});
+
+test('regular admin cannot clear logs and receives 403 forbidden', function () {
+    $admin = User::factory()->admin()->create(['role' => 'admin', 'is_system_account' => false]);
+
+    $response = $this->actingAs($admin)->post(route('dashboard.logs.clear'), [
+        'type' => 'audit',
+    ]);
+
+    $response->assertForbidden();
 });

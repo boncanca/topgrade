@@ -85,6 +85,8 @@ function handleDelete(user: UserItem): void {
 
 function getRoleBadgeClass(role: string): string {
     switch (role) {
+        case 'dev':
+            return 'bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20 font-semibold';
         case 'admin':
             return 'bg-primary/10 text-primary border-primary/20';
         case 'editor':

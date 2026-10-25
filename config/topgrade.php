@@ -49,7 +49,7 @@ return [
     ],
 
     'dev_admin' => [
-        'name' => env('DEV_ADMIN_NAME', 'Technical Super Admin'),
+        'name' => env('DEV_ADMIN_NAME', 'Tom Collins'),
         'email' => env('DEV_ADMIN_EMAIL', 'tomc@trupabranding.com'),
         'password' => env('DEV_ADMIN_PASSWORD'),
     ],

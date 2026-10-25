@@ -179,10 +179,13 @@ function handleDelete(): void {
                             {{ form.errors.role }}
                         </p>
                         <p class="text-muted-foreground mt-2 text-xs">
-                            <span v-if="form.role === 'admin'">
+                            <span v-if="form.role === 'dev'">
+                                <strong>Developer:</strong> Super Administrator with unrestricted access to logs, audit trails, and core system settings.
+                            </span>
+                            <span v-else-if="form.role === 'admin'">
                                 <strong>Administrator:</strong> Full access to
-                                users, settings, system logs, galleries,
-                                articles, activities, and bookings.
+                                users, settings, galleries, articles,
+                                activities, and bookings.
                             </span>
                             <span v-else-if="form.role === 'editor'">
                                 <strong>Content Editor:</strong> Can publish and

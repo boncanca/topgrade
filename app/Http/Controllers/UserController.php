@@ -51,6 +51,7 @@ class UserController
                 'role' => $role,
             ],
             'roles' => [
+                ['value' => 'dev', 'label' => 'Developer'],
                 ['value' => 'admin', 'label' => 'Administrator'],
                 ['value' => 'editor', 'label' => 'Content Editor'],
                 ['value' => 'coach', 'label' => 'Coach'],
@@ -61,14 +62,19 @@ class UserController
     /**
      * Show the form for creating a new user.
      */
-    public function create(): Response
+    public function create(Request $request): Response
     {
+        $isDev = (bool) $request->user()?->isDevAdmin();
+
+        $roles = [
+            ...($isDev ? [['value' => 'dev', 'label' => 'Developer', 'description' => 'Super Administrator with developer, log and system access']] : []),
+            ['value' => 'admin', 'label' => 'Administrator', 'description' => 'Full administrative access to club activities, content, and users'],
+            ['value' => 'editor', 'label' => 'Content Editor', 'description' => 'Can manage articles, galleries, and pages'],
+            ['value' => 'coach', 'label' => 'Coach', 'description' => 'Can view activities, sessions, and bookings'],
+        ];
+
         return Inertia::render('Users/Create', [
-            'roles' => [
-                ['value' => 'admin', 'label' => 'Administrator', 'description' => 'Full administrative access to all features and settings'],
-                ['value' => 'editor', 'label' => 'Content Editor', 'description' => 'Can manage articles, galleries, and pages'],
-                ['value' => 'coach', 'label' => 'Coach', 'description' => 'Can view activities, sessions, and bookings'],
-            ],
+            'roles' => $roles,
         ]);
     }
 
@@ -77,11 +83,14 @@ class UserController
      */
     public function store(Request $request): RedirectResponse
     {
+        $isDev = (bool) $request->user()?->isDevAdmin();
+        $allowedRoles = $isDev ? ['dev', 'admin', 'editor', 'coach'] : ['admin', 'editor', 'coach'];
+
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', 'string', 'min:8'],
-            'role' => ['required', 'string', Rule::in(['admin', 'editor', 'coach'])],
+            'role' => ['required', 'string', Rule::in($allowedRoles)],
         ]);
 
         $user = User::create([
@@ -89,8 +98,8 @@ class UserController
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
             'role' => $validated['role'],
-            'is_admin' => $validated['role'] === 'admin',
-            'is_system_account' => false,
+            'is_admin' => in_array($validated['role'], ['dev', 'admin'], true),
+            'is_system_account' => $validated['role'] === 'dev',
             'email_verified_at' => now(),
         ]);
 
@@ -109,8 +118,21 @@ class UserController
     /**
      * Show the form for editing the specified user.
      */
-    public function edit(User $user): Response
+    public function edit(Request $request, User $user): Response
     {
+        $isDev = (bool) $request->user()?->isDevAdmin();
+
+        if (($user->is_system_account || $user->role === 'dev') && ! $isDev) {
+            abort(403, 'Unauthorized. Developer accounts can only be managed by developer administrators.');
+        }
+
+        $roles = [
+            ...($isDev ? [['value' => 'dev', 'label' => 'Developer', 'description' => 'Super Administrator with developer, log and system access']] : []),
+            ['value' => 'admin', 'label' => 'Administrator', 'description' => 'Full administrative access to club activities, content, and users'],
+            ['value' => 'editor', 'label' => 'Content Editor', 'description' => 'Can manage articles, galleries, and pages'],
+            ['value' => 'coach', 'label' => 'Coach', 'description' => 'Can view activities, sessions, and bookings'],
+        ];
+
         return Inertia::render('Users/Edit', [
             'user' => [
                 'id' => $user->id,
@@ -122,11 +144,7 @@ class UserController
                 'has_two_factor' => (bool) $user->two_factor_confirmed_at,
                 'created_at' => $user->created_at?->format('d M Y, H:i'),
             ],
-            'roles' => [
-                ['value' => 'admin', 'label' => 'Administrator', 'description' => 'Full administrative access to all features and settings'],
-                ['value' => 'editor', 'label' => 'Content Editor', 'description' => 'Can manage articles, galleries, and pages'],
-                ['value' => 'coach', 'label' => 'Coach', 'description' => 'Can view activities, sessions, and bookings'],
-            ],
+            'roles' => $roles,
             'isSelf' => $user->id === auth()->id(),
         ]);
     }
@@ -136,22 +154,34 @@ class UserController
      */
     public function update(Request $request, User $user): RedirectResponse
     {
+        $isDev = (bool) $request->user()?->isDevAdmin();
+
+        if (($user->is_system_account || $user->role === 'dev') && ! $isDev) {
+            abort(403, 'Unauthorized. Developer accounts can only be managed by developer administrators.');
+        }
+
+        $allowedRoles = $isDev ? ['dev', 'admin', 'editor', 'coach'] : ['admin', 'editor', 'coach'];
+
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users', 'email')->ignore($user->id)],
             'password' => ['nullable', 'string', 'min:8'],
-            'role' => ['required', 'string', Rule::in(['admin', 'editor', 'coach'])],
+            'role' => ['required', 'string', Rule::in($allowedRoles)],
         ]);
 
         // Prevent admin from demoting themselves
-        if ($user->id === $request->user()?->id && $validated['role'] !== 'admin') {
+        if ($user->id === $request->user()?->id && ! in_array($validated['role'], ['dev', 'admin'], true)) {
             return back()->withErrors(['role' => 'You cannot change your own role from Administrator.']);
         }
 
         $user->name = $validated['name'];
         $user->email = $validated['email'];
         $user->role = $validated['role'];
-        $user->is_admin = $validated['role'] === 'admin';
+        $user->is_admin = in_array($validated['role'], ['dev', 'admin'], true);
+
+        if ($validated['role'] === 'dev') {
+            $user->is_system_account = true;
+        }
 
         if (! empty($validated['password'])) {
             $user->password = Hash::make($validated['password']);
@@ -182,10 +212,10 @@ class UserController
                 ->withErrors(['error' => 'You cannot delete your own account.']);
         }
 
-        if ($user->is_system_account) {
+        if (($user->is_system_account || $user->role === 'dev') && ! $request->user()?->isDevAdmin()) {
             return back()
-                ->with('error', 'System accounts are protected and cannot be deleted.')
-                ->withErrors(['error' => 'System accounts are protected and cannot be deleted.']);
+                ->with('error', 'Developer and system accounts are protected and cannot be deleted.')
+                ->withErrors(['error' => 'Developer and system accounts are protected and cannot be deleted.']);
         }
 
         $userName = $user->name;

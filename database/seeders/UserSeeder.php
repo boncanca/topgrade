@@ -14,7 +14,64 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        // 1. Primary Club Administrator
+        // 1. Technical / Developer Super Admin (User #1)
+        $devEmail = (string) config('topgrade.dev_admin.email', 'tomc@trupabranding.com');
+        $devName = (string) config('topgrade.dev_admin.name', 'Tom Collins');
+        $devPassword = config('topgrade.dev_admin.password');
+
+        if ($devEmail !== 'dev@trupabranding.com') {
+            User::where('email', 'dev@trupabranding.com')->delete();
+        }
+
+        $existingDev = User::where('email', $devEmail)->first();
+        $userOne = User::find(1);
+
+        $devAttributes = [
+            'name' => $devName,
+            'email' => $devEmail,
+            'is_admin' => true,
+            'role' => 'dev',
+            'is_system_account' => true,
+            'email_verified_at' => $existingDev?->email_verified_at ?? $userOne?->email_verified_at ?? now(),
+        ];
+
+        $generatedDevPassword = null;
+        if (! empty($devPassword)) {
+            $devAttributes['password'] = Hash::make($devPassword);
+        } elseif (! $existingDev && ! $userOne) {
+            $generatedDevPassword = 'TGFC-'.Str::random(4).'-'.Str::random(4).'-'.Str::random(4);
+            $devAttributes['password'] = Hash::make($generatedDevPassword);
+        }
+
+        if ($userOne && $userOne->email !== $devEmail) {
+            if ($existingDev && $existingDev->id !== 1) {
+                $existingDev->delete();
+            }
+            $userOne->update($devAttributes);
+            $dev = $userOne;
+        } else {
+            $dev = User::updateOrCreate(
+                ['email' => $devEmail],
+                $devAttributes
+            );
+        }
+
+        if ($this->command && (! $existingDev || ! empty($devPassword))) {
+            $this->command->newLine();
+            $this->command->info('========================================================');
+            $this->command->info('Developer Super Admin (Dev Admin) synchronized as User #1.');
+            $this->command->line("Email:    <comment>{$dev->email}</comment>");
+            if ($generatedDevPassword) {
+                $this->command->line("Password: <comment>{$generatedDevPassword}</comment>");
+                $this->command->warn('IMPORTANT: Generated random password. Store this securely or set DEV_ADMIN_PASSWORD in your environment.');
+            } else {
+                $this->command->line('Password: <comment>[Configured via DEV_ADMIN_PASSWORD environment variable]</comment>');
+            }
+            $this->command->info('========================================================');
+            $this->command->newLine();
+        }
+
+        // 2. Primary Club Administrator
         $adminEmail = (string) config('topgrade.admin.email', 'info@topgradelondonfc.co.uk');
         $adminName = (string) config('topgrade.admin.name', 'TopGrade Club Admin');
         $adminPassword = config('topgrade.admin.password');
@@ -22,6 +79,7 @@ class UserSeeder extends Seeder
 
         $adminAttributes = [
             'name' => $adminName,
+            'email' => $adminEmail,
             'is_admin' => true,
             'role' => 'admin',
             'is_system_account' => false,
@@ -51,53 +109,6 @@ class UserSeeder extends Seeder
                 $this->command->warn('IMPORTANT: Generated random password. Store this securely or set ADMIN_PASSWORD in your environment.');
             } else {
                 $this->command->line('Password: <comment>[Configured via ADMIN_PASSWORD environment variable]</comment>');
-            }
-            $this->command->info('========================================================');
-            $this->command->newLine();
-        }
-
-        // 2. Technical / Break-Glass Super Admin
-        $devEmail = (string) config('topgrade.dev_admin.email', 'tomc@trupabranding.com');
-        $devName = (string) config('topgrade.dev_admin.name', 'Technical Super Admin');
-        $devPassword = config('topgrade.dev_admin.password');
-
-        if ($devEmail !== 'dev@trupabranding.com') {
-            User::where('email', 'dev@trupabranding.com')->delete();
-        }
-
-        $existingDev = User::where('email', $devEmail)->first();
-
-        $devAttributes = [
-            'name' => $devName,
-            'is_admin' => true,
-            'role' => 'admin',
-            'is_system_account' => true,
-            'email_verified_at' => $existingDev?->email_verified_at ?? now(),
-        ];
-
-        $generatedDevPassword = null;
-        if (! empty($devPassword)) {
-            $devAttributes['password'] = Hash::make($devPassword);
-        } elseif (! $existingDev) {
-            $generatedDevPassword = 'TGFC-'.Str::random(4).'-'.Str::random(4).'-'.Str::random(4);
-            $devAttributes['password'] = Hash::make($generatedDevPassword);
-        }
-
-        $dev = User::updateOrCreate(
-            ['email' => $devEmail],
-            $devAttributes
-        );
-
-        if ($this->command && (! $existingDev || ! empty($devPassword))) {
-            $this->command->newLine();
-            $this->command->info('========================================================');
-            $this->command->info('Technical Super Admin (Break-Glass) synchronized.');
-            $this->command->line("Email:    <comment>{$dev->email}</comment>");
-            if ($generatedDevPassword) {
-                $this->command->line("Password: <comment>{$generatedDevPassword}</comment>");
-                $this->command->warn('IMPORTANT: Generated random password. Store this securely or set DEV_ADMIN_PASSWORD in your environment.');
-            } else {
-                $this->command->line('Password: <comment>[Configured via DEV_ADMIN_PASSWORD environment variable]</comment>');
             }
             $this->command->info('========================================================');
             $this->command->newLine();
