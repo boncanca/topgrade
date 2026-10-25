@@ -213,7 +213,17 @@ class SyncMediaStorageCommand extends Command
                 })
                 ->first();
 
+            $isRemote = ! in_array($media?->disk ?? config('media-library.disk_name'), ['public', 'local'], true)
+                || config('filesystems.disks.'.($media?->disk ?? config('media-library.disk_name')).'.driver', 'local') !== 'local';
+
             if ($media) {
+                if ($isRemote) {
+                    $this->line(" [OK] Media #{$media->id} ({$media->file_name}) already registered on remote disk '{$media->disk}'");
+                    $alreadyPresentCount++;
+
+                    continue;
+                }
+
                 $targetPath = $media->getPath();
 
                 if (! $force && file_exists($targetPath)) {
@@ -244,7 +254,10 @@ class SyncMediaStorageCommand extends Command
                         ->usingFileName($asset['file_name'])
                         ->toMediaCollection($asset['collection']);
 
-                    if (! file_exists($newMedia->getPath())) {
+                    $newMediaIsRemote = ! in_array($newMedia->disk, ['public', 'local'], true)
+                        || config("filesystems.disks.{$newMedia->disk}.driver", 'local') !== 'local';
+
+                    if (! $newMediaIsRemote && ! file_exists($newMedia->getPath())) {
                         $this->error("Failed to verify newly attached media file at {$newMedia->getPath()}");
                         $hasErrors = true;
 
