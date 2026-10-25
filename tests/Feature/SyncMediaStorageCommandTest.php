@@ -8,6 +8,7 @@ use Database\Seeders\Content\MomentsSeeder;
 use Database\Seeders\Content\PagesSeeder;
 use Database\Seeders\ContentTypeSeeder;
 use Illuminate\Support\Facades\File;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 test('media:sync-storage command executes successfully and is idempotent', function () {
     $this->seed([
@@ -91,4 +92,26 @@ test('homepage content blocks normalization migration is idempotent', function (
 
     $hero->refresh();
     expect($hero->payload['stats'])->toBeArray();
+});
+
+test('media:sync-storage --prune-missing removes orphan media records with missing files', function () {
+    $this->seed([
+        ContentTypeSeeder::class,
+        PagesSeeder::class,
+    ]);
+
+    $home = Content::where('slug', 'home')->first();
+    $media = $home->addMedia(public_path('favicon.ico'))
+        ->preservingOriginal()
+        ->toMediaCollection('test_orphan');
+
+    expect(file_exists($media->getPath()))->toBeTrue();
+    File::delete($media->getPath());
+    expect(file_exists($media->getPath()))->toBeFalse();
+
+    $this->artisan('media:sync-storage', ['--prune-missing' => true])
+        ->expectsOutputToContain("Pruning orphaned media #{$media->id}")
+        ->assertSuccessful();
+
+    expect(Media::find($media->id))->toBeNull();
 });

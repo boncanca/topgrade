@@ -14,7 +14,7 @@ use Throwable;
 
 class SyncMediaStorageCommand extends Command
 {
-    protected $signature = 'media:sync-storage {--force : Overwrite existing target files even if they already exist}';
+    protected $signature = 'media:sync-storage {--force : Overwrite existing target files even if they already exist} {--prune-missing : Prune database media records whose physical files are missing from storage}';
 
     protected $description = 'Restore and ensure canonical seed-owned MediaLibrary assets exist in storage';
 
@@ -150,6 +150,25 @@ class SyncMediaStorageCommand extends Command
     public function handle(): int
     {
         $force = (bool) $this->option('force');
+        $pruneMissing = (bool) $this->option('prune-missing');
+
+        if ($pruneMissing) {
+            $prunedCount = 0;
+            $localMedia = Media::whereIn('disk', ['public', 'local'])->get();
+
+            foreach ($localMedia as $item) {
+                if (! file_exists($item->getPath())) {
+                    $this->warn("Pruning orphaned media #{$item->id} ({$item->file_name}) missing at {$item->getPath()}");
+                    $item->delete();
+                    $prunedCount++;
+                }
+            }
+
+            if ($prunedCount > 0) {
+                $this->info("Pruned {$prunedCount} orphaned media record(s) with missing disk files.");
+            }
+        }
+
         $canonicalAssets = $this->getCanonicalAssets();
         $hasErrors = false;
         $restoredCount = 0;

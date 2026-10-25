@@ -49,7 +49,9 @@ class LogsController
         // 2. System / Laravel Application Logs
         $systemLogs = $this->parseSystemLogs($search, $level);
         $logPath = storage_path('logs/laravel.log');
-        $systemLogSize = File::exists($logPath) ? Number::fileSize(File::size($logPath)) : '0 B';
+        $systemLogSize = (File::exists($logPath) && is_readable($logPath))
+            ? Number::fileSize(File::size($logPath))
+            : '0 B';
 
         return Inertia::render('Logs/Index', [
             'tab' => $tab,
@@ -77,11 +79,15 @@ class LogsController
     {
         $logPath = storage_path('logs/laravel.log');
 
-        if (! File::exists($logPath)) {
+        if (! File::exists($logPath) || ! is_readable($logPath)) {
             return [];
         }
 
-        $content = File::get($logPath);
+        try {
+            $content = File::get($logPath);
+        } catch (\Throwable) {
+            return [];
+        }
 
         if (empty(trim($content))) {
             return [];
@@ -146,8 +152,12 @@ class LogsController
 
         $logPath = storage_path('logs/laravel.log');
 
-        if (File::exists($logPath)) {
-            File::put($logPath, '');
+        if (File::exists($logPath) && is_writable($logPath)) {
+            try {
+                File::put($logPath, '');
+            } catch (\Throwable) {
+                // Ignore write failure if permissions restrict file
+            }
         }
 
         activity()

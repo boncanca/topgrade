@@ -10,12 +10,12 @@ test('/dashboard/articles redirects or provides articles index', function () {
     $response->assertRedirect('/dashboard/content?type=article');
 });
 
-test('/dashboard/moments redirects to /dashboard/galleries', function () {
+test('/dashboard/moments is accessible to admin', function () {
     $admin = User::factory()->admin()->create();
 
     $response = $this->actingAs($admin)->get('/dashboard/moments');
 
-    $response->assertRedirect('/dashboard/galleries');
+    $response->assertOk();
 });
 
 test('/dashboard/media redirects to /dashboard/galleries', function () {

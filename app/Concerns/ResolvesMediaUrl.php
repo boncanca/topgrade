@@ -26,15 +26,24 @@ trait ResolvesMediaUrl
                 return $media->getUrl();
             }
 
-            // Storage integrity alert: Record exists in database, but physical file is missing from disk
-            Log::warning(sprintf(
-                'Media record exists [ID: %s, collection: %s] on model [%s:%s], but physical file is missing at [%s]. Falling back to canonical asset.',
-                $media->id,
-                $collection,
-                static::class,
-                $this->getKey(),
-                $path
-            ));
+            // Storage integrity alert: Record exists in database, but physical file is missing from disk.
+            // Throttled and wrapped in try-catch to guarantee logging errors never crash public page rendering.
+            $warningKey = "media_missing_{$media->id}";
+            if (! cache()->has($warningKey)) {
+                try {
+                    cache()->put($warningKey, true, now()->addHours(6));
+                    Log::warning(sprintf(
+                        'Media record exists [ID: %s, collection: %s] on model [%s:%s], but physical file is missing at [%s]. Falling back to canonical asset.',
+                        $media->id,
+                        $collection,
+                        static::class,
+                        $this->getKey(),
+                        $path
+                    ));
+                } catch (\Throwable) {
+                    // Suppress any logging transport or permission failures to preserve response delivery
+                }
+            }
         }
 
         if ($fallback !== null) {

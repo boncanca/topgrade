@@ -136,13 +136,15 @@ Route::middleware(['auth', 'verified', 'admin'])->group(function () {
             Route::post('galleries/{moment}/media/reorder', [MomentController::class, 'reorderMedia'])->name('galleries.media.reorder');
             Route::delete('galleries/{moment}/media/{media}', [MomentController::class, 'destroyMedia'])->name('galleries.media.destroy');
 
+            // Resource routes for moments (supporting legacy endpoints & test suite)
+            Route::resource('moments', MomentController::class);
+            Route::post('moments/{moment}/media/reorder', [MomentController::class, 'reorderMedia'])->name('moments.media.reorder');
+            Route::delete('moments/{moment}/media/{media}', [MomentController::class, 'destroyMedia'])->name('moments.media.destroy');
+
             // Legacy dashboard alias redirects
             Route::redirect('teams', '/dashboard/bookable-items');
             Route::redirect('fixtures', '/dashboard/bookings');
             Route::redirect('media', '/dashboard/galleries');
-            Route::redirect('moments', '/dashboard/galleries');
-            Route::get('moments/{moment}', fn ($moment) => redirect("/dashboard/galleries/{$moment}"));
-            Route::get('moments/{moment}/edit', fn ($moment) => redirect("/dashboard/galleries/{$moment}/edit"));
         });
     });
 });

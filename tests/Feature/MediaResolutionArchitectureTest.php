@@ -112,6 +112,30 @@ test('runtime media record exists but physical file is missing logs warning and 
         ->withArgs(fn (string $message) => str_contains($message, 'physical file is missing'));
 });
 
+test('runtime media resolution does not throw when logger throws permission or stream exception', function () {
+    Log::shouldReceive('warning')
+        ->andThrow(new UnexpectedValueException('The stream or file "/var/www/html/storage/logs/laravel.log" could not be opened in append mode: Failed to open stream: Permission denied'));
+
+    $team = Team::create([
+        'name' => 'U7 – U8',
+        'slug' => 'u7-u8',
+        'age_group' => 'U7–U8',
+        'stage' => 'Foundation Phase',
+        'description' => 'Test description',
+        'visual_variant' => 'foundation',
+        'sort_order' => 1,
+        'is_active' => true,
+    ]);
+
+    $file = UploadedFile::fake()->image('missing_logger_fail.jpg');
+    $media = $team->addMedia($file)->toMediaCollection('image');
+    File::delete($media->getPath());
+
+    // Should NOT throw UnexpectedValueException and must cleanly return fallback
+    $resolvedUrl = $team->getResolvedMediaUrl('image');
+    expect($resolvedUrl)->toBe('/images/club/u7-u8-squad-photo-topgrade-london-fc.webp');
+});
+
 test('admin-created Moment without media produces no fabricated fallback', function () {
     $moment = Moment::create([
         'title' => 'Admin Uploaded Gallery Without Image',
