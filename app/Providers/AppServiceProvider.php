@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Mail\Transport\BrevoTransport;
 use App\Services\Mail\BrevoMailService;
 use App\Services\Mail\TransactionalMailService;
 use App\Services\PaymentService;
@@ -14,6 +15,7 @@ use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
@@ -55,6 +57,12 @@ class AppServiceProvider extends ServiceProvider
         if ($this->app->environment('production')) {
             URL::forceScheme('https');
         }
+
+        Mail::extend('brevo', function (array $config = []) {
+            $key = $config['key'] ?? config('services.brevo.key') ?? '';
+
+            return new BrevoTransport($key);
+        });
     }
 
     /**
