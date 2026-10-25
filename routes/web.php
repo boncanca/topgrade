@@ -6,6 +6,7 @@ use App\Http\Controllers\ContactController;
 use App\Http\Controllers\ContentController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\InquiryController;
+use App\Http\Controllers\LogsController;
 use App\Http\Controllers\MediaController;
 use App\Http\Controllers\MenuController;
 use App\Http\Controllers\MomentController;
@@ -14,6 +15,7 @@ use App\Http\Controllers\PublicMomentController;
 use App\Http\Controllers\PublicPageController;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\StripeWebhookController;
+use App\Http\Controllers\UserController;
 use App\Models\Content;
 use App\Services\SitemapService;
 use Illuminate\Support\Facades\Cache;
@@ -23,6 +25,14 @@ use Inertia\Inertia;
 // Authentication & entry redirects
 Route::redirect('/login', '/auth/login')->name('login.redirect');
 Route::redirect('/admin', '/auth/login')->name('admin.redirect');
+
+// Legacy & ghost route redirects to canonical locations
+Route::redirect('/news', '/articles');
+Route::redirect('/news/{any}', '/articles');
+Route::redirect('/gallery', '/moments');
+Route::redirect('/gallery/{any}', '/moments');
+Route::redirect('/teams', '/#teams');
+Route::redirect('/fixtures', '/#matchday');
 
 // Public homepage & editorial
 Route::get('/', [PublicPageController::class, 'home'])->name('home');
@@ -108,7 +118,17 @@ Route::middleware(['auth', 'verified', 'admin'])->group(function () {
         // Inquiries
         Route::resource('inquiries', InquiryController::class)->only(['index', 'show', 'edit', 'update', 'destroy']);
 
-        // Editorial Gallery Management
+        // Articles direct alias
+        Route::get('articles', fn () => redirect()->route('content.index', ['type' => 'article']))->name('articles.index');
+
+        // User management
+        Route::resource('users', UserController::class)->names('dashboard.users');
+
+        // Audit & System logs
+        Route::get('logs', [LogsController::class, 'index'])->name('dashboard.logs.index');
+        Route::post('logs/clear', [LogsController::class, 'clear'])->name('dashboard.logs.clear');
+
+        // Unified Editorial Gallery Management
         Route::name('dashboard.')->group(function () {
             Route::resource('galleries', MomentController::class)
                 ->parameters(['galleries' => 'moment'])
@@ -116,10 +136,13 @@ Route::middleware(['auth', 'verified', 'admin'])->group(function () {
             Route::post('galleries/{moment}/media/reorder', [MomentController::class, 'reorderMedia'])->name('galleries.media.reorder');
             Route::delete('galleries/{moment}/media/{media}', [MomentController::class, 'destroyMedia'])->name('galleries.media.destroy');
 
-            // Backward compatibility aliases for moments
-            Route::resource('moments', MomentController::class);
-            Route::post('moments/{moment}/media/reorder', [MomentController::class, 'reorderMedia'])->name('moments.media.reorder');
-            Route::delete('moments/{moment}/media/{media}', [MomentController::class, 'destroyMedia'])->name('moments.media.destroy');
+            // Legacy dashboard alias redirects
+            Route::redirect('teams', '/dashboard/bookable-items');
+            Route::redirect('fixtures', '/dashboard/bookings');
+            Route::redirect('media', '/dashboard/galleries');
+            Route::redirect('moments', '/dashboard/galleries');
+            Route::get('moments/{moment}', fn ($moment) => redirect("/dashboard/galleries/{$moment}"));
+            Route::get('moments/{moment}/edit', fn ($moment) => redirect("/dashboard/galleries/{$moment}/edit"));
         });
     });
 });

@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
 import {
+    Activity,
     CalendarCheck,
-    Camera,
     FileText,
+    History,
     Image,
     LayoutGrid,
     Newspaper,
@@ -33,7 +34,7 @@ const navGroups: NavGroup[] = [
     {
         items: [
             {
-                title: 'Dashboard',
+                title: 'Overview',
                 href: dashboard(),
                 icon: LayoutGrid,
                 exact: true,
@@ -44,29 +45,34 @@ const navGroups: NavGroup[] = [
                 icon: FileText,
             },
             {
-                title: 'News & Updates',
+                title: 'Articles',
                 href: contentIndex({ query: { type: 'article' } }),
                 icon: Newspaper,
             },
             {
-                title: 'Media',
+                title: 'Galleries',
                 href: '/dashboard/galleries',
                 icon: Image,
             },
             {
-                title: 'Team',
+                title: 'Activities',
                 href: bookableItemsIndex(),
-                icon: Users,
+                icon: Activity,
             },
             {
-                title: 'Fixtures & Results',
+                title: 'Bookings',
                 href: bookingsIndex(),
                 icon: CalendarCheck,
             },
             {
-                title: 'Gallery',
-                href: '/dashboard/moments',
-                icon: Camera,
+                title: 'Users',
+                href: '/dashboard/users',
+                icon: Users,
+            },
+            {
+                title: 'Logs',
+                href: '/dashboard/logs',
+                icon: History,
             },
             {
                 title: 'Settings',

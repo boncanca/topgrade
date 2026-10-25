@@ -1,0 +1,58 @@
+<?php
+
+use App\Models\User;
+
+test('/dashboard/articles redirects or provides articles index', function () {
+    $admin = User::factory()->admin()->create();
+
+    $response = $this->actingAs($admin)->get('/dashboard/articles');
+
+    $response->assertRedirect('/dashboard/content?type=article');
+});
+
+test('/dashboard/moments redirects to /dashboard/galleries', function () {
+    $admin = User::factory()->admin()->create();
+
+    $response = $this->actingAs($admin)->get('/dashboard/moments');
+
+    $response->assertRedirect('/dashboard/galleries');
+});
+
+test('/dashboard/media redirects to /dashboard/galleries', function () {
+    $admin = User::factory()->admin()->create();
+
+    $response = $this->actingAs($admin)->get('/dashboard/media');
+
+    $response->assertRedirect('/dashboard/galleries');
+});
+
+test('/dashboard/teams redirects to /dashboard/bookable-items', function () {
+    $admin = User::factory()->admin()->create();
+
+    $response = $this->actingAs($admin)->get('/dashboard/teams');
+
+    $response->assertRedirect('/dashboard/bookable-items');
+});
+
+test('/dashboard/fixtures redirects to /dashboard/bookings', function () {
+    $admin = User::factory()->admin()->create();
+
+    $response = $this->actingAs($admin)->get('/dashboard/fixtures');
+
+    $response->assertRedirect('/dashboard/bookings');
+});
+
+test('/dashboard/galleries is accessible to admin', function () {
+    $admin = User::factory()->admin()->create();
+
+    $response = $this->actingAs($admin)->get('/dashboard/galleries');
+
+    $response->assertOk();
+});
+
+test('public ghost routes redirect to canonical destinations', function () {
+    $this->get('/news')->assertRedirect('/articles');
+    $this->get('/gallery')->assertRedirect('/moments');
+    $this->get('/teams')->assertRedirect('/#teams');
+    $this->get('/fixtures')->assertRedirect('/#matchday');
+});

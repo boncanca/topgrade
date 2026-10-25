@@ -1,17 +1,19 @@
 <script setup lang="ts">
 import { Head, Link, usePage } from '@inertiajs/vue3';
 import {
+    Activity,
     ArrowUpRight,
-    Calendar,
     CalendarCheck,
     ChevronDown,
     ChevronRight,
     FileText,
+    History,
     Image as ImageIcon,
     Newspaper,
     PenSquare,
     Plus,
     Upload,
+    Users,
 } from '@lucide/vue';
 import { computed, ref } from 'vue';
 import { dashboard } from '@/routes';
@@ -104,7 +106,7 @@ defineOptions({
     layout: {
         breadcrumbs: [
             {
-                title: 'Dashboard',
+                title: 'Overview',
                 href: dashboard(),
             },
         ],
@@ -113,12 +115,12 @@ defineOptions({
 
 const page = usePage();
 const userName = computed(() => {
-    const full = page.props.auth?.user?.name || 'Tom';
+    const full = (page.props.auth as any)?.user?.name || 'Tom';
 
     return full.split(' ')[0] || 'Tom';
 });
 
-const showOperations = ref(false);
+const showOperations = ref(true);
 
 function formatCurrency(amount: number, currency = 'GBP'): string {
     return new Intl.NumberFormat('en-GB', {
@@ -129,7 +131,7 @@ function formatCurrency(amount: number, currency = 'GBP'): string {
 </script>
 
 <template>
-    <Head title="Dashboard" />
+    <Head title="Overview" />
 
     <div class="flex h-full flex-1 flex-col gap-6 p-4 sm:p-6 lg:p-8">
         <!-- 1. Header Banner -->
@@ -140,10 +142,11 @@ function formatCurrency(amount: number, currency = 'GBP'): string {
                 <h1
                     class="text-2xl font-bold tracking-tight text-neutral-900 sm:text-3xl dark:text-white"
                 >
-                    Welcome back, {{ userName }}
+                    Overview
                 </h1>
                 <p class="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
-                    Manage your club website content
+                    Welcome back, {{ userName }}. Club updates, activities, and
+                    operational summary.
                 </p>
             </div>
 
@@ -160,7 +163,7 @@ function formatCurrency(amount: number, currency = 'GBP'): string {
             </div>
         </div>
 
-        <!-- 2. Four Stat Cards (Mockup Panel 1) -->
+        <!-- 2. Core Stat Cards -->
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <!-- Pages Card -->
             <Link
@@ -192,12 +195,12 @@ function formatCurrency(amount: number, currency = 'GBP'): string {
                     />
                     <span
                         class="font-medium text-emerald-600 dark:text-emerald-400"
-                        >Published</span
+                        >Live in Navigation</span
                     >
                 </div>
             </Link>
 
-            <!-- News Posts Card -->
+            <!-- Articles Card -->
             <Link
                 :href="contentIndex({ query: { type: 'article' } })"
                 class="shadow-2xs group relative overflow-hidden rounded-xl border border-neutral-200/90 bg-white p-5 transition-all duration-200 hover:border-purple-400/80 hover:shadow-md hover:shadow-purple-900/10 dark:border-white/10 dark:bg-neutral-900/90 dark:hover:border-purple-500/60 dark:hover:shadow-purple-950/30"
@@ -212,7 +215,7 @@ function formatCurrency(amount: number, currency = 'GBP'): string {
                         <div
                             class="text-xs font-medium text-neutral-500 dark:text-neutral-400"
                         >
-                            News Posts
+                            Articles & News
                         </div>
                         <div
                             class="text-2xl font-extrabold tracking-tight text-neutral-900 dark:text-white"
@@ -232,7 +235,7 @@ function formatCurrency(amount: number, currency = 'GBP'): string {
                 </div>
             </Link>
 
-            <!-- Gallery Items Card -->
+            <!-- Galleries Card -->
             <Link
                 href="/dashboard/galleries"
                 class="shadow-2xs group relative overflow-hidden rounded-xl border border-neutral-200/90 bg-white p-5 transition-all duration-200 hover:border-purple-400/80 hover:shadow-md hover:shadow-purple-900/10 dark:border-white/10 dark:bg-neutral-900/90 dark:hover:border-purple-500/60 dark:hover:shadow-purple-950/30"
@@ -247,7 +250,7 @@ function formatCurrency(amount: number, currency = 'GBP'): string {
                         <div
                             class="text-xs font-medium text-neutral-500 dark:text-neutral-400"
                         >
-                            Gallery Items
+                            Galleries
                         </div>
                         <div
                             class="text-2xl font-extrabold tracking-tight text-neutral-900 dark:text-white"
@@ -259,11 +262,11 @@ function formatCurrency(amount: number, currency = 'GBP'): string {
                 <div
                     class="mt-3 text-xs text-neutral-500 dark:text-neutral-400"
                 >
-                    Photos & Videos
+                    Photos & Match Albums
                 </div>
             </Link>
 
-            <!-- Upcoming Match Card -->
+            <!-- Bookings & Inquiries Card -->
             <Link
                 :href="bookingsIndex()"
                 class="shadow-2xs group relative overflow-hidden rounded-xl border border-neutral-200/90 bg-white p-5 transition-all duration-200 hover:border-purple-400/80 hover:shadow-md hover:shadow-purple-900/10 dark:border-white/10 dark:bg-neutral-900/90 dark:hover:border-purple-500/60 dark:hover:shadow-purple-950/30"
@@ -272,30 +275,33 @@ function formatCurrency(amount: number, currency = 'GBP'): string {
                     <div
                         class="flex size-11 items-center justify-center rounded-lg border border-purple-500/20 bg-purple-50 text-purple-600 transition-colors group-hover:bg-purple-600 group-hover:text-white dark:border-purple-500/30 dark:bg-purple-950/50 dark:text-purple-300 dark:group-hover:bg-purple-600 dark:group-hover:text-white"
                     >
-                        <Calendar class="size-5" />
+                        <CalendarCheck class="size-5" />
                     </div>
                     <div>
                         <div
                             class="text-xs font-medium text-neutral-500 dark:text-neutral-400"
                         >
-                            Upcoming Match
+                            Total Bookings
                         </div>
                         <div
                             class="text-2xl font-extrabold tracking-tight text-neutral-900 dark:text-white"
                         >
-                            {{ stats.upcoming_match?.days_left || '3 days' }}
+                            {{ stats.total_bookings ?? 0 }}
                         </div>
                     </div>
                 </div>
                 <div
-                    class="mt-3 truncate text-xs font-medium text-purple-600 dark:text-purple-400"
+                    class="mt-3 flex items-center gap-1.5 text-xs font-medium text-amber-600 dark:text-amber-400"
                 >
-                    {{ stats.upcoming_match?.opponent || 'vs Hackney Wick FC' }}
+                    <span
+                        >{{ stats.pending_bookings ?? 0 }} pending
+                        approval</span
+                    >
                 </div>
             </Link>
         </div>
 
-        <!-- 3. Lower Main Section: Quick Actions & Recent Updates (Mockup Panel 1) -->
+        <!-- 3. Quick Actions & Relevant Updates -->
         <div class="grid grid-cols-1 gap-6 lg:grid-cols-12">
             <!-- Left: Quick Actions (5 cols) -->
             <div class="flex flex-col gap-4 lg:col-span-5">
@@ -308,7 +314,7 @@ function formatCurrency(amount: number, currency = 'GBP'): string {
                 </div>
 
                 <div class="flex flex-col gap-3">
-                    <!-- Action 1: Create News Post (Primary Purple Card) -->
+                    <!-- Action 1: Create Article (Primary Purple Card) -->
                     <Link
                         :href="contentCreate({ query: { type: 'article' } })"
                         class="group relative flex items-center gap-3.5 overflow-hidden rounded-xl bg-[#7c3aed] p-4 text-white shadow-md shadow-purple-950/30 transition-all duration-200 hover:bg-[#6d28d9] hover:shadow-lg hover:shadow-purple-950/50"
@@ -320,10 +326,10 @@ function formatCurrency(amount: number, currency = 'GBP'): string {
                         </div>
                         <div class="flex-1">
                             <div class="text-sm font-semibold tracking-wide">
-                                Create News Post
+                                Create New Article
                             </div>
                             <div class="text-xs text-white/80">
-                                Publish announcements, match reports & stories
+                                Publish news, match reports & club announcements
                             </div>
                         </div>
                         <ChevronRight
@@ -331,36 +337,9 @@ function formatCurrency(amount: number, currency = 'GBP'): string {
                         />
                     </Link>
 
-                    <!-- Action 2: Update Page -->
+                    <!-- Action 2: Add Photos / Gallery -->
                     <Link
-                        :href="contentIndex({ query: { type: 'page' } })"
-                        class="shadow-2xs group relative flex items-center gap-3.5 rounded-xl border border-neutral-200/90 bg-white p-4 transition-all duration-200 hover:border-purple-400 hover:shadow-sm dark:border-white/10 dark:bg-neutral-900/90 dark:hover:border-purple-500/50"
-                    >
-                        <div
-                            class="flex size-10 shrink-0 items-center justify-center rounded-lg border border-purple-500/20 bg-purple-50 text-purple-600 transition-colors group-hover:bg-purple-600 group-hover:text-white dark:border-purple-500/30 dark:bg-purple-950/40 dark:text-purple-300 dark:group-hover:bg-purple-600 dark:group-hover:text-white"
-                        >
-                            <FileText class="size-5" />
-                        </div>
-                        <div class="flex-1">
-                            <div
-                                class="text-sm font-semibold text-neutral-900 dark:text-white"
-                            >
-                                Update Page
-                            </div>
-                            <div
-                                class="text-xs text-neutral-500 dark:text-neutral-400"
-                            >
-                                Edit core website pages, heroes & values
-                            </div>
-                        </div>
-                        <ChevronRight
-                            class="size-4 text-neutral-400 transition-transform group-hover:translate-x-1"
-                        />
-                    </Link>
-
-                    <!-- Action 3: Upload Media -->
-                    <Link
-                        href="/dashboard/galleries"
+                        href="/dashboard/galleries/create"
                         class="shadow-2xs group relative flex items-center gap-3.5 rounded-xl border border-neutral-200/90 bg-white p-4 transition-all duration-200 hover:border-purple-400 hover:shadow-sm dark:border-white/10 dark:bg-neutral-900/90 dark:hover:border-purple-500/50"
                     >
                         <div
@@ -372,12 +351,66 @@ function formatCurrency(amount: number, currency = 'GBP'): string {
                             <div
                                 class="text-sm font-semibold text-neutral-900 dark:text-white"
                             >
-                                Upload Media
+                                Add Photos to Gallery
                             </div>
                             <div
                                 class="text-xs text-neutral-500 dark:text-neutral-400"
                             >
-                                Manage photos, video loops & club galleries
+                                Upload new match action and training moments
+                            </div>
+                        </div>
+                        <ChevronRight
+                            class="size-4 text-neutral-400 transition-transform group-hover:translate-x-1"
+                        />
+                    </Link>
+
+                    <!-- Action 3: Manage Users & Roles -->
+                    <Link
+                        href="/dashboard/users"
+                        class="shadow-2xs group relative flex items-center gap-3.5 rounded-xl border border-neutral-200/90 bg-white p-4 transition-all duration-200 hover:border-purple-400 hover:shadow-sm dark:border-white/10 dark:bg-neutral-900/90 dark:hover:border-purple-500/50"
+                    >
+                        <div
+                            class="flex size-10 shrink-0 items-center justify-center rounded-lg border border-purple-500/20 bg-purple-50 text-purple-600 transition-colors group-hover:bg-purple-600 group-hover:text-white dark:border-purple-500/30 dark:bg-purple-950/40 dark:text-purple-300 dark:group-hover:bg-purple-600 dark:group-hover:text-white"
+                        >
+                            <Users class="size-5" />
+                        </div>
+                        <div class="flex-1">
+                            <div
+                                class="text-sm font-semibold text-neutral-900 dark:text-white"
+                            >
+                                Users & Staff Roles
+                            </div>
+                            <div
+                                class="text-xs text-neutral-500 dark:text-neutral-400"
+                            >
+                                Assign administrator, editor, and coach roles
+                            </div>
+                        </div>
+                        <ChevronRight
+                            class="size-4 text-neutral-400 transition-transform group-hover:translate-x-1"
+                        />
+                    </Link>
+
+                    <!-- Action 4: Audit & Error Logs -->
+                    <Link
+                        href="/dashboard/logs"
+                        class="shadow-2xs group relative flex items-center gap-3.5 rounded-xl border border-neutral-200/90 bg-white p-4 transition-all duration-200 hover:border-purple-400 hover:shadow-sm dark:border-white/10 dark:bg-neutral-900/90 dark:hover:border-purple-500/50"
+                    >
+                        <div
+                            class="flex size-10 shrink-0 items-center justify-center rounded-lg border border-purple-500/20 bg-purple-50 text-purple-600 transition-colors group-hover:bg-purple-600 group-hover:text-white dark:border-purple-500/30 dark:bg-purple-950/40 dark:text-purple-300 dark:group-hover:bg-purple-600 dark:group-hover:text-white"
+                        >
+                            <History class="size-5" />
+                        </div>
+                        <div class="flex-1">
+                            <div
+                                class="text-sm font-semibold text-neutral-900 dark:text-white"
+                            >
+                                Audit Trail & Logs
+                            </div>
+                            <div
+                                class="text-xs text-neutral-500 dark:text-neutral-400"
+                            >
+                                Review recent user activity and system traces
                             </div>
                         </div>
                         <ChevronRight
@@ -387,19 +420,26 @@ function formatCurrency(amount: number, currency = 'GBP'): string {
                 </div>
             </div>
 
-            <!-- Right: Recent Updates (7 cols) -->
+            <!-- Right: Relevant Updates Only (7 cols) -->
             <div class="flex flex-col gap-4 lg:col-span-7">
                 <div class="flex items-center justify-between">
-                    <h2
-                        class="text-base font-bold text-neutral-900 dark:text-white"
-                    >
-                        Recent Updates
-                    </h2>
+                    <div>
+                        <h2
+                            class="text-base font-bold text-neutral-900 dark:text-white"
+                        >
+                            Relevant Updates
+                        </h2>
+                        <p
+                            class="text-xs text-neutral-500 dark:text-neutral-400"
+                        >
+                            Active publications and recent announcements
+                        </p>
+                    </div>
                     <Link
                         :href="contentIndex({ query: { type: 'article' } })"
                         class="inline-flex items-center gap-1 text-xs font-semibold text-purple-600 hover:text-purple-700 dark:text-purple-400 dark:hover:text-purple-300"
                     >
-                        <span>View All</span>
+                        <span>All Articles</span>
                         <ChevronRight class="size-3.5" />
                     </Link>
                 </div>
@@ -472,7 +512,7 @@ function formatCurrency(amount: number, currency = 'GBP'): string {
                     <p
                         class="mt-2 text-sm font-medium text-neutral-700 dark:text-neutral-300"
                     >
-                        No articles published yet
+                        No recent updates published
                     </p>
                     <Link
                         :href="contentCreate({ query: { type: 'article' } })"
@@ -485,7 +525,7 @@ function formatCurrency(amount: number, currency = 'GBP'): string {
             </div>
         </div>
 
-        <!-- 4. Collapsible Club Operations & Bookings Section (Preserving business functionality) -->
+        <!-- 4. Operations, Activities & Bookings Summary -->
         <div
             class="shadow-2xs mt-4 rounded-xl border border-neutral-200/90 bg-white dark:border-white/10 dark:bg-neutral-900/90"
         >
@@ -495,11 +535,11 @@ function formatCurrency(amount: number, currency = 'GBP'): string {
                 class="flex w-full items-center justify-between p-4 text-left font-semibold text-neutral-900 dark:text-white"
             >
                 <div class="flex items-center gap-2.5">
-                    <CalendarCheck
+                    <Activity
                         class="size-4.5 text-purple-600 dark:text-purple-400"
                     />
                     <span class="text-sm font-bold"
-                        >Club Operations, Bookings & Financials</span
+                        >Activities, Bookings & Financial Status</span
                     >
                     <span
                         class="rounded-full bg-purple-100 px-2 py-0.5 text-[11px] font-medium text-purple-700 dark:bg-purple-950/60 dark:text-purple-300"
@@ -510,7 +550,9 @@ function formatCurrency(amount: number, currency = 'GBP'): string {
                 <div
                     class="flex items-center gap-2 text-xs text-neutral-500 dark:text-neutral-400"
                 >
-                    <span>{{ showOperations ? 'Collapse' : 'Expand' }}</span>
+                    <span>{{
+                        showOperations ? 'Hide Summary' : 'Show Summary'
+                    }}</span>
                     <ChevronDown
                         class="size-4 transition-transform duration-200"
                         :class="showOperations ? 'rotate-180' : ''"
@@ -522,7 +564,6 @@ function formatCurrency(amount: number, currency = 'GBP'): string {
                 v-if="showOperations"
                 class="border-t border-neutral-200/80 p-5 dark:border-white/10"
             >
-                <!-- Operations Stats Cards -->
                 <div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
                     <div
                         class="rounded-lg border border-neutral-200/60 bg-neutral-50/60 p-3.5 dark:border-neutral-800 dark:bg-neutral-800/40"
@@ -553,7 +594,7 @@ function formatCurrency(amount: number, currency = 'GBP'): string {
                         <div
                             class="mt-1 text-[11px] text-amber-600 dark:text-amber-400"
                         >
-                            {{ stats.pending_bookings || 0 }} pending approval
+                            {{ stats.pending_bookings || 0 }} pending review
                         </div>
                     </div>
 
@@ -562,7 +603,7 @@ function formatCurrency(amount: number, currency = 'GBP'): string {
                     >
                         <span
                             class="text-xs font-medium text-neutral-500 dark:text-neutral-400"
-                            >Upcoming Sessions</span
+                            >Upcoming Activity Sessions</span
                         >
                         <div
                             class="mt-1 text-xl font-bold text-neutral-900 dark:text-white"
@@ -612,7 +653,7 @@ function formatCurrency(amount: number, currency = 'GBP'): string {
                         :href="bookableItemsIndex()"
                         class="text-xs font-semibold text-purple-600 hover:underline dark:text-purple-400"
                     >
-                        Manage training programs &rarr;
+                        Manage activities &rarr;
                     </Link>
                 </div>
             </div>

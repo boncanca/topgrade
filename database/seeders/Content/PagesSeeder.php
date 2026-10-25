@@ -141,57 +141,10 @@ class PagesSeeder extends Seeder
             ]
         );
 
-        // 4. Our Teams Page
-        Content::firstOrCreate(
-            ['slug' => 'teams'],
-            [
-                'content_type_id' => $pageType->id,
-                'title' => 'Our Teams',
-                'excerpt' => 'TopGrade London FC youth squads from Foundation Phase U7-U8 through Youth Phase U16.',
-                'content' => 'TopGrade London FC operates competitive squads across all youth development phases.',
-                'status' => 'published',
-                'published_at' => now(),
-            ]
-        );
-
-        // 5. Fixtures & Results Page
-        Content::firstOrCreate(
-            ['slug' => 'fixtures'],
-            [
-                'content_type_id' => $pageType->id,
-                'title' => 'Fixtures & Results',
-                'excerpt' => 'Match fixtures, kickoff times, venues, and results for TopGrade London FC squads.',
-                'content' => 'Stay updated with upcoming league fixtures and recent match results.',
-                'status' => 'published',
-                'published_at' => now(),
-            ]
-        );
-
-        // 6. News & Updates Page
-        Content::firstOrCreate(
-            ['slug' => 'news'],
-            [
-                'content_type_id' => $pageType->id,
-                'title' => 'News & Updates',
-                'excerpt' => 'The latest news, match reports, and club announcements from TopGrade London FC.',
-                'content' => 'Official club announcements, match previews, and training highlights.',
-                'status' => 'published',
-                'published_at' => now(),
-            ]
-        );
-
-        // 7. Gallery Page
-        Content::firstOrCreate(
-            ['slug' => 'gallery'],
-            [
-                'content_type_id' => $pageType->id,
-                'title' => 'Club Gallery',
-                'excerpt' => 'Photos and video highlights capturing matchday action, youth training, and squad milestones.',
-                'content' => 'Explore the moments and milestones of TopGrade London FC.',
-                'status' => 'published',
-                'published_at' => now(),
-            ]
-        );
+        // Clean up legacy ghost pages that do not correspond to actual pages
+        Content::where('content_type_id', $pageType->id)
+            ->whereIn('slug', ['teams', 'fixtures', 'news', 'gallery'])
+            ->delete();
 
         // 4. Privacy Policy
         Content::firstOrCreate(

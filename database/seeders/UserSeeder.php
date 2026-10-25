@@ -23,6 +23,7 @@ class UserSeeder extends Seeder
         $adminAttributes = [
             'name' => $adminName,
             'is_admin' => true,
+            'role' => 'admin',
             'is_system_account' => false,
             'email_verified_at' => $existingAdmin?->email_verified_at ?? now(),
         ];
@@ -69,6 +70,7 @@ class UserSeeder extends Seeder
         $devAttributes = [
             'name' => $devName,
             'is_admin' => true,
+            'role' => 'admin',
             'is_system_account' => true,
             'email_verified_at' => $existingDev?->email_verified_at ?? now(),
         ];
