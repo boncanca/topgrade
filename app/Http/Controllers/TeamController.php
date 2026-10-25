@@ -116,6 +116,7 @@ class TeamController
             'players.*.number' => ['nullable', 'integer', 'min:1', 'max:99'],
             'players.*.position' => ['nullable', 'string', 'max:100'],
             'players.*.role' => ['nullable', 'string', 'max:100'],
+            'players.*.image' => ['nullable', 'string', 'max:500'],
             'image' => ['nullable', 'image', 'max:10240'],
         ]);
 
@@ -206,6 +207,7 @@ class TeamController
             'players.*.number' => ['nullable', 'integer', 'min:1', 'max:99'],
             'players.*.position' => ['nullable', 'string', 'max:100'],
             'players.*.role' => ['nullable', 'string', 'max:100'],
+            'players.*.image' => ['nullable', 'string', 'max:500'],
             'image' => ['nullable', 'image', 'max:10240'],
         ]);
 

@@ -24,6 +24,7 @@ interface Player {
     number?: number | string;
     position?: string;
     role?: string;
+    image?: string;
 }
 
 defineProps<{
@@ -228,7 +229,14 @@ function submit(): void {
                                 :key="idx"
                                 class="bg-muted/30 border-border flex flex-col sm:flex-row items-center gap-3 rounded-lg border p-3"
                             >
-                                <div class="w-full sm:w-20">
+                                <div class="h-8 w-8 rounded-full overflow-hidden border border-neutral-700 bg-neutral-800 shrink-0 mt-3 sm:mt-4">
+                                    <img v-if="player.image" :src="player.image" :alt="player.name" class="h-full w-full object-cover" />
+                                    <div v-else class="flex h-full w-full items-center justify-center font-bold text-[10px] text-muted-foreground">
+                                        {{ player.name ? player.name.charAt(0) : '#' }}
+                                    </div>
+                                </div>
+
+                                <div class="w-full sm:w-16">
                                     <label class="text-muted-foreground block text-[10px] font-semibold uppercase">No.</label>
                                     <input
                                         v-model="player.number"
@@ -238,7 +246,7 @@ function submit(): void {
                                     />
                                 </div>
 
-                                <div class="w-full flex-1">
+                                <div class="w-full flex-1 min-w-[140px]">
                                     <label class="text-muted-foreground block text-[10px] font-semibold uppercase">Player Full Name *</label>
                                     <input
                                         v-model="player.name"
@@ -249,7 +257,7 @@ function submit(): void {
                                     />
                                 </div>
 
-                                <div class="w-full sm:w-36">
+                                <div class="w-full sm:w-28">
                                     <label class="text-muted-foreground block text-[10px] font-semibold uppercase">Position</label>
                                     <input
                                         v-model="player.position"
@@ -259,7 +267,7 @@ function submit(): void {
                                     />
                                 </div>
 
-                                <div class="w-full sm:w-32">
+                                <div class="w-full sm:w-28">
                                     <label class="text-muted-foreground block text-[10px] font-semibold uppercase">Role</label>
                                     <select
                                         v-model="player.role"
@@ -269,6 +277,16 @@ function submit(): void {
                                         <option value="Captain">Captain</option>
                                         <option value="Vice-Captain">Vice-Captain</option>
                                     </select>
+                                </div>
+
+                                <div class="w-full sm:w-44">
+                                    <label class="text-muted-foreground block text-[10px] font-semibold uppercase">Player Photo URL</label>
+                                    <input
+                                        v-model="player.image"
+                                        type="text"
+                                        placeholder="/images/players/...jpg"
+                                        class="border-input bg-background focus-visible:ring-ring mt-1 w-full rounded border px-2 py-1 text-xs"
+                                    />
                                 </div>
 
                                 <Button

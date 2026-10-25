@@ -21,6 +21,7 @@ interface Player {
     number?: number;
     position?: string;
     role?: string;
+    image?: string;
 }
 
 interface TeamItem {
@@ -225,6 +226,20 @@ function handleDelete(team: TeamItem): void {
                                 <div class="flex items-center gap-1.5 font-medium">
                                     <Users class="h-3.5 w-3.5 text-amber-500" />
                                     <span>{{ team.players_count }} players</span>
+                                </div>
+                                <div v-if="team.players_count > 0" class="mt-1.5 flex items-center -space-x-1.5 overflow-hidden py-0.5">
+                                    <div
+                                        v-for="(p, pIdx) in team.players.slice(0, 5)"
+                                        :key="pIdx"
+                                        class="inline-block h-6 w-6 rounded-full ring-2 ring-background overflow-hidden bg-muted shrink-0"
+                                        :title="`${p.name} (${p.position || 'Player'})`"
+                                    >
+                                        <img v-if="p.image" :src="p.image" :alt="p.name" class="h-full w-full object-cover" />
+                                        <div v-else class="flex h-full w-full items-center justify-center font-bold text-[9px] text-muted-foreground">{{ p.name.charAt(0) }}</div>
+                                    </div>
+                                    <span v-if="team.players_count > 5" class="flex h-6 w-6 items-center justify-center rounded-full bg-muted text-[10px] font-bold text-muted-foreground ring-2 ring-background">
+                                        +{{ team.players_count - 5 }}
+                                    </span>
                                 </div>
                                 <div v-if="team.players_count > 0" class="text-muted-foreground mt-0.5 text-[11px] truncate max-w-[200px]">
                                     {{ team.players.map(p => p.name).slice(0, 3).join(', ') }}{{ team.players_count > 3 ? '...' : '' }}

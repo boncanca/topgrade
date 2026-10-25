@@ -22,6 +22,7 @@ interface Player {
     number?: number | string;
     position?: string;
     role?: string;
+    image?: string;
 }
 
 interface MomentPhoto {
@@ -297,26 +298,53 @@ function submitTrialApplication() {
                                         <div
                                             v-for="(player, pIdx) in team.players"
                                             :key="pIdx"
-                                            class="flex items-center justify-between py-2.5 transition-colors hover:bg-neutral-800/30 px-2 rounded-lg"
+                                            class="flex items-center justify-between py-3 transition-colors hover:bg-neutral-800/40 px-3 rounded-xl border border-transparent hover:border-neutral-800/80"
                                         >
-                                            <div class="flex items-center gap-3">
-                                                <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-neutral-800 font-mono text-xs font-bold text-amber-400">
-                                                    {{ player.number ? `#${player.number}` : (pIdx + 1) }}
-                                                </span>
-                                                <span class="text-sm font-semibold text-neutral-100">
-                                                    {{ player.name }}
-                                                </span>
+                                            <div class="flex items-center gap-3.5">
+                                                <!-- Player Photo Avatar -->
+                                                <div class="relative h-11 w-11 shrink-0 overflow-hidden rounded-full border-2 border-amber-400/30 bg-neutral-800 shadow-md">
+                                                    <img
+                                                        v-if="player.image"
+                                                        :src="player.image"
+                                                        :alt="`${player.name} portrait`"
+                                                        class="h-full w-full object-cover transition-transform duration-300 hover:scale-110"
+                                                        loading="lazy"
+                                                    />
+                                                    <div
+                                                        v-else
+                                                        class="flex h-full w-full items-center justify-center font-mono text-xs font-bold text-amber-400 bg-neutral-900"
+                                                    >
+                                                        {{ player.name.charAt(0) }}
+                                                    </div>
+                                                    <span
+                                                        v-if="player.number"
+                                                        class="absolute -bottom-0.5 -right-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-neutral-950 px-1 font-mono text-[9px] font-bold text-amber-400 border border-neutral-700"
+                                                    >
+                                                        {{ player.number }}
+                                                    </span>
+                                                </div>
+
+                                                <div>
+                                                    <div class="flex items-center gap-2">
+                                                        <span class="text-sm font-bold text-neutral-100">
+                                                            {{ player.name }}
+                                                        </span>
+                                                        <span
+                                                            v-if="player.role && player.role.toLowerCase().includes('captain')"
+                                                            class="rounded-full bg-amber-400/20 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-amber-300 border border-amber-400/30"
+                                                        >
+                                                            {{ player.role }}
+                                                        </span>
+                                                    </div>
+                                                    <div class="text-xs text-neutral-400 font-medium">
+                                                        {{ player.position || 'Squad Player' }}
+                                                    </div>
+                                                </div>
                                             </div>
 
                                             <div class="flex items-center gap-2">
-                                                <span class="text-xs text-neutral-400 font-medium">
-                                                    {{ player.position || 'Squad Player' }}
-                                                </span>
-                                                <span
-                                                    v-if="player.role && player.role.toLowerCase().includes('captain')"
-                                                    class="rounded-full bg-amber-400/20 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-amber-300 border border-amber-400/30"
-                                                >
-                                                    {{ player.role }}
+                                                <span class="font-mono text-xs font-semibold text-neutral-500">
+                                                    {{ player.number ? `#${player.number}` : (pIdx + 1) }}
                                                 </span>
                                             </div>
                                         </div>
