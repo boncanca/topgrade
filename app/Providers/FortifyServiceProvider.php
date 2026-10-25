@@ -51,12 +51,12 @@ class FortifyServiceProvider extends ServiceProvider
     }
 
     /**
-     * Configure password reset and verification URL generation to always point to production domain.
+     * Configure password reset URL generation to target the application's configured URL.
      */
     private function configureUrlGeneration(): void
     {
         ResetPassword::createUrlUsing(function ($user, string $token) {
-            $baseUrl = rtrim((string) env('PRODUCTION_URL', 'https://topgradelondonfc.co.uk'), '/');
+            $baseUrl = rtrim((string) (config('app.url') ?: 'https://topgradelondonfc.co.uk'), '/');
 
             return "{$baseUrl}/auth/reset-password/{$token}?email=".urlencode($user->getEmailForPasswordReset());
         });
