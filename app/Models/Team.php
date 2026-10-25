@@ -6,6 +6,7 @@ use App\Concerns\ResolvesMediaUrl;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
@@ -19,6 +20,8 @@ class Team extends Model implements HasMedia
         'age_group',
         'stage',
         'description',
+        'players',
+        'moment_id',
         'visual_variant',
         'sort_order',
         'is_active',
@@ -27,7 +30,14 @@ class Team extends Model implements HasMedia
     protected $casts = [
         'is_active' => 'boolean',
         'sort_order' => 'integer',
+        'players' => 'array',
+        'moment_id' => 'integer',
     ];
+
+    public function moment(): BelongsTo
+    {
+        return $this->belongsTo(Moment::class);
+    }
 
     public function registerMediaCollections(): void
     {

@@ -19,8 +19,13 @@ class UserController
     {
         $search = $request->string('search')->trim()->value();
         $role = $request->string('role')->trim()->value();
+        $isDev = (bool) $request->user()?->isDevAdmin();
 
         $query = User::query()
+            ->when(! $isDev, function ($q) {
+                $q->where('role', '!=', 'dev')
+                    ->where('is_system_account', false);
+            })
             ->when($search, function ($q, $search) {
                 $q->where(function ($sub) use ($search) {
                     $sub->where('name', 'like', "%{$search}%")
@@ -51,7 +56,7 @@ class UserController
                 'role' => $role,
             ],
             'roles' => [
-                ['value' => 'dev', 'label' => 'Developer'],
+                ...($isDev ? [['value' => 'dev', 'label' => 'Developer']] : []),
                 ['value' => 'admin', 'label' => 'Administrator'],
                 ['value' => 'editor', 'label' => 'Content Editor'],
                 ['value' => 'coach', 'label' => 'Coach'],

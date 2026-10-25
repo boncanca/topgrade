@@ -3,14 +3,21 @@
 use App\Http\Middleware\EnsureUserIsAdmin;
 use App\Http\Middleware\HandleAppearance;
 use App\Http\Middleware\HandleInertiaRequests;
+use App\Mail\SystemErrorAlertNotification;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets;
 use Illuminate\Http\Request;
+use Illuminate\Session\TokenMismatchException;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -44,6 +51,37 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
+        $exceptions->report(function (Throwable $e) {
+            // Filter out routine client errors: validation, auth, 404s, 403s, 419s
+            if ($e instanceof ValidationException ||
+                $e instanceof AuthenticationException ||
+                $e instanceof NotFoundHttpException ||
+                $e instanceof AccessDeniedHttpException ||
+                $e instanceof TokenMismatchException) {
+                return;
+            }
+
+            // Do not send alert emails during testing
+            if (app()->environment(['testing'])) {
+                return;
+            }
+
+            // Throttling / deduplication: 1 alert per identical error per 15 minutes
+            $hash = md5($e->getMessage().$e->getFile().$e->getLine());
+            $cacheKey = "system_error_alert_{$hash}";
+
+            if (! cache()->has($cacheKey)) {
+                try {
+                    cache()->put($cacheKey, true, now()->addMinutes(15));
+                    $recipient = env('DEV_SUPPORT_EMAIL', 'support@trupabranding.com');
+                    Mail::to($recipient)
+                        ->send(new SystemErrorAlertNotification($e));
+                } catch (Throwable) {
+                    // Suppress any transport failure to prevent recursive exception loops
+                }
+            }
+        });
+
         $exceptions->render(function (TransportExceptionInterface $exception, Request $request) {
             if ($request->routeIs('password.email') || $request->is('auth/forgot-password*')) {
                 Log::error('Password reset email transport failure: '.$exception->getMessage());

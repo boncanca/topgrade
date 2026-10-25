@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
+import { usePage } from '@inertiajs/vue3';
 import {
     Activity,
     CalendarCheck,
@@ -12,6 +13,7 @@ import {
     Settings,
     Users,
 } from '@lucide/vue';
+import { computed } from 'vue';
 import AppLogo from '@/components/AppLogo.vue';
 import NavMain from '@/components/NavMain.vue';
 import NavUser from '@/components/NavUser.vue';
@@ -24,8 +26,6 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { computed } from 'vue';
-import { usePage } from '@inertiajs/vue3';
 import { dashboard } from '@/routes';
 import { index as bookableItemsIndex } from '@/routes/bookable-items';
 import { index as bookingsIndex } from '@/routes/bookings';
@@ -46,15 +46,15 @@ const navGroups = computed<NavGroup[]>(() => {
 
     const items = [
         {
+            title: 'Inbox',
+            href: inquiriesIndex(),
+            icon: MessageSquare,
+        },
+        {
             title: 'Overview',
             href: dashboard(),
             icon: LayoutGrid,
             exact: true,
-        },
-        {
-            title: 'Pages',
-            href: contentIndex({ query: { type: 'page' } }),
-            icon: FileText,
         },
         {
             title: 'Articles',
@@ -66,6 +66,11 @@ const navGroups = computed<NavGroup[]>(() => {
             href: '/dashboard/galleries',
             icon: Image,
         },
+        ...(isDev ? [{
+            title: 'Teams',
+            href: '/dashboard/teams',
+            icon: Users,
+        }] : []),
         {
             title: 'Activities',
             href: bookableItemsIndex(),
@@ -77,14 +82,9 @@ const navGroups = computed<NavGroup[]>(() => {
             icon: CalendarCheck,
         },
         {
-            title: 'Messages',
-            href: inquiriesIndex(),
-            icon: MessageSquare,
-        },
-        {
-            title: 'Users',
-            href: '/dashboard/users',
-            icon: Users,
+            title: 'Pages',
+            href: contentIndex({ query: { type: 'page' } }),
+            icon: FileText,
         },
         ...(isDev ? [{
             title: 'Logs',

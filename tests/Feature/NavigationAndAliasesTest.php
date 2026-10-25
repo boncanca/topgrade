@@ -26,12 +26,16 @@ test('/dashboard/media redirects to /dashboard/galleries', function () {
     $response->assertRedirect('/dashboard/galleries');
 });
 
-test('/dashboard/teams redirects to /dashboard/bookable-items', function () {
+test('/dashboard/teams is restricted to dev admin and forbidden for regular admin', function () {
     $admin = User::factory()->admin()->create();
+    $this->actingAs($admin)->get('/dashboard/teams')->assertForbidden();
 
-    $response = $this->actingAs($admin)->get('/dashboard/teams');
-
-    $response->assertRedirect('/dashboard/bookable-items');
+    $devAdmin = User::factory()->create([
+        'role' => 'dev',
+        'is_admin' => true,
+        'is_system_account' => true,
+    ]);
+    $this->actingAs($devAdmin)->get('/dashboard/teams')->assertOk();
 });
 
 test('/dashboard/fixtures redirects to /dashboard/bookings', function () {
@@ -53,6 +57,11 @@ test('/dashboard/galleries is accessible to admin', function () {
 test('public ghost routes redirect to canonical destinations', function () {
     $this->get('/news')->assertRedirect('/articles');
     $this->get('/gallery')->assertRedirect('/moments');
-    $this->get('/teams')->assertRedirect('/#teams');
     $this->get('/fixtures')->assertRedirect('/#matchday');
+});
+
+test('public /teams page is accessible', function () {
+    $response = $this->get('/teams');
+
+    $response->assertOk();
 });

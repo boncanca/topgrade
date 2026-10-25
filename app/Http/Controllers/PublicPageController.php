@@ -268,6 +268,134 @@ class PublicPageController
         ]);
     }
 
+    public function teams(): Response
+    {
+        $teams = Team::active()
+            ->with(['media', 'moment.media', 'moment.coverMedia'])
+            ->orderBy('sort_order')
+            ->orderBy('name')
+            ->get()
+            ->map(fn (Team $team) => [
+                'id' => $team->id,
+                'name' => $team->name,
+                'slug' => $team->slug,
+                'age_group' => $team->age_group,
+                'stage' => $team->stage,
+                'description' => $team->description,
+                'visual_variant' => $team->visual_variant,
+                'image_url' => $team->getResolvedMediaUrl('image'),
+                'players' => $team->players ?? [],
+                'players_count' => count($team->players ?? []),
+                'moment' => $team->moment ? [
+                    'id' => $team->moment->id,
+                    'title' => $team->moment->title,
+                    'slug' => $team->moment->slug,
+                    'description' => $team->moment->description,
+                    'cover_url' => $team->moment->getResolvedCoverUrl(),
+                    'photos' => $team->moment->getMedia('gallery')->take(6)->map(fn ($media) => [
+                        'id' => $media->id,
+                        'url' => $media->getUrl(),
+                        'name' => $media->name,
+                    ])->values()->all(),
+                ] : null,
+            ]);
+
+        $publishedMoments = Moment::published()
+            ->with(['media', 'coverMedia'])
+            ->latest('published_at')
+            ->take(6)
+            ->get()
+            ->map(fn (Moment $moment) => [
+                'id' => $moment->id,
+                'title' => $moment->title,
+                'slug' => $moment->slug,
+                'description' => $moment->description,
+                'cover_url' => $moment->getResolvedCoverUrl(),
+                'images_count' => $moment->getMedia('gallery')->count(),
+            ]);
+
+        return Inertia::render('Public/Teams', [
+            'teams' => $teams,
+            'moments' => $publishedMoments,
+        ]);
+    }
+
+    /**
+     * Submit a youth team trial or player registration application.
+     */
+    public function submitTeamApplication(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'parent_name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255',
+            'phone' => 'required|string|max:30',
+            'player_name' => 'required|string|max:255',
+            'player_dob' => 'required|string|max:50',
+            'age_group' => 'required|string|max:50',
+            'experience' => 'nullable|string|max:255',
+            'preferred_position' => 'nullable|string|max:100',
+            'notes' => 'nullable|string|max:3000',
+        ]);
+
+        $subject = "Team Trial Application: {$validated['player_name']} ({$validated['age_group']})";
+
+        $messageContent = implode("\n", array_filter([
+            "Applicant / Player: {$validated['player_name']}",
+            "Date of Birth: {$validated['player_dob']}",
+            "Requested Age Group: {$validated['age_group']}",
+            ! empty($validated['preferred_position']) ? "Preferred Position: {$validated['preferred_position']}" : null,
+            ! empty($validated['experience']) ? "Current Club / Experience: {$validated['experience']}" : null,
+            "Parent / Guardian Name: {$validated['parent_name']}",
+            "Contact Phone: {$validated['phone']}",
+            "Contact Email: {$validated['email']}",
+            ! empty($validated['notes']) ? "\nAdditional Notes / Medical Info:\n{$validated['notes']}" : null,
+        ]));
+
+        // Prevent rapid duplicate submissions
+        $recentDuplicate = Inquiry::where('email', $validated['email'])
+            ->where('subject', $subject)
+            ->where('created_at', '>=', now()->subSeconds(60))
+            ->first();
+
+        if ($recentDuplicate) {
+            return back()->with('success', 'Your trial application has already been received. Our coaching staff will contact you shortly!');
+        }
+
+        [$firstName, $lastName] = $this->parseParticipantName($validated['parent_name']);
+
+        $contact = Contact::firstOrCreate(
+            ['email' => $validated['email']],
+            [
+                'first_name' => $firstName,
+                'last_name' => $lastName,
+                'phone' => $validated['phone'],
+                'status' => 'active',
+            ]
+        );
+
+        $inquiry = Inquiry::create([
+            'contact_id' => $contact->id,
+            'name' => $validated['parent_name'],
+            'email' => $validated['email'],
+            'phone' => $validated['phone'],
+            'subject' => $subject,
+            'message' => $messageContent,
+            'status' => 'new',
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+        ]);
+
+        try {
+            $adminRecipient = app(ClubSettings::class)->email ?? config('topgrade.emails.info', 'info@topgradelondonfc.co.uk');
+            Mail::to($adminRecipient)->send(new ContactReceivedAdminNotification($inquiry));
+            Mail::to($inquiry->email)->send(new ContactReceivedCustomerNotification($inquiry));
+        } catch (\Throwable $e) {
+            report($e);
+        }
+
+        return back()->with('success', 'Your trial application for TopGrade London FC has been submitted successfully! Our coaching staff will review and get in touch.');
+    }
+
     public function terms(): Response
     {
         $page = Content::published()

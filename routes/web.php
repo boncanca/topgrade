@@ -15,6 +15,7 @@ use App\Http\Controllers\PublicMomentController;
 use App\Http\Controllers\PublicPageController;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\StripeWebhookController;
+use App\Http\Controllers\TeamController;
 use App\Http\Controllers\UserController;
 use App\Models\Content;
 use App\Services\SitemapService;
@@ -31,8 +32,11 @@ Route::redirect('/news', '/articles');
 Route::redirect('/news/{any}', '/articles');
 Route::redirect('/gallery', '/moments');
 Route::redirect('/gallery/{any}', '/moments');
-Route::redirect('/teams', '/#teams');
 Route::redirect('/fixtures', '/#matchday');
+
+// Public Teams & Squads (with Trial Applications)
+Route::get('/teams', [PublicPageController::class, 'teams'])->name('teams.index');
+Route::post('/teams/apply', [PublicPageController::class, 'submitTeamApplication'])->name('teams.apply');
 
 // Public homepage & editorial
 Route::get('/', [PublicPageController::class, 'home'])->name('home');
@@ -117,10 +121,10 @@ Route::middleware(['auth', 'verified', 'admin'])->group(function () {
 
         // Inquiries & Messages
         Route::resource('inquiries', InquiryController::class)->only(['index', 'show', 'edit', 'update', 'destroy']);
-        Route::get('messages', fn () => redirect()->route('inquiries.index'))->name('messages.index');
+        Route::get('messages', fn () => redirect()->route('inquiries.index'))->name('dashboard.messages.index');
 
         // Articles direct alias
-        Route::get('articles', fn () => redirect()->route('content.index', ['type' => 'article']))->name('articles.index');
+        Route::get('articles', fn () => redirect()->route('content.index', ['type' => 'article']))->name('dashboard.articles.index');
 
         // User management
         Route::resource('users', UserController::class)->names('dashboard.users');
@@ -142,8 +146,10 @@ Route::middleware(['auth', 'verified', 'admin'])->group(function () {
             Route::post('moments/{moment}/media/reorder', [MomentController::class, 'reorderMedia'])->name('moments.media.reorder');
             Route::delete('moments/{moment}/media/{media}', [MomentController::class, 'destroyMedia'])->name('moments.media.destroy');
 
+            // Teams & Squads management
+            Route::resource('teams', TeamController::class)->names('teams');
+
             // Legacy dashboard alias redirects
-            Route::redirect('teams', '/dashboard/bookable-items');
             Route::redirect('fixtures', '/dashboard/bookings');
             Route::redirect('media', '/dashboard/galleries');
         });

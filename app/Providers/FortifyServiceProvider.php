@@ -8,6 +8,7 @@ use App\Actions\Fortify\EnsureLoginUserIsVerified;
 use App\Actions\Fortify\ResetUserPassword;
 use App\Models\User;
 use Illuminate\Auth\Events\Failed;
+use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -41,11 +42,24 @@ class FortifyServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        $this->configureUrlGeneration();
         $this->configureActions();
         $this->configureViews();
         $this->configureRateLimiting();
         $this->configureAuthentication();
         $this->configureLoginPipeline();
+    }
+
+    /**
+     * Configure password reset and verification URL generation to always point to production domain.
+     */
+    private function configureUrlGeneration(): void
+    {
+        ResetPassword::createUrlUsing(function ($user, string $token) {
+            $baseUrl = rtrim((string) env('PRODUCTION_URL', 'https://topgradelondonfc.co.uk'), '/');
+
+            return "{$baseUrl}/auth/reset-password/{$token}?email=".urlencode($user->getEmailForPasswordReset());
+        });
     }
 
     /**

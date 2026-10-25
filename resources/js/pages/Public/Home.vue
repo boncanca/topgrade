@@ -101,8 +101,10 @@ const heroVideoRef = ref<HTMLVideoElement | null>(null);
 const videoFailed = ref(false);
 const prefersReducedMotion = ref(false);
 
+const localFallbackVideo = '/hero-training-loop-topgrade-london-fc.mp4';
+
 const heroVideoUrl = computed(
-    () => props.hero?.video_url || '/hero-training-loop-topgrade-london-fc.mp4',
+    () => props.hero?.video_url || localFallbackVideo,
 );
 const heroPosterUrl = computed(
     () =>
@@ -151,7 +153,27 @@ const heroHeadlineParts = computed(() => {
     return [text];
 });
 
+const onSourceError = () => {
+    if (heroVideoRef.value && !heroVideoRef.value.src.endsWith(localFallbackVideo)) {
+        heroVideoRef.value.src = localFallbackVideo;
+        heroVideoRef.value.load();
+        heroVideoRef.value.play().catch(() => {
+            videoFailed.value = true;
+        });
+    }
+};
+
 const onVideoError = () => {
+    if (heroVideoRef.value && !heroVideoRef.value.src.endsWith(localFallbackVideo)) {
+        heroVideoRef.value.src = localFallbackVideo;
+        heroVideoRef.value.load();
+        heroVideoRef.value.play().catch(() => {
+            videoFailed.value = true;
+        });
+
+        return;
+    }
+
     videoFailed.value = true;
 };
 
@@ -1034,7 +1056,7 @@ onUnmounted(() => {
                 aria-hidden="true"
             >
                 <video
-                    v-if="heroVideoUrl && !videoFailed && !prefersReducedMotion"
+                    v-if="!videoFailed && !prefersReducedMotion"
                     ref="heroVideoRef"
                     class="h-full w-full object-cover object-center transition-opacity duration-700"
                     autoplay
@@ -1045,12 +1067,22 @@ onUnmounted(() => {
                     :poster="heroPosterUrl || undefined"
                     @error="onVideoError"
                 >
-                    <source :src="heroVideoUrl" type="video/mp4" />
+                    <source
+                        v-if="heroVideoUrl && heroVideoUrl !== localFallbackVideo"
+                        :src="heroVideoUrl"
+                        type="video/mp4"
+                        @error="onSourceError"
+                    />
+                    <source
+                        :src="localFallbackVideo"
+                        type="video/mp4"
+                        @error="onVideoError"
+                    />
                 </video>
                 <img
                     v-else-if="heroPosterUrl"
                     :src="heroPosterUrl"
-                    alt=""
+                    alt="TopGrade London FC Squad Training"
                     class="h-full w-full object-cover object-center transition-opacity duration-700"
                 />
                 <!-- Subtle flat translucent overlay (restrained 35%, no gradients, no glows) -->

@@ -3,9 +3,11 @@ import { Head, router } from '@inertiajs/vue3';
 import {
     Activity,
     AlertCircle,
+    Check,
     ChevronDown,
     ChevronRight,
     Clock,
+    Copy,
     RefreshCw,
     Search,
     Trash2,
@@ -85,6 +87,54 @@ const searchQuery = ref(props.filters.search || '');
 const selectedLevel = ref(props.filters.level || '');
 const expandedSystemLogIndices = ref<Set<number>>(new Set());
 const expandedAuditIndices = ref<Set<number>>(new Set());
+const copiedKey = ref<string | null>(null);
+
+async function copyToClipboard(text: string, key: string): Promise<void> {
+    try {
+        if (navigator?.clipboard?.writeText) {
+            await navigator.clipboard.writeText(text);
+        } else {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+        }
+
+        copiedKey.value = key;
+        setTimeout(() => {
+            if (copiedKey.value === key) {
+                copiedKey.value = null;
+            }
+        }, 2000);
+    } catch (err) {
+        console.error('Failed to copy to clipboard', err);
+    }
+}
+
+function formatLogForCopy(log: SystemLogItem): string {
+    let text = `[${log.timestamp}] ${log.env || 'local'}.${log.level}: ${log.message}`;
+
+    if (log.stack_trace) {
+        text += `\n\nStack Trace:\n${log.stack_trace}`;
+    }
+
+    return text;
+}
+
+function copyAllSystemLogs(): void {
+    if (!props.systemLogs.length) {
+return;
+}
+
+    const text = props.systemLogs
+        .map((log) => formatLogForCopy(log))
+        .join('\n\n' + '='.repeat(60) + '\n\n');
+    copyToClipboard(text, 'all-system-logs');
+}
 
 function switchTab(tab: 'audit' | 'system'): void {
     currentTab.value = tab;
@@ -192,6 +242,18 @@ function formatSubject(type: string | null, id: number | null): string {
         >
             <template #actions>
                 <div class="flex items-center gap-2">
+                    <Button
+                        v-if="currentTab === 'system' && systemLogs.length > 0"
+                        variant="outline"
+                        @click="copyAllSystemLogs"
+                    >
+                        <component
+                            :is="copiedKey === 'all-system-logs' ? Check : Copy"
+                            class="mr-2 h-4 w-4"
+                            :class="copiedKey === 'all-system-logs' ? 'text-emerald-500' : ''"
+                        />
+                        {{ copiedKey === 'all-system-logs' ? 'Copied All Logs!' : `Copy All Logs (${systemLogs.length})` }}
+                    </Button>
                     <Button
                         v-if="currentTab === 'system'"
                         variant="outline"
@@ -529,7 +591,7 @@ function formatSubject(type: string | null, id: number | null): string {
                         </div>
 
                         <div
-                            class="text-muted-foreground flex shrink-0 items-center gap-3 self-end text-xs sm:self-start"
+                            class="text-muted-foreground flex shrink-0 items-center gap-2 self-end text-xs sm:self-start"
                         >
                             <span class="flex items-center gap-1 font-mono">
                                 <Clock class="h-3.5 w-3.5" />
@@ -540,6 +602,19 @@ function formatSubject(type: string | null, id: number | null): string {
                             >
                                 {{ log.env }}
                             </span>
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                class="h-7 px-2 text-xs"
+                                :class="copiedKey === `log-${idx}` ? 'text-emerald-500 hover:text-emerald-600' : 'text-muted-foreground hover:text-foreground'"
+                                @click="copyToClipboard(formatLogForCopy(log), `log-${idx}`)"
+                            >
+                                <component
+                                    :is="copiedKey === `log-${idx}` ? Check : Copy"
+                                    class="mr-1 h-3.5 w-3.5"
+                                />
+                                {{ copiedKey === `log-${idx}` ? 'Copied' : 'Copy' }}
+                            </Button>
                         </div>
                     </div>
 
@@ -548,23 +623,40 @@ function formatSubject(type: string | null, id: number | null): string {
                         v-if="log.stack_trace"
                         class="border-border/50 mt-3 border-t pt-3"
                     >
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            class="text-muted-foreground hover:text-foreground h-7 px-2 text-xs"
-                            @click="toggleSystemTrace(idx)"
-                        >
-                            <ChevronDown
+                        <div class="flex items-center justify-between">
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                class="text-muted-foreground hover:text-foreground h-7 px-2 text-xs"
+                                @click="toggleSystemTrace(idx)"
+                            >
+                                <ChevronDown
+                                    v-if="expandedSystemLogIndices.has(idx)"
+                                    class="mr-1 h-3.5 w-3.5"
+                                />
+                                <ChevronRight v-else class="mr-1 h-3.5 w-3.5" />
+                                {{
+                                    expandedSystemLogIndices.has(idx)
+                                        ? 'Collapse Stack Trace'
+                                        : 'Expand Stack Trace / Retrace Details'
+                                }}
+                            </Button>
+
+                            <Button
                                 v-if="expandedSystemLogIndices.has(idx)"
-                                class="mr-1 h-3.5 w-3.5"
-                            />
-                            <ChevronRight v-else class="mr-1 h-3.5 w-3.5" />
-                            {{
-                                expandedSystemLogIndices.has(idx)
-                                    ? 'Collapse Stack Trace'
-                                    : 'Expand Stack Trace / Retrace Details'
-                            }}
-                        </Button>
+                                variant="ghost"
+                                size="sm"
+                                class="h-7 px-2 text-xs"
+                                :class="copiedKey === `trace-${idx}` ? 'text-emerald-500' : 'text-muted-foreground hover:text-foreground'"
+                                @click="copyToClipboard(log.stack_trace, `trace-${idx}`)"
+                            >
+                                <component
+                                    :is="copiedKey === `trace-${idx}` ? Check : Copy"
+                                    class="mr-1 h-3.5 w-3.5"
+                                />
+                                {{ copiedKey === `trace-${idx}` ? 'Copied Trace' : 'Copy Stack Trace' }}
+                            </Button>
+                        </div>
 
                         <div
                             v-if="expandedSystemLogIndices.has(idx)"
